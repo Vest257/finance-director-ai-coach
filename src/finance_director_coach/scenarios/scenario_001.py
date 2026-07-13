@@ -5,6 +5,7 @@ from __future__ import annotations
 from textwrap import dedent
 
 from finance_director_coach.models import ContentSection, RecommendationRoute, ScenarioContent
+from finance_director_coach.scenarios.contracts import ScenarioMetadata
 
 MONEY_TOLERANCE = 0.05
 PERCENTAGE_TOLERANCE = 0.2
@@ -206,6 +207,42 @@ RECOMMENDATION_OPTIONS: dict[str, str] = {
     RecommendationRoute.CONDITIONALLY_APPROVE.value: RecommendationRoute.CONDITIONALLY_APPROVE.label,
     RecommendationRoute.DELAY.value: RecommendationRoute.DELAY.label,
     RecommendationRoute.REJECT.value: RecommendationRoute.REJECT.label,
+}
+
+SCENARIO_METADATA = ScenarioMetadata(
+    primary_domains=("Balance Sheet", "Cash Flow", "Treasury"),
+    completion_time="About 20 minutes",
+    difficulty="Intermediate",
+    provenance="Synthetic FinanceOS scenario, validated against the Scenario 001 contract.",
+    version="1.0",
+    short_description="Revenue and EBITDA are rising while cash falls; decide whether to hire 20 people.",
+)
+
+EVIDENCE_TITLES: dict[str, str] = {
+    "E-001": "Growth calculations",
+    "E-002": "Cash movement",
+    "E-003": "EBITDA-to-cash reconciliation",
+    "E-004": "Working-capital drivers",
+    "E-005": "Largest cash driver",
+    "E-006": "Hiring cost",
+    "E-007": "Liquidity forecast",
+    "E-008": "Cash thresholds",
+    "E-009": "Recommendation",
+    "E-010": "Route safeguards",
+    "E-011": "Missing information",
+    "E-012": "Analysis completion",
+    "E-013": "Commercial tradeoffs",
+    "E-014": "Core risks",
+    "E-015": "Extended risks",
+}
+
+CRITICAL_OMISSION_LABELS: dict[str, str] = {
+    "CO-001": "The response did not reconcile EBITDA growth with working-capital cash pressure.",
+    "CO-002": "A material cash, hiring, liquidity, or threshold calculation was misstated.",
+    "CO-003": "No recommendation route was provided.",
+    "CO-004": "The approval route did not adequately address the board-floor exposure.",
+    "CO-005": "The response treated the lender minimum as already breached.",
+    "CO-006": "Unsupported collections or hiring benefits were treated as certain.",
 }
 
 

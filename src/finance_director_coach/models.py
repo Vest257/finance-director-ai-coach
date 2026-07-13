@@ -62,6 +62,7 @@ class EvidenceRecord:
     feedback: str
     improvement_guidance: str
     worked_solution: str | None = None
+    judgment_explanation: str | None = None
 
 
 @dataclass(frozen=True)
