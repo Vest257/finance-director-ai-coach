@@ -4,7 +4,15 @@ The initial architecture should support a simple text-based scenario coach while
 
 ## Current State
 
-This repository currently contains documentation, packaging configuration, and an empty Python package. It does not implement runtime features yet.
+This repository implements the first Scenario 001 CLI vertical slice using standard-library Python. It has no frontend, persistence, database, authentication, telemetry, or external AI integration.
+
+Current runtime boundaries are:
+
+- `models.py`: typed attempts, evidence, ratings, scorecards, and scenario content.
+- `scenarios/scenario_001.py`: approved content, options, finance constants, and reconciliation functions.
+- `evaluation.py`: pure deterministic evidence and competency evaluation.
+- `session.py`: guided and skip-to-solution learning flows.
+- `cli.py` and `__main__.py`: validated console input and application entry point.
 
 ## Architectural Principles
 
@@ -17,7 +25,7 @@ This repository currently contains documentation, packaging configuration, and a
 
 ## Expected Future Boundaries
 
-These are likely future module boundaries, not commitments to implement now:
+These remain possible future boundaries, not commitments to implement now:
 
 - `scenarios`: scenario definitions, prompts, and financial context.
 - `competencies`: competency definitions and mapping to rubrics.
@@ -28,13 +36,13 @@ These are likely future module boundaries, not commitments to implement now:
 
 ## Initial Runtime Shape
 
-When feature implementation begins, start with a simple command-line or text-based interaction:
+The first implementation uses this command-line interaction:
 
 ```text
 scenario content -> learner response -> evaluator -> structured feedback
 ```
 
-The evaluator should begin with deterministic rubric logic and authored feedback that follows the [evaluation contract](../learning/evaluation-contract.md). Calculations and structured selections may be machine-assessed. Free-text communication and nuanced reasoning remain self-review or manual-review evidence in the non-AI MVP. External AI should not be introduced during this phase.
+The evaluator uses deterministic rubric logic and authored feedback that follows the [evaluation contract](../learning/evaluation-contract.md). Calculations and structured selections may be machine-assessed. Free-text communication and nuanced reasoning remain self-review or manual-review evidence in the non-AI MVP. Commercial Judgment cannot receive deterministic `Strong`; Stakeholder Communication and Strategic Leadership remain unassessed without a qualified manual reviewer. External AI is not part of this phase.
 
 Scenario 001 is specified in [Scenario 001: Growth With Falling Cash](../learning/scenarios/scenario-001-growth-with-falling-cash.md). That document is a content and evaluation contract, not a commitment to new infrastructure. The first implementation should support its explicit inputs and evidence traceability with plain Python structures before considering general-purpose authoring systems.
 

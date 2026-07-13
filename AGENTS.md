@@ -182,4 +182,4 @@ When changing product direction, update the relevant product document:
 - No database yet.
 - No external AI API integration yet.
 - No unnecessary placeholder abstractions.
-- No feature implementation in the foundation phase.
+- Feature implementation must remain within approved Phase 1 scope and review gates.

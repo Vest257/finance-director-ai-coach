@@ -28,7 +28,9 @@ Goal: deliver the first usable Finance Director Scenario Coach learning loop thr
 
 Status: current.
 
-Candidate deliverables:
+Scenario 001 CLI vertical-slice milestone: implemented on `feat/scenario-001-cli`, pending pull-request review and merge.
+
+Delivered in this milestone:
 
 - Implement the approved Scenario 001 content and evidence format.
 - First scenario: revenue and EBITDA rising while cash falls, with a decision on hiring 20 people.
@@ -37,7 +39,10 @@ Candidate deliverables:
 - Deterministic rubric implementation conforming to the approved evaluation contract.
 - Structured coaching feedback.
 - Qualitative competency scorecard, debrief, model Finance Director answer, and action plan.
-- Basic tests around scenario and evaluation behavior.
+- Comprehensive tests around finance reconciliation, evaluation boundaries, session flow, and CLI validation.
+- Minimal Python 3.11 continuous integration.
+
+Remaining Phase 1 work should follow learner testing and Product Owner prioritization; it is not presented as delivered by this milestone.
 
 ## Phase 2: Better Scenario And Feedback Quality
 
