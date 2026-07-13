@@ -2,7 +2,7 @@
 
 FinanceOS is planned as a long-term Finance Director and CFO simulation platform. Its first product is the Finance Director Scenario Coach: a text-based scenario coach that helps learners practice finance leadership decisions, receive structured feedback, and understand the competencies they are developing.
 
-This repository currently contains the project foundation only. It intentionally does not include product features, a frontend, database, or external AI integration yet.
+This repository contains the first Phase 1 vertical slice: a command-line implementation of Scenario 001. It intentionally does not include a frontend, database, persistence, or external AI integration.
 
 ## Current Goals
 
@@ -36,9 +36,18 @@ This repository currently contains the project foundation only. It intentionally
 |       +-- coding-standards.md
 +-- src/
 |   +-- finance_director_coach/
+|       +-- scenarios/
+|       |   +-- scenario_001.py
 |       +-- __init__.py
+|       +-- __main__.py
+|       +-- cli.py
+|       +-- evaluation.py
+|       +-- models.py
+|       +-- session.py
 +-- tests/
-|   +-- __init__.py
+|   +-- test_cli.py
+|   +-- test_evaluation.py
+|   +-- test_scenario_financials.py
 +-- AGENTS.md
 +-- pyproject.toml
 +-- .gitignore
@@ -60,25 +69,43 @@ This repository currently contains the project foundation only. It intentionally
 - [Roadmap](docs/project-management/roadmap.md)
 - [Decision log](docs/project-management/decision-log.md)
 
-## Development Setup
+## Installation
 
 This project uses Python packaging through `pyproject.toml`.
 
 ```bash
 python -m pip install -e ".[dev]"
-pytest
 ```
 
-No runtime dependencies are required yet.
+The application has no runtime dependencies outside the Python standard library.
 
-## Non-Goals For The Foundation
+## Run Scenario 001
+
+```bash
+python -m finance_director_coach
+```
+
+Choose the guided path to complete an assessed attempt, or skip to the solution for study without collecting learner evidence.
+
+## Run Tests
+
+```bash
+pytest
+python -m compileall src tests
+```
+
+## Current MVP Limitations
 
 - No frontend framework.
 - No database.
+- No learner persistence or attempt history.
 - No external AI API integration.
-- No scenario engine implementation.
-- No placeholder services that do not serve the first text-based scenario coach.
+- Scenario 001 is the only implemented learning experience.
+- Unrestricted free-text reasoning is stored for display and self-review but is not automatically evaluated.
+- Commercial Judgment is capped at `Capable` under deterministic evaluation; `Strong` requires qualified manual review.
+- Stakeholder Communication and Strategic Leadership remain `Not assessed` without qualified manual review.
+- No overall numerical score is produced.
 
 ## Status
 
-The foundation and Scenario 001 design gate are complete. Phase 1 feature implementation has not started.
+Phase 0 is complete. Phase 1 remains current, with the Scenario 001 CLI vertical slice implemented for pull-request review.

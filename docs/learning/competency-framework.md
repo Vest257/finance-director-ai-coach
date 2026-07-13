@@ -68,7 +68,9 @@ The MVP reports a qualitative competency scorecard. Each assessed competency rec
 - `Strong`: Response shows clear finance leadership, prioritization, and communication.
 - `Not assessed`: The scenario or learner response does not provide enough evidence for an honest rating.
 
-Every rating must cite observable evidence, explain why the rating applies, and identify what would improve the response. Different recommendations may receive the same `Strong` rating when each is supported by sound evidence and suitable conditions. The MVP does not calculate an overall numerical score or imply precision that the evidence cannot support.
+Every rating must cite observable evidence, explain why the rating applies, identify what would improve the response, and state its assessment source. Different recommendations may receive equivalent ratings when each is supported by sound evidence and suitable conditions. The MVP does not calculate an overall numerical score or imply precision that the evidence cannot support.
+
+Deterministic evidence may assign `Developing` or `Capable` for Commercial Judgment, but it may never assign `Strong`; strong commercial judgment requires qualified manual review in the MVP or hybrid AI-assisted review in a future phase. Stakeholder Communication and Strategic Leadership remain `Not assessed` without qualified manual review. A selected recommendation route may be retained as evidence relevant to Strategic Leadership without creating a deterministic leadership rating. Financial Insight and Cash And Risk Discipline may receive deterministic ratings, including `Strong`, where scenario calculations and structured financial evidence support them.
 
 The [evaluation contract](evaluation-contract.md) owns the deterministic rating rules and the boundary between machine-assessable evidence and open-ended evidence that requires self-review, a model answer, or a human reviewer.
 

@@ -1,6 +1,6 @@
 # Scenario 001: Growth With Falling Cash
 
-- Status: approved design specification.
+- Status: accepted by the Product Owner for Phase 1 implementation.
 - Product: Finance Director Scenario Coach.
 - Scenario ID: `SCN-001`.
 - Version: 1.0.
@@ -392,12 +392,12 @@ The [evaluation contract](../evaluation-contract.md) governs rating precedence a
 | Competency | Core evidence for `Capable` | Additional evidence for `Strong` | Critical gates | MVP assessment source |
 | --- | --- | --- | --- | --- |
 | Financial Insight | `E-002`, `E-003`, `E-004`, and `E-005` observed | `E-001` and `E-011` also observed; balance sheet and cash bridge connected | `CO-001`, `CO-002`, `CO-005` | Deterministic |
-| Commercial Judgment | `E-006`, `E-009`, `E-010`, and `E-012` observed | `E-013` also observed | `CO-003`, `CO-004`, `CO-006` | Deterministic for structured evidence; manual for narrative quality |
+| Commercial Judgment | `E-006`, `E-009`, `E-010`, and `E-012` observed | A qualified reviewer finds sound tradeoff reasoning using `E-013` and the learner's explanation | `CO-003`, `CO-004`, `CO-006` | Deterministic is capped at `Capable`; manual review is required for `Strong` |
 | Cash And Risk Discipline | `E-002`, `E-007`, `E-008`, `E-014`, and route-relevant `E-010` observed | `E-015` also observed | `CO-001`, `CO-002`, `CO-004` | Deterministic |
 | Stakeholder Communication | A qualified reviewer finds a clear decision, correct numbers, and understandable tradeoffs | Concise, persuasive, constructive challenge with well-sequenced actions | `CO-005` or materially misleading communication | Manual review; otherwise `Not assessed` |
 | Strategic Leadership | A qualified reviewer finds ownership, a decision, and practical cross-functional actions | Aligns growth, liquidity, accountability, and contingency planning without avoiding the decision | `CO-003`, `CO-006` | Manual review; otherwise `Not assessed` |
 
-For each competency, feedback must list the evidence observed, explain the rating, and identify a specific improvement. Different recommendation routes can earn the same rating when their route requirements are met.
+For each competency, feedback must list the evidence observed, explain the rating, identify a specific improvement, and state the assessment source. Different recommendation routes can earn equivalent deterministic outcomes when their route requirements are met. Selecting all expected options does not prove executive judgment: Commercial Judgment cannot receive deterministic `Strong`, and recommendation evidence for Strategic Leadership does not create a deterministic leadership rating.
 
 ## Model Finance Director Answer
 
@@ -434,4 +434,4 @@ A Finance Director should not use incomplete information to avoid a recommendati
 - Software Architect: confirmed the specification can be represented with simple content, structured inputs, and deterministic rules without new infrastructure.
 - QA Engineer: confirmed acceptance criteria, arithmetic, balance-sheet and cash-bridge consistency, hiring phasing, liquidity conclusions, and evidence traceability.
 - Documentation Engineer: confirmed terminology and links align with the repository sources of truth.
-- Product Owner: final product acceptance remains a human gate before implementation milestone acceptance.
+- Product Owner: accepted Scenario 001 for Phase 1 implementation subject to the Commercial Judgment deterministic-rating ceiling recorded in the evaluation contract.

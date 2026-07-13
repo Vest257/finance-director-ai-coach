@@ -60,11 +60,11 @@ The scorecard must be reproducible from these records. It must not depend on hid
 
 ## Competency Ratings
 
-Each scenario defines the core and strong evidence requirements for every competency it can assess. Apply ratings in this order:
+Each scenario defines the core evidence requirements and permitted assessment source for every competency it can assess. Apply ratings in this order, subject to the competency-specific source limits below:
 
 1. `Not assessed`: use when the scenario does not elicit the competency, the learner uses skip-to-solution, the learner provides no meaningful evidence for the competency, or only open-ended evidence is available to the deterministic evaluator.
 2. `Developing`: use when a competency-specific critical omission is present, a material calculation is wrong beyond the stated tolerance, evidence contradicts the recommendation, or one or more core evidence requirements are not observed.
-3. `Strong`: use when every core and strong evidence requirement for that competency is observed and no critical omission is present.
+3. `Strong`: use only when every core and strong evidence requirement for that competency is observed, no critical omission is present, and the assessment source is permitted to assign `Strong` for that competency.
 4. `Capable`: use when every core evidence requirement is observed, no critical omission is present, and one or more strong evidence requirements are not observed.
 
 The order is deliberate: insufficient evidence is not failure, and a critical omission cannot be offset by unrelated strengths.
@@ -77,6 +77,16 @@ Every reported rating must include:
 - The assessment source: `deterministic`, `self-review`, or `manual review`.
 
 Self-review results must be labeled as self-review and must not silently replace deterministic or manual ratings.
+
+### Competency-Specific Source Limits
+
+- Financial Insight may receive `Developing`, `Capable`, or `Strong` from deterministic evidence when the scenario elicits calculations, reconciliation, and structured financial analysis.
+- Cash And Risk Discipline may receive `Developing`, `Capable`, or `Strong` from deterministic evidence when the scenario elicits liquidity calculations, threshold interpretation, and structured risk recognition.
+- Commercial Judgment may receive only `Developing` or `Capable` from deterministic evidence. `Strong` requires a qualified manual reviewer in the MVP or hybrid AI-assisted review in a future phase because checklist completion cannot establish executive judgment.
+- Stakeholder Communication and Strategic Leadership remain `Not assessed` unless a qualified manual reviewer provides evidence in the MVP. Future hybrid AI-assisted review may assess them under a separately approved contract.
+- Selecting a recommendation route may be recorded as evidence relevant to Strategic Leadership, but it must not create a deterministic Strategic Leadership rating.
+
+Every competency result must state its assessment source. Structured selections demonstrate only the selected facts, risks, or actions; selecting every expected option does not by itself prove executive judgment.
 
 ## Critical Omissions
 
@@ -94,7 +104,7 @@ Each scenario must list its critical omissions and map each one to affected comp
 
 The evaluator must assess reasoning evidence and safeguards, not conformity with a model recommendation. A scenario may define several acceptable decision routes, each with route-specific evidence and conditions.
 
-Different recommendations may receive the same `Strong` competency rating when they:
+Different recommendations may receive equivalent ratings within the permitted assessment-source limits when they:
 
 - Use the available financial evidence correctly.
 - Recognize the material risks and unavailable information.

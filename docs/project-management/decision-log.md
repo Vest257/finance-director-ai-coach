@@ -2,6 +2,67 @@
 
 This log records important product and architecture decisions. Add entries in reverse chronological order.
 
+## 2026-07-13: Implement The First Vertical Slice With Typed Python Boundaries
+
+Decision: Implement Scenario 001 with plain typed Python modules for scenario content, domain models, deterministic evaluation, session orchestration, and CLI input. Use dataclasses, enums, pure evaluation functions, and pytest without adding runtime dependencies or generic content infrastructure.
+
+Rationale:
+
+- These boundaries are required by the current scenario and can be tested independently.
+- Plain Python keeps the first learning loop easy to understand and change.
+- YAML, a database, a frontend, and a generic scenario engine would add complexity without a current use case.
+
+Implications:
+
+- `python -m finance_director_coach` is the first product interface.
+- Scenario content remains separate from learner interaction and evaluation.
+- No persistence, database, AI integration, authentication, telemetry, or frontend is introduced.
+
+## 2026-07-13: Keep Free Text For Display And Self-Review Only
+
+Decision: Store the learner's CEO response only in the in-memory attempt for display and self-review. Do not inspect its keywords, length, grammar, sentiment, or wording during deterministic evaluation.
+
+Rationale:
+
+- Free-text presence can confirm completion of a required step but does not establish response quality.
+- Automatic text heuristics would conflict with the approved evaluation boundary.
+
+Implications:
+
+- Free-text quality does not alter evidence results or competency ratings.
+- The CLI labels the limitation and provides a model answer and self-review checklist.
+- Future hybrid review requires a separately approved AI evaluation contract.
+
+## 2026-07-13: Accept Scenario 001 For Phase 1 Implementation
+
+Decision: The Product Owner accepts Scenario 001 for implementation after correcting the deterministic Commercial Judgment boundary.
+
+Rationale:
+
+- The scenario financial pack, learning flow, and evidence traceability passed the design review gates.
+- The rating correction prevents structured checklist completion from being presented as executive judgment.
+
+Implications:
+
+- The `feat/scenario-001-cli` vertical slice may implement the approved specification.
+- Material departures from the scenario or evaluation contract require the documented review gates.
+
+## 2026-07-13: Cap Deterministic Commercial Judgment At Capable
+
+Decision: Deterministic evidence may assign `Developing` or `Capable` for Commercial Judgment, but never `Strong`. Strong Commercial Judgment requires qualified manual review in the MVP or hybrid AI-assisted review in a future phase.
+
+Rationale:
+
+- Structured selections can show that expected calculations, risks, and safeguards were recorded.
+- They cannot reliably establish nuance, proportionality, or executive tradeoff judgment.
+
+Implications:
+
+- Stakeholder Communication and Strategic Leadership remain `Not assessed` without qualified manual review.
+- Recommendation-route selection may be retained as Strategic Leadership evidence without creating a deterministic rating.
+- Financial Insight and Cash And Risk Discipline may still receive deterministic `Strong` when scenario evidence supports it.
+- Every competency result must state its assessment source.
+
 ## 2026-07-13: Approve Scenario 001 As The First Implementation Contract
 
 Decision: Use [Scenario 001: Growth With Falling Cash](../learning/scenarios/scenario-001-growth-with-falling-cash.md) as the first scenario implementation contract. Its reconciled financial pack, evidence IDs, acceptable recommendation routes, competency rubric, model answer, and debrief define the Phase 1 behavior to implement.
