@@ -21,12 +21,24 @@ from finance_director_coach.scenarios.scenario_001 import (
     CORE_MISSING_INFORMATION,
     CORE_RISKS,
     CORE_TRADEOFFS,
+    EXPECTED_ANNUAL_HIRING_COST,
+    EXPECTED_BOARD_SHORTFALL,
     EXPECTED_CASH_DRIVERS,
+    EXPECTED_CASH_DECREASE,
+    EXPECTED_CASH_LOW_POINT,
+    EXPECTED_DECEMBER_CASH,
+    EXPECTED_EBITDA_GROWTH,
+    EXPECTED_H2_HIRING_COST,
+    EXPECTED_LENDER_HEADROOM,
+    EXPECTED_NET_OPERATING_CASH,
+    EXPECTED_OPERATING_CASH,
+    EXPECTED_REVENUE_GROWTH,
     EXPECTED_THRESHOLD_INTERPRETATIONS,
     EXTENDED_RISKS,
     MONEY_TOLERANCE,
     PERCENTAGE_TOLERANCE,
     REQUIRED_ROUTE_SAFEGUARDS,
+    WORKED_CALCULATION_EXPLANATIONS,
 )
 
 
@@ -53,6 +65,7 @@ def _record(
     competencies: tuple[Competency, ...],
     observed_feedback: str,
     improvement_guidance: str,
+    worked_solution: str | None = None,
 ) -> EvidenceRecord:
     if result is EvidenceResult.OBSERVED:
         feedback = observed_feedback
@@ -68,6 +81,7 @@ def _record(
         competencies_informed=competencies,
         feedback=feedback,
         improvement_guidance=improvement_guidance,
+        worked_solution=worked_solution,
     )
 
 
@@ -77,11 +91,21 @@ def evaluate_evidence(answers: LearnerAnswers) -> tuple[EvidenceRecord, ...]:
     growth_values = (answers.revenue_growth_percent, answers.ebitda_growth_percent)
     growth_sufficient = all(value is not None for value in growth_values)
     growth_observed = growth_sufficient and _within(
-        answers.revenue_growth_percent or 0.0, 22.2, PERCENTAGE_TOLERANCE
-    ) and _within(answers.ebitda_growth_percent or 0.0, 25.9, PERCENTAGE_TOLERANCE)
+        answers.revenue_growth_percent or 0.0,
+        EXPECTED_REVENUE_GROWTH,
+        PERCENTAGE_TOLERANCE,
+    ) and _within(
+        answers.ebitda_growth_percent or 0.0,
+        EXPECTED_EBITDA_GROWTH,
+        PERCENTAGE_TOLERANCE,
+    )
 
     cash_sufficient = answers.cash_decrease is not None
-    cash_observed = cash_sufficient and _within(answers.cash_decrease or 0.0, 2.70, MONEY_TOLERANCE)
+    cash_observed = cash_sufficient and _within(
+        answers.cash_decrease or 0.0,
+        EXPECTED_CASH_DECREASE,
+        MONEY_TOLERANCE,
+    )
 
     operating_values = (
         answers.operating_cash_before_interest_tax,
@@ -89,20 +113,38 @@ def evaluate_evidence(answers: LearnerAnswers) -> tuple[EvidenceRecord, ...]:
     )
     operating_sufficient = all(value is not None for value in operating_values)
     operating_observed = operating_sufficient and _within(
-        answers.operating_cash_before_interest_tax or 0.0, -0.20, MONEY_TOLERANCE
-    ) and _within(answers.net_operating_cash or 0.0, -0.90, MONEY_TOLERANCE)
+        answers.operating_cash_before_interest_tax or 0.0,
+        EXPECTED_OPERATING_CASH,
+        MONEY_TOLERANCE,
+    ) and _within(
+        answers.net_operating_cash or 0.0,
+        EXPECTED_NET_OPERATING_CASH,
+        MONEY_TOLERANCE,
+    )
 
     hiring_values = (answers.h2_hiring_cost, answers.annual_hiring_cost)
     hiring_sufficient = all(value is not None for value in hiring_values)
     hiring_observed = hiring_sufficient and _within(
-        answers.h2_hiring_cost or 0.0, 0.58, MONEY_TOLERANCE
-    ) and _within(answers.annual_hiring_cost or 0.0, 1.68, MONEY_TOLERANCE)
+        answers.h2_hiring_cost or 0.0,
+        EXPECTED_H2_HIRING_COST,
+        MONEY_TOLERANCE,
+    ) and _within(
+        answers.annual_hiring_cost or 0.0,
+        EXPECTED_ANNUAL_HIRING_COST,
+        MONEY_TOLERANCE,
+    )
 
     liquidity_values = (answers.cash_low_point, answers.december_cash)
     liquidity_sufficient = all(value is not None for value in liquidity_values)
     liquidity_observed = liquidity_sufficient and _within(
-        answers.cash_low_point or 0.0, 3.35, MONEY_TOLERANCE
-    ) and _within(answers.december_cash or 0.0, 4.42, MONEY_TOLERANCE)
+        answers.cash_low_point or 0.0,
+        EXPECTED_CASH_LOW_POINT,
+        MONEY_TOLERANCE,
+    ) and _within(
+        answers.december_cash or 0.0,
+        EXPECTED_DECEMBER_CASH,
+        MONEY_TOLERANCE,
+    )
 
     threshold_values = (answers.board_floor_shortfall, answers.lender_headroom)
     threshold_sufficient = all(value is not None for value in threshold_values) and bool(
@@ -110,8 +152,16 @@ def evaluate_evidence(answers: LearnerAnswers) -> tuple[EvidenceRecord, ...]:
     )
     threshold_observed = (
         threshold_sufficient
-        and _within(answers.board_floor_shortfall or 0.0, 0.15, MONEY_TOLERANCE)
-        and _within(answers.lender_headroom or 0.0, 0.85, MONEY_TOLERANCE)
+        and _within(
+            answers.board_floor_shortfall or 0.0,
+            EXPECTED_BOARD_SHORTFALL,
+            MONEY_TOLERANCE,
+        )
+        and _within(
+            answers.lender_headroom or 0.0,
+            EXPECTED_LENDER_HEADROOM,
+            MONEY_TOLERANCE,
+        )
         and answers.threshold_interpretations == EXPECTED_THRESHOLD_INTERPRETATIONS
     )
 
@@ -147,29 +197,34 @@ def evaluate_evidence(answers: LearnerAnswers) -> tuple[EvidenceRecord, ...]:
         _record(
             "E-001",
             _format_values(growth_values),
-            "Revenue growth 22.2% and EBITDA growth 25.9%, each within 0.2 percentage points",
+            f"Revenue growth {EXPECTED_REVENUE_GROWTH:.1f}% and EBITDA growth "
+            f"{EXPECTED_EBITDA_GROWTH:.1f}%, each within 0.2 percentage points",
             _result(growth_observed, growth_sufficient),
             (Competency.FINANCIAL_INSIGHT,),
             "You calculated both growth rates within the documented tolerance.",
             "Recalculate percentage growth as (current - prior) / prior x 100.",
+            WORKED_CALCULATION_EXPLANATIONS["E-001"],
         ),
         _record(
             "E-002",
             _format_values((answers.cash_decrease,)),
-            "Cash decreased by GBP 2.70m, within GBP 0.05m",
+            f"Cash decreased by GBP {EXPECTED_CASH_DECREASE:.2f}m, within GBP 0.05m",
             _result(cash_observed, cash_sufficient),
             (Competency.FINANCIAL_INSIGHT, Competency.CASH_AND_RISK_DISCIPLINE),
-            "You identified the complete GBP 2.70m cash decline.",
+            f"You identified the complete GBP {EXPECTED_CASH_DECREASE:.2f}m cash decline.",
             "Compare opening cash of GBP 7.00m with closing cash of GBP 4.30m.",
+            WORKED_CALCULATION_EXPLANATIONS["E-002"],
         ),
         _record(
             "E-003",
             _format_values(operating_values),
-            "Operating cash before interest and tax was -GBP 0.20m and net operating cash was -GBP 0.90m",
+            f"Operating cash before interest and tax was GBP {EXPECTED_OPERATING_CASH:.2f}m "
+            f"and net operating cash was GBP {EXPECTED_NET_OPERATING_CASH:.2f}m",
             _result(operating_observed, operating_sufficient),
             (Competency.FINANCIAL_INSIGHT,),
             "You reconciled EBITDA to both operating-cash measures.",
             "Bridge EBITDA through working capital, then deduct cash interest and tax.",
+            WORKED_CALCULATION_EXPLANATIONS["E-003"],
         ),
         _record(
             "E-004",
@@ -192,29 +247,35 @@ def evaluate_evidence(answers: LearnerAnswers) -> tuple[EvidenceRecord, ...]:
         _record(
             "E-006",
             _format_values(hiring_values),
-            "H2 hiring cost GBP 0.58m and annual recurring cost GBP 1.68m",
+            f"H2 hiring cost GBP {EXPECTED_H2_HIRING_COST:.2f}m and annual recurring cost "
+            f"GBP {EXPECTED_ANNUAL_HIRING_COST:.2f}m",
             _result(hiring_observed, hiring_sufficient),
             (Competency.COMMERCIAL_JUDGMENT,),
             "You quantified the near-term and recurring hiring commitment.",
             "Apply the September and November start dates to monthly recurring and onboarding costs.",
+            WORKED_CALCULATION_EXPLANATIONS["E-006"],
         ),
         _record(
             "E-007",
             _format_values(liquidity_values),
-            "Hiring-case cash low point GBP 3.35m and December cash GBP 4.42m",
+            f"Hiring-case cash low point GBP {EXPECTED_CASH_LOW_POINT:.2f}m and December cash "
+            f"GBP {EXPECTED_DECEMBER_CASH:.2f}m",
             _result(liquidity_observed, liquidity_sufficient),
             (Competency.CASH_AND_RISK_DISCIPLINE,),
             "You calculated the hiring-case low point and December cash.",
             "Deduct cumulative hiring costs from each baseline monthly closing cash balance.",
+            WORKED_CALCULATION_EXPLANATIONS["E-007"],
         ),
         _record(
             "E-008",
             _format_values((*threshold_values, *sorted(answers.threshold_interpretations))),
-            "Board floor breached by GBP 0.15m; lender minimum retained with GBP 0.85m headroom",
+            f"Board floor breached by GBP {EXPECTED_BOARD_SHORTFALL:.2f}m; lender minimum "
+            f"retained with GBP {EXPECTED_LENDER_HEADROOM:.2f}m headroom",
             _result(threshold_observed, threshold_sufficient),
             (Competency.CASH_AND_RISK_DISCIPLINE,),
             "You correctly separated the internal board floor from the lender covenant.",
             "Compare the GBP 3.35m low point separately with GBP 3.50m and GBP 2.50m.",
+            WORKED_CALCULATION_EXPLANATIONS["E-008"],
         ),
         _record(
             "E-009",

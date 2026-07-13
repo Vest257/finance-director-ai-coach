@@ -4,6 +4,17 @@ from finance_director_coach.scenarios.scenario_001 import (
     ANNUAL_COST_PER_HIRE,
     BOARD_CASH_FLOOR,
     CURRENT_ASSETS,
+    EXPECTED_ANNUAL_HIRING_COST,
+    EXPECTED_BOARD_SHORTFALL,
+    EXPECTED_CASH_DECREASE,
+    EXPECTED_CASH_LOW_POINT,
+    EXPECTED_DECEMBER_CASH,
+    EXPECTED_EBITDA_GROWTH,
+    EXPECTED_H2_HIRING_COST,
+    EXPECTED_LENDER_HEADROOM,
+    EXPECTED_NET_OPERATING_CASH,
+    EXPECTED_OPERATING_CASH,
+    EXPECTED_REVENUE_GROWTH,
     INCOME_STATEMENT,
     LENDER_MINIMUM_CASH,
     OPENING_ASSETS,
@@ -35,6 +46,22 @@ def test_income_statement_growth_matches_specification() -> None:
     ebitda_prior, ebitda_current = INCOME_STATEMENT["EBITDA"]
     assert round((revenue_current - revenue_prior) / revenue_prior * 100, 1) == 22.2
     assert round((ebitda_current - ebitda_prior) / ebitda_prior * 100, 1) == 25.9
+
+
+def test_approved_numerical_answers_remain_unchanged() -> None:
+    assert (
+        EXPECTED_REVENUE_GROWTH,
+        EXPECTED_EBITDA_GROWTH,
+        EXPECTED_CASH_DECREASE,
+        EXPECTED_OPERATING_CASH,
+        EXPECTED_NET_OPERATING_CASH,
+        EXPECTED_H2_HIRING_COST,
+        EXPECTED_ANNUAL_HIRING_COST,
+        EXPECTED_CASH_LOW_POINT,
+        EXPECTED_DECEMBER_CASH,
+        EXPECTED_BOARD_SHORTFALL,
+        EXPECTED_LENDER_HEADROOM,
+    ) == (22.2, 25.9, 2.70, -0.20, -0.90, 0.58, 1.68, 3.35, 4.42, 0.15, 0.85)
 
 
 def test_ebitda_to_cash_reconciliation() -> None:

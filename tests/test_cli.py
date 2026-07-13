@@ -98,3 +98,7 @@ def test_guided_cli_smoke_end_to_end() -> None:
     assert "Model Finance Director answer" in rendered
     assert "Full debrief" in rendered
     assert "Learner action plan" in rendered
+    assert "All monetary answers are entered in GBP millions." in rendered
+    assert "Entering 580 would mean GBP 580 million, not GBP 580,000." in rendered
+    assert "Worked calculation:" in rendered
+    assert "GBP 84,000 / 12 = GBP 7,000" in rendered

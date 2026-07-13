@@ -21,6 +21,7 @@ env/
 # Local environment
 .env
 .env.*
+.streamlit/secrets.toml
 
 # IDEs and OS files
 .idea/

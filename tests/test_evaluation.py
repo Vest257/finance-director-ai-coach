@@ -25,6 +25,19 @@ def record(report: EvaluationReport, evidence_id: str) -> EvidenceRecord:
     return next(item for item in report.evidence_records if item.evidence_id == evidence_id)
 
 
+def test_evidence_record_worked_solution_is_backward_compatible() -> None:
+    evidence = EvidenceRecord(
+        evidence_id="E-test",
+        learner_input="input",
+        expected_rule="rule",
+        result=EvidenceResult.OBSERVED,
+        competencies_informed=(Competency.FINANCIAL_INSIGHT,),
+        feedback="feedback",
+        improvement_guidance="guidance",
+    )
+    assert evidence.worked_solution is None
+
+
 def test_correct_and_incorrect_growth_calculations(
     answer_factory: Callable[[RecommendationRoute], LearnerAnswers],
 ) -> None:
@@ -52,6 +65,63 @@ def test_monetary_tolerance_boundary(
     outside = evaluate_attempt(replace(answer_factory(), cash_decrease=2.7501))
     assert record(at_boundary, "E-002").result is EvidenceResult.OBSERVED
     assert record(outside, "E-002").result is EvidenceResult.NOT_OBSERVED
+
+
+def test_only_numerical_evidence_records_have_worked_solutions(
+    answer_factory: Callable[[RecommendationRoute], LearnerAnswers],
+) -> None:
+    report = evaluate_attempt(answer_factory())
+    numerical_ids = {"E-001", "E-002", "E-003", "E-006", "E-007", "E-008"}
+    assert {
+        item.evidence_id for item in report.evidence_records if item.worked_solution is not None
+    } == numerical_ids
+    assert all(
+        item.worked_solution is None
+        for item in report.evidence_records
+        if item.evidence_id not in numerical_ids
+    )
+
+
+def test_worked_solutions_are_available_for_observed_and_not_observed_inputs(
+    answer_factory: Callable[[RecommendationRoute], LearnerAnswers],
+) -> None:
+    correct = evaluate_attempt(answer_factory())
+    incorrect = evaluate_attempt(
+        replace(
+            answer_factory(),
+            cash_decrease=1.0,
+            h2_hiring_cost=580.0,
+            annual_hiring_cost=1680.0,
+        )
+    )
+    for evidence_id in ("E-002", "E-006"):
+        assert record(correct, evidence_id).result is EvidenceResult.OBSERVED
+        assert record(incorrect, evidence_id).result is EvidenceResult.NOT_OBSERVED
+        assert record(incorrect, evidence_id).worked_solution == record(
+            correct, evidence_id
+        ).worked_solution
+
+
+def test_hiring_worked_solution_contains_required_phasing_and_unit_steps(
+    answer_factory: Callable[[RecommendationRoute], LearnerAnswers],
+) -> None:
+    solution = record(evaluate_attempt(answer_factory()), "E-006").worked_solution
+    assert solution is not None
+    for expected_step in (
+        "GBP 84,000 / 12 = GBP 7,000",
+        "September cohort",
+        "four months of recurring cost plus onboarding",
+        "GBP 0.36m",
+        "November cohort",
+        "two months of recurring cost plus onboarding",
+        "GBP 0.22m",
+        "H2 total",
+        "GBP 0.58m",
+        "Annual recurring cost = 20 x GBP 84,000",
+        "GBP 1.68m",
+        "Enter **0.58** and **1.68** because the fields use GBP millions",
+    ):
+        assert expected_step in solution
 
 
 def test_working_capital_driver_selection(

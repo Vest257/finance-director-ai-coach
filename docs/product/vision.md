@@ -17,7 +17,7 @@ The product should simulate the work of senior finance leadership across ambiguo
 
 The first usable product should be the text-based Finance Director Scenario Coach. It should let a learner enter a scenario, respond to guided questions, skip to a model solution if needed, receive a debrief, see a qualitative competency scorecard, compare with a model Finance Director answer, and leave with a practical action plan.
 
-This first version should prove the learning loop before investing in a frontend, database, external AI integration, or advanced simulation systems.
+The CLI first proved this loop without platform infrastructure. FinanceOS Alpha 0.1 adds a thin Streamlit presentation layer so a small pilot group can use the same scenario and evaluator through a browser link. Database, external AI integration, and advanced simulation systems remain deferred.
 
 ## Product Promise
 

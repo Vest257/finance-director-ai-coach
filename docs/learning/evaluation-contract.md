@@ -55,8 +55,11 @@ Every scenario requirement used in evaluation must have a stable identifier. An 
 - Competency or competencies informed by the result.
 - Feedback message explaining the result.
 - Improvement guidance.
+- An optional worked solution for deterministically assessed calculations.
 
 The scorecard must be reproducible from these records. It must not depend on hidden weighting.
+
+Worked solutions are post-submission learning content. They must use the scenario's reconciled figures and calculation rules, remain hidden during the assessed questions, and be available after assessment whether the numerical evidence was observed or not observed.
 
 ## Competency Ratings
 
@@ -157,6 +160,7 @@ The deterministic MVP may:
 - Confirm completion of required analysis steps.
 - Apply explicit route-specific rating gates.
 - Produce authored feedback tied to the evidence record.
+- Show an authored worked solution after submission for numerical evidence where one is defined.
 
 The deterministic MVP may not claim to evaluate:
 

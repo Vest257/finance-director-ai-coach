@@ -2,6 +2,25 @@
 
 This log records important product and architecture decisions. Add entries in reverse chronological order.
 
+## 2026-07-13: Add Streamlit As The Alpha 0.1 Pilot Surface
+
+Decision: Add a Streamlit browser interface for a small group of finance-professional pilot testers. Streamlit is a presentation and interaction layer over the existing Scenario 001 content, `LearnerAnswers`, deterministic evaluator, evidence records, scorecard, and learning content.
+
+Rationale:
+
+- The merged CLI vertical slice has established the first complete learning loop.
+- A browser link reduces pilot access friction without requiring a separate frontend application or platform infrastructure.
+- Streamlit supports forms, in-memory state, responsive layouts, testing, and Community Cloud deployment with one approved runtime dependency.
+
+Implications:
+
+- `streamlit_app.py` is the Community Cloud entrypoint and delegates to the package presentation module.
+- The browser collects structured inputs and calls the same evaluator only after final submission.
+- The learner-facing financial pack retains the no-answer-leakage boundary.
+- Session state is in memory only; Start over clears it, and the optional summary is generated locally for download.
+- The pilot does not add AI, a database, persistence, accounts, authentication, telemetry, or another frontend framework.
+- CLI behavior and all approved finance and competency-rating rules remain unchanged.
+
 ## 2026-07-13: Implement The First Vertical Slice With Typed Python Boundaries
 
 Decision: Implement Scenario 001 with plain typed Python modules for scenario content, domain models, deterministic evaluation, session orchestration, and CLI input. Use dataclasses, enums, pure evaluation functions, and pytest without adding runtime dependencies or generic content infrastructure.

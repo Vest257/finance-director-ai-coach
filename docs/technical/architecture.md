@@ -4,7 +4,7 @@ The initial architecture should support a simple text-based scenario coach while
 
 ## Current State
 
-This repository implements the first Scenario 001 CLI vertical slice using standard-library Python. It has no frontend, persistence, database, authentication, telemetry, or external AI integration.
+This repository implements Scenario 001 with a shared typed Python core, a CLI, and a Streamlit Alpha 0.1 pilot interface. Streamlit is a presentation and interaction layer only. The application has no persistence, database, authentication, telemetry, or external AI integration.
 
 Current runtime boundaries are:
 
@@ -13,6 +13,8 @@ Current runtime boundaries are:
 - `evaluation.py`: pure deterministic evidence and competency evaluation.
 - `session.py`: guided and skip-to-solution learning flows.
 - `cli.py` and `__main__.py`: validated console input and application entry point.
+- `streamlit_ui.py`: in-memory browser interaction and rendering over the existing content, models, and evaluator.
+- `streamlit_app.py`: root Streamlit and Community Cloud entrypoint.
 
 ## Architectural Principles
 
@@ -34,13 +36,21 @@ These remain possible future boundaries, not commitments to implement now:
 - `profiles`: learner history and competency progress, once persistence exists.
 - `ai`: external AI provider integration, once needed.
 
-## Initial Runtime Shape
+## Runtime Shape
 
 The first implementation uses this command-line interaction:
 
 ```text
 scenario content -> learner response -> evaluator -> structured feedback
 ```
+
+The browser pilot preserves the same core flow:
+
+```text
+Streamlit widgets -> LearnerAnswers -> evaluator -> evidence and scorecard -> Streamlit results
+```
+
+Streamlit session state retains only the current in-memory attempt and widget values. Start over clears that state. The optional plain-text summary is assembled locally from the learner's submitted answers and evaluation report; it is offered as a download and is not stored by the application.
 
 The evaluator uses deterministic rubric logic and authored feedback that follows the [evaluation contract](../learning/evaluation-contract.md). Calculations and structured selections may be machine-assessed. Free-text communication and nuanced reasoning remain self-review or manual-review evidence in the non-AI MVP. Commercial Judgment cannot receive deterministic `Strong`; Stakeholder Communication and Strategic Leadership remain unassessed without a qualified manual reviewer. External AI is not part of this phase.
 
@@ -62,6 +72,7 @@ Testing should focus on domain behavior:
 - Competency mapping.
 - Evaluation output structure.
 - Session flow.
+- Streamlit stage flow, reset behavior, answer-leakage boundaries, and delegation to the core evaluator.
 
 Avoid brittle tests around wording unless exact wording is a product requirement.
 

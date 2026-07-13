@@ -19,4 +19,4 @@ jobs:
       - name: Run tests
         run: pytest
       - name: Compile Python sources
-        run: python -m compileall src tests
+        run: python -m compileall src tests streamlit_app.py
