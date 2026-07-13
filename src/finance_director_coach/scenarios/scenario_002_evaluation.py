@@ -22,7 +22,6 @@ from finance_director_coach.scenarios.scenario_002 import (
     EXPECTED_CURRENT_GROSS_MARGIN,
     EXPECTED_CUSTOMER_CONTRIBUTION,
     EXPECTED_CUSTOMER_CONTRIBUTION_MARGIN,
-    EXPECTED_DECISION_CONDITIONS,
     EXPECTED_DISCOUNTED_CONTRIBUTION_MARGIN,
     EXPECTED_ECONOMIC_REVENUE,
     EXPECTED_MARGIN_INTERPRETATION,
@@ -40,6 +39,9 @@ from finance_director_coach.scenarios.scenario_002 import (
     REQUIRED_ROUTE_SAFEGUARDS,
     Scenario002Answers,
     WORKED_CALCULATION_EXPLANATIONS,
+    decision_condition_expectation,
+    decision_condition_feedback,
+    decision_conditions_are_valid,
 )
 
 
@@ -154,10 +156,11 @@ def evaluate_scenario_002_evidence(answers: Scenario002Answers) -> tuple[Evidenc
         answers.recommendation
         and REQUIRED_ROUTE_SAFEGUARDS[answers.recommendation].issubset(answers.safeguards)
     )
-    conditions_sufficient = bool(answers.decision_conditions)
-    conditions_observed = (
-        answers.decision_conditions == EXPECTED_DECISION_CONDITIONS
-        and len(answers.decision_conditions) == 2
+    conditions_sufficient = (
+        answers.recommendation is not None and bool(answers.decision_conditions)
+    )
+    conditions_observed = decision_conditions_are_valid(
+        answers.recommendation, answers.decision_conditions
     )
 
     required_values = (
@@ -316,10 +319,10 @@ def evaluate_scenario_002_evidence(answers: Scenario002Answers) -> tuple[Evidenc
         _record(
             "SCN-002-E-014",
             _format_values(sorted(answers.decision_conditions)),
-            "Select exactly target contribution margin and scope/service reset as the two decision conditions",
+            decision_condition_expectation(answers.recommendation),
             _result(conditions_observed, conditions_sufficient),
             (Competency.COMMERCIAL_JUDGMENT,),
-            "You set conditions that repair both the economics and operating model.",
+            decision_condition_feedback(answers.recommendation),
             "Use conditions that determine whether the account creates value, not conditions based on revenue credibility alone.",
             judgment_explanation=JUDGMENT_EXPLANATIONS["SCN-002-E-014"],
         ),

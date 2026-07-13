@@ -24,24 +24,28 @@ COMPANY_INCOME_STATEMENT: dict[str, tuple[float, float]] = {
     "EBITDA": (4.80, 3.36),
 }
 
+CUSTOMER_STANDARD_PRICE = 10.50
 CUSTOMER_REPORTED_REVENUE = 9.00
 CUSTOMER_DIRECT_COSTS: dict[str, float] = {
-    "Customer-specific delivery capacity": 2.50,
+    "Redeployable delivery capacity after 90 days": 2.00,
+    "Delivery notice and tooling commitments": 0.50,
     "Implementation overruns": 1.20,
     "Incremental support": 1.10,
     "Customer-specific engineering": 0.70,
     "Service-level credits": 0.50,
 }
 ALLOCATED_HEAD_OFFICE_OVERHEAD = 0.80
-AVOIDABLE_EXIT_COSTS: dict[str, float] = {
-    "Redeployable delivery capacity after 90 days": 2.00,
-    "Implementation overruns": 1.20,
-    "Incremental support": 1.10,
-    "Customer-specific engineering": 0.70,
-}
-UNAVOIDABLE_EXIT_COSTS: dict[str, float] = {
-    "Delivery notice and tooling commitments": 1.00,
-}
+AVOIDABLE_DIRECT_COST_KEYS = frozenset(
+    {
+        "Redeployable delivery capacity after 90 days",
+        "Implementation overruns",
+        "Incremental support",
+        "Customer-specific engineering",
+    }
+)
+RETAINED_DIRECT_COST_KEYS = frozenset(
+    {"Delivery notice and tooling commitments", "Service-level credits"}
+)
 TARGET_CONTRIBUTION_MARGIN = 0.45
 REQUESTED_ADDITIONAL_DISCOUNT_RATE = 0.05
 CUSTOMER_DELIVERY_CAPACITY_PERCENT = 0.28
@@ -66,16 +70,13 @@ DRIVER_OPTIONS: dict[str, str] = {
     "capacity_diversion": "Capacity diverted from more profitable customers",
     "improved_collections": "Improved collections",
 }
-EXPECTED_TOP_DRIVERS = frozenset(
-    {"deep_discount", "implementation_overruns", "support_requirements"}
-)
-
 AVOIDABLE_COST_OPTIONS: dict[str, str] = {
     "delivery_capacity": "GBP 2.00m of redeployable delivery capacity after 90 days",
     "implementation_overruns": "GBP 1.20m of implementation overruns",
     "incremental_support": "GBP 1.10m of incremental support",
     "customer_engineering": "GBP 0.70m of customer-specific engineering",
-    "notice_and_tooling": "GBP 1.00m of delivery notice and tooling commitments",
+    "notice_and_tooling": "GBP 0.50m of delivery notice and tooling commitments",
+    "service_level_credits": "GBP 0.50m of service-level credits retained during transition",
     "allocated_overhead": "GBP 0.80m of allocated head-office overhead",
 }
 EXPECTED_AVOIDABLE_COSTS = frozenset(
@@ -100,7 +101,22 @@ DECISION_CONDITION_OPTIONS: dict[str, str] = {
     "revenue_credibility": "Retain the customer for market credibility regardless of economics",
     "capacity_release": "Capacity can be released or redeployed if commercial terms cannot be repaired",
 }
-EXPECTED_DECISION_CONDITIONS = frozenset({"target_margin", "scope_service_reset"})
+RENEWAL_DECISION_CONDITIONS = frozenset({"target_margin", "scope_service_reset"})
+REJECT_DECISION_CONDITIONS = frozenset({"capacity_release", "target_margin"})
+DECISION_CONDITION_EXPECTATIONS: dict[RecommendationRoute, str] = {
+    RecommendationRoute.APPROVE: (
+        "For Approve, select exactly target contribution margin and scope/service reset"
+    ),
+    RecommendationRoute.CONDITIONALLY_APPROVE: (
+        "For Conditionally approve, select exactly target contribution margin and scope/service reset"
+    ),
+    RecommendationRoute.DELAY: (
+        "For Delay, select exactly two conditions: capacity release plus either target contribution margin or scope/service reset"
+    ),
+    RecommendationRoute.REJECT: (
+        "For Reject, select exactly capacity release and target contribution margin"
+    ),
+}
 
 ROUTE_SAFEGUARD_OPTIONS: dict[RecommendationRoute, dict[str, str]] = {
     RecommendationRoute.APPROVE: {
@@ -166,6 +182,35 @@ def customer_direct_cost() -> float:
     return round(sum(CUSTOMER_DIRECT_COSTS.values()), 2)
 
 
+def existing_discount_amount() -> float:
+    return round(CUSTOMER_STANDARD_PRICE - CUSTOMER_REPORTED_REVENUE, 2)
+
+
+def existing_discount_percentage() -> float:
+    return round(existing_discount_amount() / CUSTOMER_STANDARD_PRICE * 100, 1)
+
+
+def quantified_margin_driver_values() -> dict[str, float]:
+    """Return value leaks that can be ranked from learner-visible raw inputs."""
+
+    return {
+        "deep_discount": existing_discount_amount(),
+        "implementation_overruns": CUSTOMER_DIRECT_COSTS["Implementation overruns"],
+        "support_requirements": CUSTOMER_DIRECT_COSTS["Incremental support"],
+        "customer_engineering": CUSTOMER_DIRECT_COSTS["Customer-specific engineering"],
+        "service_levels": CUSTOMER_DIRECT_COSTS["Service-level credits"],
+    }
+
+
+def ranked_quantified_margin_drivers() -> tuple[str, ...]:
+    return tuple(
+        driver
+        for driver, _ in sorted(
+            quantified_margin_driver_values().items(), key=lambda item: (-item[1], item[0])
+        )
+    )
+
+
 def customer_contribution() -> float:
     return round(CUSTOMER_REPORTED_REVENUE - customer_direct_cost(), 2)
 
@@ -205,7 +250,11 @@ def contribution_margin_after_requested_discount() -> float:
 
 
 def avoidable_exit_cost() -> float:
-    return round(sum(AVOIDABLE_EXIT_COSTS.values()), 2)
+    return round(sum(CUSTOMER_DIRECT_COSTS[key] for key in AVOIDABLE_DIRECT_COST_KEYS), 2)
+
+
+def retained_direct_cost() -> float:
+    return round(sum(CUSTOMER_DIRECT_COSTS[key] for key in RETAINED_DIRECT_COST_KEYS), 2)
 
 
 def current_company_ebitda() -> float:
@@ -230,6 +279,36 @@ def exit_and_redeploy_ebitda() -> float:
     )
 
 
+def decision_conditions_are_valid(
+    route: RecommendationRoute | None, conditions: frozenset[str]
+) -> bool:
+    if route is None or len(conditions) != 2:
+        return False
+    if route is RecommendationRoute.DELAY:
+        return "capacity_release" in conditions and len(
+            conditions.intersection(RENEWAL_DECISION_CONDITIONS)
+        ) == 1
+    if route is RecommendationRoute.REJECT:
+        return conditions == REJECT_DECISION_CONDITIONS
+    return conditions == RENEWAL_DECISION_CONDITIONS
+
+
+def decision_condition_expectation(route: RecommendationRoute | None) -> str:
+    if route is None:
+        return "Choose a recommendation route, then select exactly two compatible decision conditions"
+    return DECISION_CONDITION_EXPECTATIONS[route]
+
+
+def decision_condition_feedback(route: RecommendationRoute | None) -> str:
+    if route in {RecommendationRoute.APPROVE, RecommendationRoute.CONDITIONALLY_APPROVE}:
+        return "You set conditions that repair both the economics and operating model."
+    if route is RecommendationRoute.DELAY:
+        return "You set a condition to test repair and a condition to release or redeploy capacity if it is not achievable."
+    if route is RecommendationRoute.REJECT:
+        return "You tied rejection to unrepaired economics and credible capacity release or redeployment."
+    return "You set conditions that match the selected decision route."
+
+
 EXPECTED_REVENUE_GROWTH = income_statement_growth("Revenue")
 EXPECTED_PRIOR_GROSS_MARGIN = margin("Gross profit", 0)
 EXPECTED_CURRENT_GROSS_MARGIN = margin("Gross profit", 1)
@@ -246,6 +325,7 @@ EXPECTED_DISCOUNTED_CONTRIBUTION_MARGIN = contribution_margin_after_requested_di
 EXPECTED_PROPOSED_RENEWAL_EBITDA = proposed_renewal_ebitda()
 EXPECTED_TARGET_RENEWAL_EBITDA = target_renewal_ebitda()
 EXPECTED_EXIT_AND_REDEPLOY_EBITDA = exit_and_redeploy_ebitda()
+EXPECTED_TOP_DRIVERS = frozenset(ranked_quantified_margin_drivers()[:3])
 
 
 def _worked_calculation_explanations() -> dict[str, str]:
@@ -341,12 +421,17 @@ WORKED_CALCULATION_EXPLANATIONS = _worked_calculation_explanations()
 
 JUDGMENT_EXPLANATIONS: dict[str, str] = {
     "SCN-002-E-004": "Revenue growth is not proof of value creation. A Finance Director should test whether each incremental pound of revenue preserves gross and EBITDA margin, especially where delivery costs are customer-specific.",
-    "SCN-002-E-009": "The largest value leaks should drive the first negotiation agenda. Discounts, overruns, and support demand reduce contribution before centrally allocated overhead is considered.",
+    "SCN-002-E-009": (
+        f"The existing discount/value leakage is GBP {existing_discount_amount():.2f}m, "
+        f"implementation overruns are GBP {CUSTOMER_DIRECT_COSTS['Implementation overruns']:.2f}m, "
+        f"and incremental support is GBP {CUSTOMER_DIRECT_COSTS['Incremental support']:.2f}m. "
+        "These are therefore the three largest quantified margin drivers and should drive the first negotiation agenda."
+    ),
     "SCN-002-E-010": "Contribution analysis separates costs that change with the customer from costs that remain after an exit. Allocated head-office overhead is relevant to total company profitability but is not automatically avoidable or a standalone reason to exit.",
     "SCN-002-E-011": "Commercial decisions need evidence about the customer's response, exit obligations, and the availability of more profitable work. Without it, neither renewal nor exit can be treated as risk-free.",
     "SCN-002-E-012": "A route is a decision, not a rating. More than one route can be defensible when its safeguards address economics, delivery risk, and capacity deployment.",
     "SCN-002-E-013": "Route-specific safeguards turn a commercial preference into a controllable decision. Pricing, scope, and change control are particularly important when customer economics have already deteriorated.",
-    "SCN-002-E-014": "The decision should be determined by economic repair and a deliverable operating model, not revenue credibility alone. A credible capacity-release alternative protects the company if negotiation fails.",
+    "SCN-002-E-014": "Renewal routes require economic and operating repair. Delay requires evidence about whether repair is achievable and whether capacity has a credible alternative use. Rejection requires evidence that economics cannot be repaired and capacity can be released or redeployed.",
 }
 
 
@@ -431,15 +516,18 @@ SCENARIO_002 = ScenarioContent(
         ContentSection(
             "Northstar renewal commercial inputs - GBP m unless stated otherwise",
             dedent(
-                """
-                Reported annual customer revenue                         9.00
-                Customer-specific delivery capacity                      2.50
-                Implementation overruns                                  1.20
-                Incremental support                                      1.10
-                Customer-specific engineering                            0.70
-                Service-level credits                                    0.50
+                f"""
+                Standard price for the current customer scope           {CUSTOMER_STANDARD_PRICE:>5.2f}
+                Reported annual customer revenue                        {CUSTOMER_REPORTED_REVENUE:>5.2f}
+                Redeployable delivery capacity after 90 days            {CUSTOMER_DIRECT_COSTS['Redeployable delivery capacity after 90 days']:>5.2f}
+                Delivery notice and tooling commitments                 {CUSTOMER_DIRECT_COSTS['Delivery notice and tooling commitments']:>5.2f}
+                Implementation overruns                                 {CUSTOMER_DIRECT_COSTS['Implementation overruns']:>5.2f}
+                Incremental support                                     {CUSTOMER_DIRECT_COSTS['Incremental support']:>5.2f}
+                Customer-specific engineering                           {CUSTOMER_DIRECT_COSTS['Customer-specific engineering']:>5.2f}
+                Service-level credits                                   {CUSTOMER_DIRECT_COSTS['Service-level credits']:>5.2f}
+                Current direct customer costs total                     {customer_direct_cost():>5.2f}
 
-                Allocated head-office overhead                            0.80
+                Allocated head-office overhead                          {ALLOCATED_HEAD_OFFICE_OVERHEAD:>5.2f}
                 Defined target contribution margin                       45.0%
                 Requested additional renewal discount                     5.0%
 
@@ -450,11 +538,11 @@ SCENARIO_002 = ScenarioContent(
         ContentSection(
             "Capacity and renewal assumptions",
             dedent(
-                """
+                f"""
                 Northstar uses 28% of delivery capacity and 35% of senior-engineering capacity.
-                GBP 2.00m of delivery capacity can be redeployed within 90 days if the account exits.
-                Implementation overruns, incremental support, and customer-specific engineering can be avoided when the work stops.
-                GBP 1.00m of delivery notice and tooling commitments remains after an exit.
+                GBP {avoidable_exit_cost():.2f}m of the existing direct cost base is avoidable after exit: redeployable delivery capacity, implementation overruns, incremental support, and customer-specific engineering.
+                GBP {retained_direct_cost():.2f}m of the existing direct cost base remains after exit: delivery notice and tooling commitments plus service-level credits. It is already included in the GBP {customer_direct_cost():.2f}m current direct cost total and is not an additional cost.
+                The allocated GBP {ALLOCATED_HEAD_OFFICE_OVERHEAD:.2f}m head-office overhead also remains and is already contained in company EBITDA.
                 Validated profitable-demand opportunities could contribute GBP 3.70m after redeployment.
                 """
             ).strip(),
@@ -479,7 +567,7 @@ SCENARIO_002 = ScenarioContent(
         "The renewal should meet a 45.0% contribution-margin target through a GBP 1.91m price increase, GBP 1.05m cost reduction, or a credible combination, with paid change control and a reset of service-level commitments. We should cap implementation exposure and run monthly customer economics reviews owned jointly by Commercial and Delivery. If Northstar will not accept viable terms, I would delay only long enough to validate exit obligations and redeployment, then transition the account rather than preserve uneconomic revenue."
     ),
     debrief=(
-        "Northstar is a commercial-finance decision, not a revenue-retention reflex. Its reported revenue is GBP 9.00m, but direct costs of GBP 6.00m leave GBP 3.00m contribution. The GBP 0.80m allocation should be understood in total profitability reporting, but it should not be treated as avoidable in an exit decision.\n\n"
+        "Northstar is a commercial-finance decision, not a revenue-retention reflex. Its reported revenue is GBP 9.00m, but direct costs of GBP 6.00m leave GBP 3.00m contribution. Of that existing GBP 6.00m direct-cost base, GBP 5.00m is avoidable after exit and GBP 1.00m remains; the retained GBP 1.00m is not an additional exit cost. The GBP 0.80m allocation should be understood in total profitability reporting, but it should not be treated as avoidable in an exit decision.\n\n"
         "A renewal at the additional discount reduces company EBITDA from GBP 3.36m to GBP 2.91m in the base view. Repairing price to the target improves EBITDA to GBP 5.27m. Exiting and replacing the released capacity produces GBP 3.06m after the 90-day direct-cost assumptions, so exit is not mechanically superior but remains a credible alternative when terms cannot be repaired."
     ),
     self_review_checklist=(
@@ -496,6 +584,6 @@ SCENARIO_002 = ScenarioContent(
         "Create a capacity-redeployment case that distinguishes avoidable costs, retained costs, and replacement contribution.",
     ),
     reconciliation_summary=(
-        f"Company revenue grows {EXPECTED_REVENUE_GROWTH:.1f}% from GBP 40.00m to GBP 48.00m, while gross margin falls from {EXPECTED_PRIOR_GROSS_MARGIN:.1f}% to {EXPECTED_CURRENT_GROSS_MARGIN:.1f}% and EBITDA margin from {EXPECTED_PRIOR_EBITDA_MARGIN:.1f}% to {EXPECTED_CURRENT_EBITDA_MARGIN:.1f}%. Northstar's GBP 9.00m revenue less GBP {customer_direct_cost():.2f}m direct cost gives GBP {EXPECTED_CUSTOMER_CONTRIBUTION:.2f}m contribution ({EXPECTED_CUSTOMER_CONTRIBUTION_MARGIN:.1f}%). A 45.0% target requires GBP {EXPECTED_ECONOMIC_REVENUE:.2f}m revenue, GBP {EXPECTED_PRICE_INCREASE:.2f}m more than reported, or GBP {EXPECTED_COST_REDUCTION:.2f}m cost reduction. The requested discount costs GBP {EXPECTED_REQUESTED_DISCOUNT:.2f}m and reduces contribution margin to {EXPECTED_DISCOUNTED_CONTRIBUTION_MARGIN:.1f}%. Company EBITDA is GBP {EXPECTED_PROPOSED_RENEWAL_EBITDA:.2f}m if renewed as proposed, GBP {EXPECTED_TARGET_RENEWAL_EBITDA:.2f}m at target economics, and GBP {EXPECTED_EXIT_AND_REDEPLOY_EBITDA:.2f}m after exit and redeployment under the stated assumptions."
+        f"Company revenue grows {EXPECTED_REVENUE_GROWTH:.1f}% from GBP 40.00m to GBP 48.00m, while gross margin falls from {EXPECTED_PRIOR_GROSS_MARGIN:.1f}% to {EXPECTED_CURRENT_GROSS_MARGIN:.1f}% and EBITDA margin from {EXPECTED_PRIOR_EBITDA_MARGIN:.1f}% to {EXPECTED_CURRENT_EBITDA_MARGIN:.1f}%. Northstar's GBP 9.00m revenue less GBP {customer_direct_cost():.2f}m direct cost gives GBP {EXPECTED_CUSTOMER_CONTRIBUTION:.2f}m contribution ({EXPECTED_CUSTOMER_CONTRIBUTION_MARGIN:.1f}%). A 45.0% target requires GBP {EXPECTED_ECONOMIC_REVENUE:.2f}m revenue, GBP {EXPECTED_PRICE_INCREASE:.2f}m more than reported, or GBP {EXPECTED_COST_REDUCTION:.2f}m cost reduction. The requested discount costs GBP {EXPECTED_REQUESTED_DISCOUNT:.2f}m and reduces contribution margin to {EXPECTED_DISCOUNTED_CONTRIBUTION_MARGIN:.1f}%. Exit makes GBP {avoidable_exit_cost():.2f}m of the GBP {customer_direct_cost():.2f}m current direct-cost base avoidable, leaving GBP {retained_direct_cost():.2f}m retained direct cost; that GBP {retained_direct_cost():.2f}m is already part of the current direct-cost base, not an additional cost. The allocated GBP {ALLOCATED_HEAD_OFFICE_OVERHEAD:.2f}m head-office overhead also remains and is already contained in company EBITDA. Company EBITDA is GBP {EXPECTED_PROPOSED_RENEWAL_EBITDA:.2f}m if renewed as proposed, GBP {EXPECTED_TARGET_RENEWAL_EBITDA:.2f}m at target economics, and GBP {EXPECTED_EXIT_AND_REDEPLOY_EBITDA:.2f}m after exit and redeployment under the stated assumptions."
     ),
 )

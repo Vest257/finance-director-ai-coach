@@ -6,6 +6,7 @@ from dataclasses import replace
 
 import pytest
 
+import finance_director_coach.scenarios.scenario_002 as scenario_002
 from finance_director_coach.models import (
     AssessmentSource,
     Competency,
@@ -14,15 +15,18 @@ from finance_director_coach.models import (
     RecommendationRoute,
 )
 from finance_director_coach.scenarios.scenario_002 import (
+    AVOIDABLE_DIRECT_COST_KEYS,
     AVOIDABLE_COST_OPTIONS,
     CUSTOMER_DIRECT_COSTS,
+    CUSTOMER_REPORTED_REVENUE,
+    CUSTOMER_STANDARD_PRICE,
+    DECISION_CONDITION_EXPECTATIONS,
     EXPECTED_AVOIDABLE_COSTS,
     EXPECTED_COST_REDUCTION,
     EXPECTED_CURRENT_EBITDA_MARGIN,
     EXPECTED_CURRENT_GROSS_MARGIN,
     EXPECTED_CUSTOMER_CONTRIBUTION,
     EXPECTED_CUSTOMER_CONTRIBUTION_MARGIN,
-    EXPECTED_DECISION_CONDITIONS,
     EXPECTED_DISCOUNTED_CONTRIBUTION_MARGIN,
     EXPECTED_ECONOMIC_REVENUE,
     EXPECTED_EXIT_AND_REDEPLOY_EBITDA,
@@ -37,6 +41,7 @@ from finance_director_coach.scenarios.scenario_002 import (
     EXPECTED_REVENUE_GROWTH,
     EXPECTED_TARGET_RENEWAL_EBITDA,
     EXPECTED_TOP_DRIVERS,
+    RETAINED_DIRECT_COST_KEYS,
     REQUIRED_ROUTE_SAFEGUARDS,
     SCENARIO_002,
     Scenario002Answers,
@@ -46,9 +51,14 @@ from finance_director_coach.scenarios.scenario_002 import (
     customer_contribution,
     customer_contribution_margin,
     customer_direct_cost,
+    existing_discount_amount,
+    existing_discount_percentage,
     economically_attractive_revenue,
     exit_and_redeploy_ebitda,
     proposed_renewal_ebitda,
+    quantified_margin_driver_values,
+    ranked_quantified_margin_drivers,
+    retained_direct_cost,
     required_cost_reduction,
     required_price_increase,
     required_price_increase_percent,
@@ -59,6 +69,14 @@ from finance_director_coach.scenarios.scenario_002_evaluation import (
     evaluate_scenario_002_attempt,
     skipped_scenario_002_report,
 )
+
+
+def decision_conditions_for(route: RecommendationRoute) -> frozenset[str]:
+    if route in {RecommendationRoute.APPROVE, RecommendationRoute.CONDITIONALLY_APPROVE}:
+        return frozenset({"target_margin", "scope_service_reset"})
+    if route is RecommendationRoute.DELAY:
+        return frozenset({"capacity_release", "target_margin"})
+    return frozenset({"capacity_release", "target_margin"})
 
 
 def answers_for(route: RecommendationRoute = RecommendationRoute.CONDITIONALLY_APPROVE) -> Scenario002Answers:
@@ -82,7 +100,7 @@ def answers_for(route: RecommendationRoute = RecommendationRoute.CONDITIONALLY_A
         missing_information=EXPECTED_MISSING_INFORMATION,
         recommendation=route,
         safeguards=REQUIRED_ROUTE_SAFEGUARDS[route],
-        decision_conditions=EXPECTED_DECISION_CONDITIONS,
+        decision_conditions=decision_conditions_for(route),
         ceo_response="Conditionally approve subject to repaired pricing, scope, and service economics.",
     )
 
@@ -93,6 +111,10 @@ def evidence_result(report, evidence_id: str) -> EvidenceResult:
 
 def test_scenario_002_financial_calculations_reconcile() -> None:
     assert customer_direct_cost() == round(sum(CUSTOMER_DIRECT_COSTS.values()), 2) == 6.00
+    assert avoidable_exit_cost() + retained_direct_cost() == customer_direct_cost()
+    assert customer_direct_cost() - avoidable_exit_cost() == retained_direct_cost() == 1.00
+    assert AVOIDABLE_DIRECT_COST_KEYS.isdisjoint(RETAINED_DIRECT_COST_KEYS)
+    assert AVOIDABLE_DIRECT_COST_KEYS | RETAINED_DIRECT_COST_KEYS == frozenset(CUSTOMER_DIRECT_COSTS)
     assert customer_contribution() == EXPECTED_CUSTOMER_CONTRIBUTION == 3.00
     assert customer_contribution_margin() == EXPECTED_CUSTOMER_CONTRIBUTION_MARGIN == 33.3
     assert economically_attractive_revenue() == EXPECTED_ECONOMIC_REVENUE == 10.91
@@ -108,6 +130,24 @@ def test_scenario_002_financial_calculations_reconcile() -> None:
     assert exit_and_redeploy_ebitda() == EXPECTED_EXIT_AND_REDEPLOY_EBITDA == 3.06
 
 
+def test_existing_discount_and_top_driver_ranking_are_derived_from_raw_inputs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    assert existing_discount_amount() == CUSTOMER_STANDARD_PRICE - CUSTOMER_REPORTED_REVENUE == 1.50
+    assert existing_discount_percentage() == 14.3
+    quantified_drivers = quantified_margin_driver_values()
+    assert quantified_drivers["deep_discount"] == existing_discount_amount()
+    assert ranked_quantified_margin_drivers()[:3] == (
+        "deep_discount",
+        "implementation_overruns",
+        "support_requirements",
+    )
+    assert EXPECTED_TOP_DRIVERS == frozenset(ranked_quantified_margin_drivers()[:3])
+
+    monkeypatch.setattr(scenario_002, "existing_discount_amount", lambda: 0.20)
+    assert "deep_discount" not in scenario_002.ranked_quantified_margin_drivers()[:3]
+
+
 def test_scenario_002_pack_exposes_raw_inputs_without_derived_answers() -> None:
     pack = " ".join(
         " ".join(f"{section.title} {section.body}".split())
@@ -117,8 +157,10 @@ def test_scenario_002_pack_exposes_raw_inputs_without_derived_answers() -> None:
         "revenue 40.00 48.00",
         "gross profit 18.00 18.24",
         "ebitda 4.80 3.36",
+        "standard price for the current customer scope 10.50",
         "reported annual customer revenue 9.00",
         "implementation overruns 1.20",
+        "current direct customer costs total 6.00",
         "defined target contribution margin 45.0%",
         "requested additional renewal discount 5.0%",
         "28% of delivery capacity",
@@ -133,10 +175,21 @@ def test_scenario_002_pack_exposes_raw_inputs_without_derived_answers() -> None:
         "required price increase",
         "alternative cost reduction",
         "contribution margin after",
+        "existing discount/value leakage",
+        "three largest quantified margin drivers",
         "renew as proposed",
         "target economics",
     ):
         assert derived_label not in pack
+    for required_exit_clarity in (
+        "5.00m of the existing direct cost base is avoidable after exit",
+        "1.00m of the existing direct cost base remains after exit",
+        "not an additional cost",
+        "already contained in company ebitda",
+    ):
+        assert required_exit_clarity in pack
+    assert "gbp 6.00m current direct cost total" in pack
+    assert "GBP 0.80m head-office overhead also remains" in SCENARIO_002.reconciliation_summary
 
 
 def test_correct_incorrect_and_missing_numerical_evidence() -> None:
@@ -174,25 +227,82 @@ def test_all_recommendation_routes_can_meet_route_specific_rules(route: Recommen
     report = evaluate_scenario_002_attempt(answers_for(route))
     assert evidence_result(report, "SCN-002-E-012") is EvidenceResult.OBSERVED
     assert evidence_result(report, "SCN-002-E-013") is EvidenceResult.OBSERVED
-    result = report.scorecard.for_competency(Competency.COMMERCIAL_JUDGMENT)
-    assert result.rating is CompetencyRating.CAPABLE
-    assert result.assessment_source is AssessmentSource.DETERMINISTIC
+    assert evidence_result(report, "SCN-002-E-014") is EvidenceResult.OBSERVED
+    conditions_record = next(
+        record for record in report.evidence_records if record.evidence_id == "SCN-002-E-014"
+    )
+    assert conditions_record.expected_rule == DECISION_CONDITION_EXPECTATIONS[route]
+    commercial = report.scorecard.for_competency(Competency.COMMERCIAL_JUDGMENT)
+    assert commercial.rating is CompetencyRating.CAPABLE
+    assert commercial.assessment_source is AssessmentSource.DETERMINISTIC
+    assert report.scorecard.for_competency(Competency.STAKEHOLDER_COMMUNICATION).rating is CompetencyRating.NOT_ASSESSED
+    assert report.scorecard.for_competency(Competency.STRATEGIC_LEADERSHIP).rating is CompetencyRating.NOT_ASSESSED
 
 
-def test_missing_route_safeguards_create_observed_failure_not_text_scoring() -> None:
-    route = RecommendationRoute.CONDITIONALLY_APPROVE
-    incomplete = frozenset({"target_margin"})
+@pytest.mark.parametrize(
+    ("route", "conditions"),
+    (
+        (
+            RecommendationRoute.DELAY,
+            frozenset({"capacity_release", "scope_service_reset"}),
+        ),
+        (
+            RecommendationRoute.REJECT,
+            frozenset({"capacity_release", "target_margin"}),
+        ),
+    ),
+)
+def test_delay_and_reject_accept_route_compatible_capacity_release_conditions(
+    route: RecommendationRoute, conditions: frozenset[str]
+) -> None:
+    report = evaluate_scenario_002_attempt(
+        replace(answers_for(route), decision_conditions=conditions)
+    )
+    assert evidence_result(report, "SCN-002-E-014") is EvidenceResult.OBSERVED
+
+
+@pytest.mark.parametrize(
+    ("route", "conditions"),
+    (
+        (
+            RecommendationRoute.APPROVE,
+            frozenset({"capacity_release", "target_margin"}),
+        ),
+        (
+            RecommendationRoute.CONDITIONALLY_APPROVE,
+            frozenset({"capacity_release", "scope_service_reset"}),
+        ),
+        (
+            RecommendationRoute.DELAY,
+            frozenset({"target_margin", "scope_service_reset"}),
+        ),
+        (
+            RecommendationRoute.REJECT,
+            frozenset({"capacity_release", "revenue_credibility"}),
+        ),
+    ),
+)
+def test_incompatible_decision_condition_pairs_are_not_observed(
+    route: RecommendationRoute, conditions: frozenset[str]
+) -> None:
+    report = evaluate_scenario_002_attempt(
+        replace(answers_for(route), decision_conditions=conditions)
+    )
+    assert evidence_result(report, "SCN-002-E-014") is EvidenceResult.NOT_OBSERVED
+
+
+def test_ceo_response_wording_does_not_change_deterministic_evaluation() -> None:
+    route = RecommendationRoute.DELAY
     short = evaluate_scenario_002_attempt(
-        replace(answers_for(route), safeguards=incomplete, ceo_response="Approve.")
+        replace(answers_for(route), ceo_response="Delay.")
     )
     long = evaluate_scenario_002_attempt(
         replace(
             answers_for(route),
-            safeguards=incomplete,
             ceo_response="persuasive strategic revenue cash leadership " * 40,
         )
     )
-    assert evidence_result(short, "SCN-002-E-013") is EvidenceResult.NOT_OBSERVED
+    assert evidence_result(short, "SCN-002-E-014") is EvidenceResult.OBSERVED
     assert short.evidence_records == long.evidence_records
     assert short.scorecard == long.scorecard
 
@@ -223,6 +333,14 @@ def test_scenario_002_worked_and_judgment_explanations_are_traceable() -> None:
     assert price_solution is not None
     for expected_step in ("Formula", "GBP 6.00m / 0.55", "GBP 10.91m", "GBP 1.91m", "21.2%", "Enter"):
         assert expected_step in price_solution
+    driver_explanation = records["SCN-002-E-009"].judgment_explanation
+    assert driver_explanation is not None
+    for quantified_driver in ("GBP 1.50m", "GBP 1.20m", "GBP 1.10m", "three largest"):
+        assert quantified_driver in driver_explanation
+    route_explanation = records["SCN-002-E-014"].judgment_explanation
+    assert route_explanation is not None
+    for route_rule in ("Renewal routes", "Delay", "Rejection"):
+        assert route_rule in route_explanation
 
 
 def test_scenario_002_competency_source_limits_and_skip_path() -> None:

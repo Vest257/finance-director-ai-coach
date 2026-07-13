@@ -7,8 +7,12 @@ from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
-from finance_director_coach.models import EvidenceResult
+from finance_director_coach.models import EvidenceResult, RecommendationRoute
 from finance_director_coach.scenarios.registry import SCENARIOS, get_scenario
+from finance_director_coach.scenarios.scenario_002 import (
+    DECISION_CONDITION_EXPECTATIONS,
+    JUDGMENT_EXPLANATIONS,
+)
 from finance_director_coach.scenarios.scenario_002_evaluation import evaluate_scenario_002_attempt
 from finance_director_coach.streamlit_ui import (
     GUIDED_STAGE,
@@ -120,6 +124,33 @@ def test_scenario_two_guided_stage_has_no_post_submission_answers_or_popovers() 
         assert hidden_value not in rendered
 
 
+def test_scenario_two_driver_stage_does_not_disclose_the_ranked_answer_or_explanation() -> None:
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    app.session_state["selected_scenario_id"] = "SCN-002"
+    app.session_state["stage"] = GUIDED_STAGE
+    app.session_state["guided_step"] = 2
+    app.run()
+    rendered = str(app)
+    assert app.get("popover") == []
+    assert JUDGMENT_EXPLANATIONS["SCN-002-E-009"] not in rendered
+    assert "Select exactly the three largest drivers" not in rendered
+
+
+def test_scenario_two_decision_stage_does_not_disclose_route_feedback() -> None:
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    app.session_state["selected_scenario_id"] = "SCN-002"
+    app.session_state["stage"] = GUIDED_STAGE
+    app.session_state["guided_step"] = 3
+    app.session_state["input_recommendation"] = "delay"
+    app.run()
+    rendered = str(app)
+    assert app.get("popover") == []
+    assert JUDGMENT_EXPLANATIONS["SCN-002-E-014"] not in rendered
+    assert DECISION_CONDITION_EXPECTATIONS[RecommendationRoute.DELAY] not in rendered
+
+
 def test_scenario_library_selects_each_scenario_and_skip_results_identify_it() -> None:
     entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
     app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
@@ -136,6 +167,23 @@ def test_scenario_library_selects_each_scenario_and_skip_results_identify_it() -
     app.button(key="results_restart").click().run()
     assert app.session_state["stage"] == WELCOME_STAGE
     assert "selected_scenario_id" not in app.session_state
+
+
+def test_scenario_two_skip_reconciliation_explains_retained_costs() -> None:
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    app.radio(key="library_scenario_choice").set_value("SCN-002").run()
+    app.button(key="start_scenario").click().run()
+    app.button_group(key="path_choice").set_value("skip").run()
+    app.button(key="continue_from_scenario").click().run()
+    rendered = "\n".join(markdown.value for markdown in app.markdown)
+    for phrase in (
+        "GBP 5.00m of the GBP 6.00m current direct-cost base",
+        "GBP 1.00m retained direct cost",
+        "not an additional cost",
+        "GBP 0.80m head-office overhead also remains",
+    ):
+        assert phrase in rendered
 
 
 def test_scenario_two_summary_identifies_selected_scenario_without_hidden_learning_content() -> None:

@@ -22,10 +22,10 @@ The learner may choose `Approve`, `Conditionally approve`, `Delay`, or `Reject`.
 
 ## Learner-Facing Pack
 
-All figures are GBP millions unless stated otherwise. The learner-facing pack includes raw information only:
+All figures are GBP millions unless stated otherwise. The learner-facing pack includes calculation inputs and an explicit exit-cost relationship:
 
 - FY2025 and FY2026 forecast company revenue, gross profit, and EBITDA.
-- Northstar reported revenue and direct cost-to-serve components.
+- Northstar's GBP 10.50m standard price, GBP 9.00m reported customer revenue, and direct cost-to-serve components.
 - Separately reported allocated head-office overhead.
 - A defined 45.0% target contribution margin and 5.0% requested extra discount.
 - Capacity consumption, the avoidable cost categories after exit, retained commitments, and redeployment contribution assumptions.
@@ -49,7 +49,7 @@ The pack does not state calculated revenue growth, company margins, customer con
 | Company EBITDA: target economics | GBP 5.27m | Skip-path reconciliation only |
 | Company EBITDA: exit and redeployment | GBP 3.06m | Skip-path reconciliation only |
 
-The exit-and-redeployment result deducts GBP 9.00m of revenue, adds GBP 5.00m of avoidable direct cost, and adds GBP 3.70m of replacement contribution. It deliberately retains GBP 1.00m of notice and tooling commitments. The separately allocated GBP 0.80m head-office amount is not treated as avoidable.
+The current direct customer-cost base is GBP 6.00m. The exit-and-redeployment result deducts GBP 9.00m of revenue, adds GBP 5.00m of avoidable direct cost, and adds GBP 3.70m of replacement contribution. The remaining GBP 1.00m is retained direct cost within the existing GBP 6.00m base, not an additional exit cost: it comprises GBP 0.50m of delivery notice and tooling commitments and GBP 0.50m of service-level credits. The separately allocated GBP 0.80m head-office amount also remains, is already contained in company EBITDA, and is not treated as avoidable.
 
 ## Guided Flow
 
@@ -59,6 +59,8 @@ The exit-and-redeployment result deducts GBP 9.00m of revenue, adds GBP 5.00m of
 4. Decision: choose a route, select route safeguards, select exactly two decision conditions, and write a concise CEO recommendation.
 
 Free-text CEO wording is retained for self-review only. It is not deterministically scored for keywords, length, grammar, sentiment, persuasiveness, or leadership quality.
+
+The driver ranking is derivable from raw pack data. The standard price and reported revenue establish the current discount/value leakage; the other options are ranked only where they have a quantified cost-to-serve input. The calculated ranking remains post-submission feedback rather than learner-facing pack content.
 
 ## Evidence And Explanations
 
@@ -80,6 +82,16 @@ Every route can be defensible under the stated evidence:
 - Conditionally approve: target pricing, capped implementation exposure, service-level reset, and named commercial and delivery owners.
 - Delay: short negotiation window, validated profitability and exit-cost case, interim scope controls, and a redeployment plan.
 - Reject: transition plan, capacity redeployment, commercial re-entry economics, and stakeholder-management plan.
+
+## Route-Aware Decision Conditions
+
+The learner always selects exactly two decision conditions. The deterministic rule applies them to the selected route:
+
+- Approve and Conditionally approve: target contribution margin and scope/service reset.
+- Delay: capacity release plus either target contribution margin or scope/service reset.
+- Reject: capacity release and target contribution margin.
+
+The rule is displayed only in post-submission evidence feedback. It does not turn a selected route into a Strategic Leadership rating.
 
 ## Validation Gate
 
