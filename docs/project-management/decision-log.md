@@ -2,6 +2,24 @@
 
 This log records important product and architecture decisions. Add entries in reverse chronological order.
 
+## 2026-07-13: Add A Curated Scenario Library And Approve Scenario 002
+
+Decision: Replace the browser pilot's single hardwired scenario path with a small typed in-code registry. Register Scenario 001 and the synthetic Scenario 002, "Growth at Any Price: Should We Renew the Contract?". Keep the CLI defaulted to Scenario 001.
+
+Rationale:
+
+- Two materially different scenarios establish the minimum real use case for a scenario-selection boundary.
+- Scenario-specific answer models and evaluators avoid forcing unrelated finance decisions into one oversized attempt dataclass.
+- An explicit in-code registry remains understandable and prevents premature YAML, spreadsheet, or database authoring infrastructure.
+
+Implications:
+
+- The shared Streamlit shell owns selection, in-memory state, common results, restart, and summaries; registrations own scenario content, typed answers, evaluator, guided questions, evidence labels, and explanations.
+- Scenario 002 is synthetic and reconciled: it covers company margins, customer contribution, pricing, cost-to-serve, discount impact, capacity, and alternative renewal routes.
+- Numerical evidence may display a post-submission worked calculation. Relevant structured evidence may display a post-submission "Why does this matter?" explanation.
+- Finance SME and Product Owner validation, followed by QA learner-flow validation, is required before a scenario is added to the registry.
+- No importer, database, authentication, AI integration, telemetry, or general enterprise platform capability is introduced.
+
 ## 2026-07-13: Add Streamlit As The Alpha 0.1 Pilot Surface
 
 Decision: Add a Streamlit browser interface for a small group of finance-professional pilot testers. Streamlit is a presentation and interaction layer over the existing Scenario 001 content, `LearnerAnswers`, deterministic evaluator, evidence records, scorecard, and learning content.

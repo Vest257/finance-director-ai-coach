@@ -2,7 +2,7 @@
 
 FinanceOS is planned as a long-term Finance Director and CFO simulation platform. Its first product is the Finance Director Scenario Coach: a scenario coach that helps learners practice finance leadership decisions, receive structured feedback, and understand the competencies they are developing.
 
-This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the original command-line interface and a Streamlit pilot interface for small-group browser testing. Both interfaces reuse the same in-memory scenario and deterministic evaluation core. The product has no database, persistence, authentication, telemetry, or external AI integration.
+This repository contains FinanceOS Alpha 0.1: a curated two-scenario browser library and the original Scenario 001 command-line interface. Both interfaces reuse in-memory scenario content and deterministic evaluation cores. The product has no database, persistence, authentication, telemetry, or external AI integration.
 
 ## Current Goals
 
@@ -23,6 +23,7 @@ This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the orig
 |   |   +-- scenario-design.md
 |   |   +-- scenarios/
 |   |       +-- scenario-001-growth-with-falling-cash.md
+|   |       +-- scenario-002-growth-at-any-price.md
 |   +-- product/
 |   |   +-- mvp-scope.md
 |   |   +-- product-principles.md
@@ -38,6 +39,8 @@ This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the orig
 |   +-- finance_director_coach/
 |       +-- scenarios/
 |       |   +-- scenario_001.py
+|       |   +-- scenario_002.py
+|       |   +-- registry.py
 |       +-- __init__.py
 |       +-- __main__.py
 |       +-- cli.py
@@ -68,6 +71,7 @@ This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the orig
 - [Evaluation contract](docs/learning/evaluation-contract.md)
 - [Scenario design](docs/learning/scenario-design.md)
 - [Scenario 001: Growth With Falling Cash](docs/learning/scenarios/scenario-001-growth-with-falling-cash.md)
+- [Scenario 002: Growth at Any Price](docs/learning/scenarios/scenario-002-growth-at-any-price.md)
 - [Architecture](docs/technical/architecture.md)
 - [Coding standards](docs/technical/coding-standards.md)
 - [Roadmap](docs/project-management/roadmap.md)
@@ -89,7 +93,7 @@ Streamlit is the only direct runtime dependency. The root `requirements.txt` del
 streamlit run streamlit_app.py
 ```
 
-The browser pilot supports the guided attempt, skip-to-solution study path, deterministic feedback, competency scorecard, complete learning review, restart, and a locally generated plain-text tester summary.
+The browser pilot begins with a scenario library. It supports Scenario 001 and Scenario 002 guided attempts, skip-to-solution study paths, deterministic feedback, competency scorecards, complete learning reviews, restart to the library, and locally generated plain-text tester summaries.
 
 The scenario is fictional. Pilot testers must not enter confidential, personal, or employer information.
 
@@ -99,7 +103,7 @@ The scenario is fictional. Pilot testers must not enter confidential, personal, 
 python -m finance_director_coach
 ```
 
-Choose the guided path to complete an assessed attempt, or skip to the solution for study without collecting learner evidence.
+The CLI deliberately defaults to Scenario 001. Choose the guided path to complete an assessed attempt, or skip to the solution for study without collecting learner evidence.
 
 ## Deploy On Streamlit Community Cloud
 
@@ -124,7 +128,7 @@ python -m compileall src tests streamlit_app.py
 - No learner persistence or attempt history.
 - No user accounts, authentication, or telemetry.
 - No external AI API integration.
-- Scenario 001 is the only implemented learning experience.
+- The browser scenario library contains two curated synthetic scenarios; it does not yet import arbitrary scenario files, YAML, or spreadsheets.
 - Browser state exists only for the current Streamlit session and is cleared by Start over.
 - The downloadable summary is generated locally and is not stored by FinanceOS.
 - Unrestricted free-text reasoning is stored for display and self-review but is not automatically evaluated.
@@ -134,4 +138,4 @@ python -m compileall src tests streamlit_app.py
 
 ## Status
 
-Phase 0 is complete. Phase 1 remains current. The Scenario 001 CLI vertical slice is merged, and the Streamlit interface is the Alpha 0.1 pilot surface for small-group learner testing.
+Phase 0 is complete. Phase 1 remains current. The Scenario 001 CLI vertical slice is merged, and the Streamlit interface is the Alpha 0.1 pilot surface for small-group learner testing across two curated scenarios.

@@ -30,7 +30,7 @@ Status: current.
 
 Scenario 001 CLI vertical-slice milestone: merged through PR #1.
 
-FinanceOS Alpha 0.1 Streamlit pilot milestone: current implementation work.
+FinanceOS Alpha 0.1 Streamlit pilot milestone: scenario-library implementation work.
 
 Delivered in this milestone:
 
@@ -46,11 +46,14 @@ Delivered in this milestone:
 
 Alpha 0.1 pilot scope:
 
-- Streamlit presentation layer over the existing Scenario 001 and deterministic evaluator.
+- Streamlit presentation layer over a curated Scenario 001 and Scenario 002 library, each with its own typed answer model and deterministic evaluator.
 - Guided and skip-to-solution browser paths.
 - In-memory attempt state, restart, and local plain-text tester summary.
+- Post-submission worked calculations for numerical evidence and compact judgment explanations for relevant structured evidence.
 - Streamlit Community Cloud deployment configuration for a small pilot group.
 - No accounts, persistence, AI, database, authentication, or telemetry.
+
+Scenario publication remains curated: finance and product-owner validation are required before a scenario is added to the registry. A general importer is deferred until repeated authoring work establishes a clear need.
 
 Remaining Phase 1 work should follow learner testing and Product Owner prioritization; it is not presented as delivered by this milestone.
 

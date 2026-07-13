@@ -5,6 +5,7 @@ The MVP is the Finance Director Scenario Coach, the first product within the Fin
 ## In Scope
 
 - A small set of curated Finance Director scenarios.
+- A scenario library that displays each scenario's decision description, domains, completion time, difficulty, provenance, and version.
 - Scenario prompts with enough context for meaningful decisions.
 - Guided questions that help the learner work through the finance issue step by step.
 - A skip-to-solution path for learners who are stuck or want to study the model approach first.
@@ -19,6 +20,7 @@ The MVP is the Finance Director Scenario Coach, the first product within the Fin
 - A command-line interface.
 - A Streamlit pilot interface for small-group browser testing.
 - In-memory session state and a locally generated plain-text tester summary.
+- Scenario-specific typed answer models and deterministic evaluators behind an explicit registration boundary.
 
 ## Out Of Scope
 
@@ -59,7 +61,7 @@ The first scenario should focus on a business where revenue and EBITDA are risin
 
 The scenario should test cash awareness, working capital reasoning, stakeholder communication, and the ability to challenge growth plans without ignoring commercial momentum.
 
-The complete implementation contract is [Scenario 001: Growth With Falling Cash](../learning/scenarios/scenario-001-growth-with-falling-cash.md). Deterministic evaluation must follow the [evaluation contract](../learning/evaluation-contract.md). Open-ended communication and free-text reasoning are handled through transparent self-review, a model answer, and manual review where available; the non-AI MVP must not present keyword matching as intelligent evaluation.
+The current implementation contracts are [Scenario 001: Growth With Falling Cash](../learning/scenarios/scenario-001-growth-with-falling-cash.md) and [Scenario 002: Growth at Any Price](../learning/scenarios/scenario-002-growth-at-any-price.md). Deterministic evaluation must follow the [evaluation contract](../learning/evaluation-contract.md). Open-ended communication and free-text reasoning are handled through transparent self-review, a model answer, and manual review where available; the non-AI MVP must not present keyword matching as intelligent evaluation.
 
 ## Deliberate Constraints
 

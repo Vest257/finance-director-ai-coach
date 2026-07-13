@@ -4,16 +4,19 @@ The initial architecture should support a simple text-based scenario coach while
 
 ## Current State
 
-This repository implements Scenario 001 with a shared typed Python core, a CLI, and a Streamlit Alpha 0.1 pilot interface. Streamlit is a presentation and interaction layer only. The application has no persistence, database, authentication, telemetry, or external AI integration.
+This repository implements a small curated scenario library with a shared typed Python core, a Scenario 001 CLI, and a Streamlit Alpha 0.1 pilot interface. Streamlit is a presentation and interaction layer only. The application has no persistence, database, authentication, telemetry, or external AI integration.
 
 Current runtime boundaries are:
 
 - `models.py`: typed attempts, evidence, ratings, scorecards, and scenario content.
-- `scenarios/scenario_001.py`: approved content, options, finance constants, and reconciliation functions.
-- `evaluation.py`: pure deterministic evidence and competency evaluation.
+- `scenarios/scenario_001.py` and `scenarios/scenario_002.py`: approved scenario content, finance constants, reconciliation functions, evidence metadata, and explanation content.
+- `scenarios/scenario_002_evaluation.py`: Scenario 002's pure deterministic evidence and competency evaluation. `evaluation.py` remains the unchanged Scenario 001 evaluator.
+- `scenarios/contracts.py`: the typed `ScenarioRegistration`, metadata, and guided-flow boundary.
+- `scenarios/registry.py`: the explicit, in-code registry of approved scenarios.
+- `scenarios/*_adapter.py`: scenario-specific typed answer translation and guided Streamlit questions.
 - `session.py`: guided and skip-to-solution learning flows.
-- `cli.py` and `__main__.py`: validated console input and application entry point.
-- `streamlit_ui.py`: in-memory browser interaction and rendering over the existing content, models, and evaluator.
+- `cli.py` and `__main__.py`: validated console input and application entry point. The CLI deliberately defaults to Scenario 001; it is not a scenario-library surface yet.
+- `streamlit_ui.py`: scenario-library selection, in-memory browser state, shared briefing and results presentation, restart, and local summary rendering.
 - `streamlit_app.py`: root Streamlit and Community Cloud entrypoint.
 
 ## Architectural Principles
@@ -21,7 +24,9 @@ Current runtime boundaries are:
 - Keep the first implementation modular but small.
 - Model the domain explicitly before adding infrastructure.
 - Prefer plain Python modules and dataclasses before frameworks.
-- Keep scenario content separate from coaching logic once implementation begins.
+- Keep scenario content and scenario-specific rules separate from the shared coaching shell.
+- Register each published scenario explicitly. A registration owns metadata, content, typed answer construction, deterministic evaluator, skip report, evidence labels, and guided flow.
+- Do not make the shared UI aware of a scenario's finance figures, question fields, options, or evaluation rules.
 - Add persistence only when there is a real need to store learner state.
 - Add external AI integration only behind a clear boundary after the local learning loop is defined.
 
@@ -44,17 +49,23 @@ The first implementation uses this command-line interaction:
 scenario content -> learner response -> evaluator -> structured feedback
 ```
 
-The browser pilot preserves the same core flow:
+The browser pilot uses a small library boundary before preserving the same core flow:
 
 ```text
-Streamlit widgets -> LearnerAnswers -> evaluator -> evidence and scorecard -> Streamlit results
+scenario library -> selected registration -> scenario-specific answers -> scenario evaluator -> evidence and scorecard -> shared Streamlit results
 ```
 
 Streamlit session state retains only the current in-memory attempt and widget values. Start over clears that state. The optional plain-text summary is assembled locally from the learner's submitted answers and evaluation report; it is offered as a download and is not stored by the application.
 
 The evaluator uses deterministic rubric logic and authored feedback that follows the [evaluation contract](../learning/evaluation-contract.md). Calculations and structured selections may be machine-assessed. Free-text communication and nuanced reasoning remain self-review or manual-review evidence in the non-AI MVP. Commercial Judgment cannot receive deterministic `Strong`; Stakeholder Communication and Strategic Leadership remain unassessed without a qualified manual reviewer. External AI is not part of this phase.
 
-Scenario 001 is specified in [Scenario 001: Growth With Falling Cash](../learning/scenarios/scenario-001-growth-with-falling-cash.md). That document is a content and evaluation contract, not a commitment to new infrastructure. The first implementation should support its explicit inputs and evidence traceability with plain Python structures before considering general-purpose authoring systems.
+The current library contains [Scenario 001: Growth With Falling Cash](../learning/scenarios/scenario-001-growth-with-falling-cash.md) and [Scenario 002: Growth at Any Price](../learning/scenarios/scenario-002-growth-at-any-price.md). These are curated content and evaluation contracts, not arbitrary data files. They retain explicit inputs and traceability with plain Python structures rather than a general-purpose authoring engine.
+
+## Scenario Publication Boundary
+
+The registry is intentionally an in-code list of approved scenario registrations. FinanceOS does not yet include YAML, spreadsheet, or arbitrary-file import because authoring, validation, versioning, and approval needs are not proven.
+
+Before a scenario is added to the registry, the Finance SME must validate the financial pack and reconciliations, and the Product Owner must validate learning intent, evidence rules, answer-leakage boundaries, explanation content, and acceptable recommendation routes. QA must verify the tested learner flow before publication.
 
 ## Data Persistence
 

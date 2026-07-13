@@ -23,6 +23,7 @@ A scenario should include:
 - Debrief.
 - Action plan.
 - Feedback guidance.
+- Scenario metadata: primary domains, estimated completion time, difficulty, provenance, and version.
 
 ## Design Principles
 
@@ -60,6 +61,8 @@ Feedback should identify:
 - How a stronger Finance Director would frame the issue.
 - Which competency the response demonstrates.
 
+Numerical evidence should provide an optional post-submission worked calculation that shows the formula, source figures, intermediate steps, units, final answer, expected input format, and concise business interpretation. Structured interpretation, risk, cost-classification, and decision evidence may provide an optional compact "Why does this matter?" explanation. Neither type of explanation may appear in the financial pack or guided stages.
+
 ### Evaluate Only Observable Evidence
 
 Deterministic evaluation should use calculations, structured selections, required-step completion, and explicit decision conditions. Open-ended communication and reasoning should use a self-review checklist, model answer, or manual reviewer rubric. Follow the [evaluation contract](evaluation-contract.md); do not use keyword matching as a substitute for judgment.
@@ -81,7 +84,7 @@ Each MVP scenario should provide:
 - A model Finance Director answer.
 - An action plan with one to three concrete practice steps.
 
-## First Scenario
+## Current Scenario Library
 
 The approved first scenario uses this pattern:
 
@@ -91,6 +94,8 @@ The approved first scenario uses this pattern:
 - Leadership wants to hire 20 additional people.
 
 The learner decides whether to approve, conditionally approve, delay, or reject the hiring plan. The scenario prioritizes Balance Sheet and Cash Flow domains, with Treasury as a secondary domain. See the complete [Scenario 001 implementation contract](scenarios/scenario-001-growth-with-falling-cash.md).
+
+Scenario 002 is a commercial-finance renewal decision: a strategically visible customer drives revenue while discounts, implementation overruns, support demand, engineering, and service-level commitments erode contribution. It prioritizes Management Accounting, Commercial Finance, Pricing, Customer Profitability, and FP&A. See the [Scenario 002 implementation contract](scenarios/scenario-002-growth-at-any-price.md).
 
 ## Initial Scenario Categories
 
@@ -106,3 +111,7 @@ The learner decides whether to approve, conditionally approve, delay, or reject 
 ## Scenario Data
 
 Financial packs should begin simple. Early scenarios can use plain text tables or static figures. More complex files, model uploads, and generated data should come later only when the learning loop proves useful.
+
+## Publication Gate
+
+Scenarios are curated registrations, not arbitrary files. Before publication, the Finance SME validates financial accuracy and reconciliation, the Product Owner validates learning intent and acceptable routes, and QA validates the learner flow, no-answer-leakage boundary, evidence, explanations, skip path, and summaries. FinanceOS does not yet provide a scenario importer, YAML authoring framework, or spreadsheet upload pipeline.
