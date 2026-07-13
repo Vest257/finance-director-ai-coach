@@ -92,7 +92,7 @@ def evidence_result(report, evidence_id: str) -> EvidenceResult:
 
 
 def test_scenario_002_financial_calculations_reconcile() -> None:
-    assert customer_direct_cost() == sum(CUSTOMER_DIRECT_COSTS.values()) == 6.00
+    assert customer_direct_cost() == round(sum(CUSTOMER_DIRECT_COSTS.values()), 2) == 6.00
     assert customer_contribution() == EXPECTED_CUSTOMER_CONTRIBUTION == 3.00
     assert customer_contribution_margin() == EXPECTED_CUSTOMER_CONTRIBUTION_MARGIN == 33.3
     assert economically_attractive_revenue() == EXPECTED_ECONOMIC_REVENUE == 10.91
