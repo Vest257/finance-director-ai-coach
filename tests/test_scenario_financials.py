@@ -7,6 +7,7 @@ from finance_director_coach.scenarios.scenario_001 import (
     INCOME_STATEMENT,
     LENDER_MINIMUM_CASH,
     OPENING_ASSETS,
+    SCENARIO_001,
     balance_sheet_totals,
     cash_after_hiring,
     cash_bridge_change,
@@ -14,6 +15,11 @@ from finance_director_coach.scenarios.scenario_001 import (
     net_operating_cash,
     operating_cash_before_interest_and_tax,
 )
+
+
+def normalized_section(title: str) -> str:
+    section = next(item for item in SCENARIO_001.financial_pack if item.title == title)
+    return " ".join(section.body.split())
 
 
 def test_balance_sheet_reconciles() -> None:
@@ -65,3 +71,78 @@ def test_hiring_cash_low_point_and_december_cash() -> None:
     assert forecast["December"] == 4.42
     assert round(BOARD_CASH_FLOOR - min(forecast.values()), 2) == 0.15
     assert round(min(forecast.values()) - LENDER_MINIMUM_CASH, 2) == 0.85
+
+
+def test_learner_financial_pack_contains_required_raw_inputs() -> None:
+    income_statement = normalized_section("Income statement - GBP m")
+    assert "Revenue 18.00 22.00" in income_statement
+    assert "EBITDA 2.70 3.40" in income_statement
+
+    balance_sheet = normalized_section("Balance sheet - GBP m")
+    assert "Cash 7.00 4.30" in balance_sheet
+    assert "Trade receivables 6.00 9.20" in balance_sheet
+    assert "Interest-bearing debt 5.50 4.90" in balance_sheet
+
+    cash_bridge = normalized_section("EBITDA-to-cash bridge - H1 2026, GBP m")
+    for component in (
+        "Opening cash at 31 December 2025 7.00",
+        "EBITDA 3.40",
+        "Increase in trade receivables (3.20)",
+        "Increase in inventory (1.10)",
+        "Increase in contract assets and prepayments (0.60)",
+        "Increase in trade payables 0.90",
+        "Increase in accruals and deferred revenue 0.40",
+        "Cash interest paid (0.20)",
+        "Cash tax paid (0.50)",
+        "Capital expenditure (1.20)",
+        "Debt principal repaid (0.60)",
+    ):
+        assert component in cash_bridge
+
+    baseline_cash = normalized_section("Baseline monthly closing-cash forecast - GBP m")
+    for month_and_cash in (
+        "July 3.80",
+        "August 3.50",
+        "September 3.50",
+        "October 3.80",
+        "November 4.30",
+        "December 5.00",
+    ):
+        assert month_and_cash in baseline_cash
+
+    hiring = normalized_section("Proposed 20 hires")
+    assert "Ten starters are proposed for September and ten for November." in hiring
+    assert "Annual fully loaded cost is GBP 84,000 per hire" in hiring
+    assert "one-time onboarding cost is GBP 8,000 per hire" in hiring
+    assert "Recurring cost accrues evenly by month" in hiring
+    assert "One-time onboarding cost is paid in each starter's start month." in hiring
+
+    liquidity = normalized_section("Working capital and liquidity")
+    assert "The board cash floor is GBP 3.50m." in liquidity
+    assert "The lender minimum cash covenant is GBP 2.50m." in liquidity
+    assert "A GBP 3.00m undrawn RCF expires in March 2027." in liquidity
+    assert "No downside case is provided." in liquidity
+
+
+def test_learner_financial_pack_does_not_disclose_assessed_derived_outputs() -> None:
+    learner_pack = " ".join(
+        f"{section.title} {section.body}" for section in SCENARIO_001.financial_pack
+    ).lower()
+    for derived_label in (
+        "revenue growth percentage",
+        "ebitda growth percentage",
+        "net decrease in cash",
+        "total cash decline",
+        "operating cash before interest and tax",
+        "net operating cash",
+        "h2 hiring cost",
+        "annual recurring hiring cost",
+        "hiring-case cash low point",
+        "hiring-case december cash",
+        "cash after hiring",
+        "board-floor shortfall",
+        "shortfall below the board cash floor",
+        "lender headroom",
+        "headroom above the lender minimum",
+    ):
+        assert derived_label not in learner_pack

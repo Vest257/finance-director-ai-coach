@@ -47,6 +47,12 @@ def test_skip_to_solution_end_to_end() -> None:
         for item in result.report.scorecard.results
     )
     assert "Financial reconciliation" in rendered
+    assert "negative GBP 0.20m" in rendered
+    assert "negative GBP 0.90m" in rendered
+    assert "total cash decline to GBP 2.70m" in rendered
+    assert "Hiring costs GBP 0.58m in H2" in rendered
+    assert "GBP 3.35m low point" in rendered
+    assert "GBP 4.42m December cash" in rendered
     assert "Model Finance Director answer" in rendered
     assert "Full debrief" in rendered
     assert "Self-review checklist [source: self-review]" in rendered

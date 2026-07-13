@@ -335,16 +335,17 @@ SCENARIO_001 = ScenarioContent(
             "EBITDA-to-cash bridge - H1 2026, GBP m",
             dedent(
                 """
-                EBITDA                                           3.40
-                Receivables movement                             (3.20)
-                Inventory movement                               (1.10)
-                Contract assets and prepayments                  (0.60)
-                Payables and accruals offsets                     1.30
-                Operating cash before interest and tax          (0.20)
-                Cash interest and tax                            (0.70)
-                Net operating cash                               (0.90)
-                Capital expenditure and debt repayment           (1.80)
-                Net decrease in cash                             (2.70)
+                Opening cash at 31 December 2025                  7.00
+                EBITDA                                            3.40
+                Increase in trade receivables                    (3.20)
+                Increase in inventory                            (1.10)
+                Increase in contract assets and prepayments      (0.60)
+                Increase in trade payables                        0.90
+                Increase in accruals and deferred revenue         0.40
+                Cash interest paid                               (0.20)
+                Cash tax paid                                    (0.50)
+                Capital expenditure                              (1.20)
+                Debt principal repaid                            (0.60)
                 """
             ).strip(),
         ),
@@ -354,9 +355,21 @@ SCENARIO_001 = ScenarioContent(
                 """
                 DSO rose from 61 to 76 days. GBP 2.00m of receivables is over 30 days overdue.
                 Inventory days rose from 46 to 55. Five customers hold GBP 5.60m of receivables.
-                Baseline cash reaches GBP 3.50m in August and September, then GBP 5.00m in December.
                 The board cash floor is GBP 3.50m. The lender minimum cash covenant is GBP 2.50m.
                 A GBP 3.00m undrawn RCF expires in March 2027. No downside case is provided.
+                """
+            ).strip(),
+        ),
+        ContentSection(
+            "Baseline monthly closing-cash forecast - GBP m",
+            dedent(
+                """
+                July                                             3.80
+                August                                           3.50
+                September                                        3.50
+                October                                          3.80
+                November                                         4.30
+                December                                         5.00
                 """
             ).strip(),
         ),
@@ -365,9 +378,9 @@ SCENARIO_001 = ScenarioContent(
             dedent(
                 """
                 Ten starters are proposed for September and ten for November.
-                Recurring cost is GBP 84,000 per person per year; onboarding is GBP 8,000 each.
-                H2 cost is GBP 0.58m and annual recurring cost is GBP 1.68m.
-                Cash after hiring reaches a GBP 3.35m low in September and GBP 4.42m in December.
+                Annual fully loaded cost is GBP 84,000 per hire; one-time onboarding cost is GBP 8,000 per hire.
+                Recurring cost accrues evenly by month from and including each starter's start month.
+                One-time onboarding cost is paid in each starter's start month.
                 No incremental revenue or receipts from the hires are included in the forecast.
                 """
             ).strip(),
