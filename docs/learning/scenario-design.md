@@ -18,7 +18,7 @@ A scenario should include:
 - Expected strong response characteristics.
 - Competencies assessed.
 - Deterministic rubric criteria.
-- Competency score.
+- Qualitative competency scorecard.
 - Model Finance Director answer.
 - Debrief.
 - Action plan.
@@ -32,7 +32,7 @@ Use practical business tensions: cash pressure, missed forecast, pricing decisio
 
 ### Avoid Single Correct Answers
 
-A strong Finance Director response often depends on framing, prioritization, and communication. Rubrics should recognize multiple valid approaches when the reasoning is strong.
+A strong Finance Director response often depends on framing, prioritization, and communication. Rubrics should recognize multiple valid approaches when the reasoning is strong. The model answer is an example, not an answer key.
 
 ### Ask For Action
 
@@ -60,6 +60,10 @@ Feedback should identify:
 - How a stronger Finance Director would frame the issue.
 - Which competency the response demonstrates.
 
+### Evaluate Only Observable Evidence
+
+Deterministic evaluation should use calculations, structured selections, required-step completion, and explicit decision conditions. Open-ended communication and reasoning should use a self-review checklist, model answer, or manual reviewer rubric. Follow the [evaluation contract](evaluation-contract.md); do not use keyword matching as a substitute for judgment.
+
 ## Required Learner Outputs
 
 Each MVP scenario should ask the learner for:
@@ -72,21 +76,21 @@ Each MVP scenario should ask the learner for:
 
 Each MVP scenario should provide:
 
-- A competency score using the behavioral competency framework.
+- A qualitative competency scorecard using `Developing`, `Capable`, `Strong`, or `Not assessed` ratings from the behavioral competency framework.
 - A debrief explaining the financial and leadership tradeoffs.
 - A model Finance Director answer.
 - An action plan with one to three concrete practice steps.
 
 ## First Scenario
 
-The first scenario should use this pattern:
+The approved first scenario uses this pattern:
 
 - Revenue is rising.
 - EBITDA is rising.
 - Cash is falling.
 - Leadership wants to hire 20 additional people.
 
-The learner should decide whether to approve the hiring plan, reject it, or approve it with conditions. The scenario should prioritize Balance Sheet and Cash Flow domains, with Treasury as a secondary domain.
+The learner decides whether to approve, conditionally approve, delay, or reject the hiring plan. The scenario prioritizes Balance Sheet and Cash Flow domains, with Treasury as a secondary domain. See the complete [Scenario 001 implementation contract](scenarios/scenario-001-growth-with-falling-cash.md).
 
 ## Initial Scenario Categories
 

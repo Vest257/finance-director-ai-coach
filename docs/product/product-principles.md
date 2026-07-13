@@ -18,7 +18,7 @@ Scenarios should avoid tidy textbook answers. Senior finance work often involves
 
 ## 5. Transparent Evaluation
 
-Learners should understand why feedback was given. Scoring should connect to visible competencies, observable behaviors, and scenario-specific expectations.
+Learners should understand why feedback was given. Competency ratings should connect to visible competencies, observable behaviors, and scenario-specific expectations without false numerical precision.
 
 ## 6. Respect The Learner
 
@@ -26,7 +26,7 @@ The tone should be direct, useful, and professional. The coach should stretch th
 
 ## 7. Modular Learning
 
-Scenarios, competencies, scoring rubrics, financial packs, and learner progress should be separable concepts so the platform can evolve without rewriting the product.
+Scenarios, competencies, evaluation rubrics, financial packs, and learner progress should be separable concepts so the platform can evolve without rewriting the product.
 
 ## 8. Documentation Is Product Infrastructure
 

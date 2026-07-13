@@ -2,6 +2,69 @@
 
 This log records important product and architecture decisions. Add entries in reverse chronological order.
 
+## 2026-07-13: Approve Scenario 001 As The First Implementation Contract
+
+Decision: Use [Scenario 001: Growth With Falling Cash](../learning/scenarios/scenario-001-growth-with-falling-cash.md) as the first scenario implementation contract. Its reconciled financial pack, evidence IDs, acceptable recommendation routes, competency rubric, model answer, and debrief define the Phase 1 behavior to implement.
+
+Rationale:
+
+- A complete design gate reduces product ambiguity before runtime work begins.
+- Reconciled figures provide a credible finance learning experience and testable implementation expectations.
+- Multiple valid recommendation routes preserve realistic Finance Director judgment.
+
+Implications:
+
+- Phase 0 is complete and Phase 1 is current.
+- Phase 1 should implement this contract without adding a frontend, database, or AI integration.
+- Material scenario changes require Chief Product Architect, Finance SME, QA, and Product Owner review.
+
+## 2026-07-13: Define The Limits Of Deterministic Free-Text Evaluation
+
+Decision: The non-AI MVP will not claim to machine-score executive communication, persuasiveness, nuance, constructive challenge, or overall free-text reasoning. These qualities use a self-review checklist, model Finance Director answer, and manual reviewer rubric where available.
+
+Rationale:
+
+- Keyword matching and writing proxies do not provide credible evidence of executive judgment.
+- Honest `Not assessed` ratings are preferable to invented certainty.
+- The deterministic contract should remain useful when future AI-assisted review is added.
+
+Implications:
+
+- The [evaluation contract](../learning/evaluation-contract.md) defines the boundary and evidence traceability rules.
+- Future AI-assisted evaluation must remain distinguishable from deterministic results and preserve human review.
+
+## 2026-07-13: Use A Qualitative Competency Scorecard
+
+Decision: The MVP output will be a competency scorecard using `Developing`, `Capable`, `Strong`, and `Not assessed`. It will not calculate an overall numerical score.
+
+Rationale:
+
+- Qualitative ratings match the available evidence better than numerical precision.
+- Learners need evidence, explanation, and improvement guidance more than points.
+- Different recommendations can demonstrate equally strong judgment.
+
+Implications:
+
+- Every competency rating must cite observable evidence, explain the rating, and identify an improvement.
+- `Not assessed` is used for insufficient evidence and is not treated as failure.
+- No hidden weights, percentages, or averaged ratings are part of the MVP.
+
+## 2026-07-13: Establish Product Owner Authority
+
+Decision: Define the Product Owner as the human owner of FinanceOS with final authority over priorities, product acceptance, and product direction.
+
+Rationale:
+
+- Product design, finance correctness, and implementation responsibilities need a clear human decision owner.
+- Material disagreements should be surfaced rather than silently resolved by agents or specialist roles.
+
+Implications:
+
+- The Chief Product Architect proposes and reviews product design.
+- The Finance SME owns finance correctness.
+- Codex and the documented engineering roles implement approved work.
+- Unresolved material product, finance, or delivery tradeoffs are escalated to the Product Owner.
+
 ## 2026-07-13: Define Platform, First Product, And MVP Learning Flow
 
 Decision: Define FinanceOS as the platform and the Finance Director Scenario Coach as the first product. The first interface will be a CLI. The initial evaluation approach will be a deterministic rubric, with future evaluation expected to become hybrid once the rubric contract is proven.
@@ -11,12 +74,12 @@ Rationale:
 - FinanceOS needs a platform-level identity that can support multiple future finance leadership products.
 - The first product still needs to stay narrow enough to validate the learning loop quickly.
 - A CLI avoids frontend complexity while preserving a complete scenario experience.
-- Deterministic evaluation makes scoring explainable before introducing AI-assisted judgment.
+- Deterministic evaluation makes competency ratings explainable before introducing AI-assisted judgment.
 
 Implications:
 
 - MVP documentation should refer to the Finance Director Scenario Coach as the first FinanceOS product.
-- Product work should include guided questions, skip-to-solution, debrief, competency score, model Finance Director answer, and action plan.
+- Product work should include guided questions, skip-to-solution, debrief, a qualitative competency scorecard, model Finance Director answer, and action plan.
 - AI-assisted evaluation remains future work and should be hybrid rather than replacing deterministic rubrics outright.
 
 ## 2026-07-13: Prioritize Finance Learning Domains Separately From Behavioral Competencies
@@ -31,7 +94,7 @@ Rationale:
 
 Implications:
 
-- Scenarios should identify domain coverage separately from competency scoring.
+- Scenarios should identify domain coverage separately from competency ratings.
 - Early scenario sequencing should emphasize Balance Sheet and Cash Flow before broader Finance Director topics.
 
 ## 2026-07-13: Select First Scenario Pattern

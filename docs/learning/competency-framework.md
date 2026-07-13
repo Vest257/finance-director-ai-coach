@@ -59,16 +59,19 @@ Observable behaviors:
 - Helps leadership teams make decisions.
 - Anticipates board, investor, lender, or auditor concerns.
 
-## Scoring Guidance
+## Competency Scorecard
 
-Initial scoring can be qualitative:
+The MVP reports a qualitative competency scorecard. Each assessed competency receives one of these ratings:
 
 - `Developing`: Response misses important context, risks, or tradeoffs.
 - `Capable`: Response handles the core issue with reasonable judgment.
 - `Strong`: Response shows clear finance leadership, prioritization, and communication.
+- `Not assessed`: The scenario or learner response does not provide enough evidence for an honest rating.
 
-Numerical scoring can be added later if it improves feedback quality. It should not replace clear written coaching.
+Every rating must cite observable evidence, explain why the rating applies, and identify what would improve the response. Different recommendations may receive the same `Strong` rating when each is supported by sound evidence and suitable conditions. The MVP does not calculate an overall numerical score or imply precision that the evidence cannot support.
+
+The [evaluation contract](evaluation-contract.md) owns the deterministic rating rules and the boundary between machine-assessable evidence and open-ended evidence that requires self-review, a model answer, or a human reviewer.
 
 ## Framework Boundaries
 
-This framework is not a full finance curriculum. It exists to guide scenario feedback and competency tracking. Technical accounting, tax, treasury, and corporate finance topics may appear inside scenarios, but they should be evaluated through practical leadership behavior.
+This framework is not a full finance curriculum. It exists to guide scenario feedback and competency tracking. Technical accounting, tax, treasury, and corporate finance topics may appear inside scenarios, but they should be evaluated through practical leadership behavior. Finance subject coverage belongs to the separate [learning domain framework](domain-framework.md).

@@ -9,7 +9,7 @@ This repository currently contains the project foundation only. It intentionally
 - Establish a clear product and technical direction.
 - Keep the initial Python architecture simple and modular.
 - Make assumptions, scope, and decisions visible to future contributors.
-- Prepare for future support of scenarios, scoring, learner profiles, financial packs, AI roleplay, and competency tracking.
+- Prepare for future support of scenarios, evaluation, learner profiles, financial packs, AI roleplay, and competency tracking.
 
 ## Repository Structure
 
@@ -19,7 +19,10 @@ This repository currently contains the project foundation only. It intentionally
 |   +-- learning/
 |   |   +-- competency-framework.md
 |   |   +-- domain-framework.md
+|   |   +-- evaluation-contract.md
 |   |   +-- scenario-design.md
+|   |   +-- scenarios/
+|   |       +-- scenario-001-growth-with-falling-cash.md
 |   +-- product/
 |   |   +-- mvp-scope.md
 |   |   +-- product-principles.md
@@ -49,7 +52,9 @@ This repository currently contains the project foundation only. It intentionally
 - [MVP scope](docs/product/mvp-scope.md)
 - [Competency framework](docs/learning/competency-framework.md)
 - [Learning domain framework](docs/learning/domain-framework.md)
+- [Evaluation contract](docs/learning/evaluation-contract.md)
 - [Scenario design](docs/learning/scenario-design.md)
+- [Scenario 001: Growth With Falling Cash](docs/learning/scenarios/scenario-001-growth-with-falling-cash.md)
 - [Architecture](docs/technical/architecture.md)
 - [Coding standards](docs/technical/coding-standards.md)
 - [Roadmap](docs/project-management/roadmap.md)
@@ -76,4 +81,4 @@ No runtime dependencies are required yet.
 
 ## Status
 
-Foundation created. Feature implementation has not started.
+The foundation and Scenario 001 design gate are complete. Phase 1 feature implementation has not started.

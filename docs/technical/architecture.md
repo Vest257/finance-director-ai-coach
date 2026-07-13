@@ -21,7 +21,7 @@ These are likely future module boundaries, not commitments to implement now:
 
 - `scenarios`: scenario definitions, prompts, and financial context.
 - `competencies`: competency definitions and mapping to rubrics.
-- `evaluation`: scoring and coaching feedback logic.
+- `evaluation`: evidence checks, competency ratings, and coaching feedback logic.
 - `sessions`: learner interaction flow for a scenario attempt.
 - `profiles`: learner history and competency progress, once persistence exists.
 - `ai`: external AI provider integration, once needed.
@@ -34,7 +34,9 @@ When feature implementation begins, start with a simple command-line or text-bas
 scenario content -> learner response -> evaluator -> structured feedback
 ```
 
-The evaluator may begin as deterministic rubric logic or manually authored feedback patterns. External AI should not be introduced until the expected evaluation contract is clear.
+The evaluator should begin with deterministic rubric logic and authored feedback that follows the [evaluation contract](../learning/evaluation-contract.md). Calculations and structured selections may be machine-assessed. Free-text communication and nuanced reasoning remain self-review or manual-review evidence in the non-AI MVP. External AI should not be introduced during this phase.
+
+Scenario 001 is specified in [Scenario 001: Growth With Falling Cash](../learning/scenarios/scenario-001-growth-with-falling-cash.md). That document is a content and evaluation contract, not a commitment to new infrastructure. The first implementation should support its explicit inputs and evidence traceability with plain Python structures before considering general-purpose authoring systems.
 
 ## Data Persistence
 
@@ -59,5 +61,6 @@ Avoid brittle tests around wording unless exact wording is a product requirement
 
 - Overengineering before the learning loop is validated.
 - Generic coaching that does not feel finance-specific.
-- Scoring that appears precise but is not explainable.
+- Competency ratings that appear precise but are not explainable.
+- Deterministic evaluation presented as understanding open-ended reasoning.
 - Scenario content coupled too tightly to a future AI provider.

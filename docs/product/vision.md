@@ -15,7 +15,7 @@ The product should simulate the work of senior finance leadership across ambiguo
 
 ## Initial Quick Win
 
-The first usable product should be the text-based Finance Director Scenario Coach. It should let a learner enter a scenario, respond to guided questions, skip to a model solution if needed, receive a debrief, see a competency score, compare with a model Finance Director answer, and leave with a practical action plan.
+The first usable product should be the text-based Finance Director Scenario Coach. It should let a learner enter a scenario, respond to guided questions, skip to a model solution if needed, receive a debrief, see a qualitative competency scorecard, compare with a model Finance Director answer, and leave with a practical action plan.
 
 This first version should prove the learning loop before investing in a frontend, database, external AI integration, or advanced simulation systems.
 

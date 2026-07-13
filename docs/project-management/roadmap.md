@@ -6,7 +6,7 @@ This roadmap is directional. It should be updated as product discovery and imple
 
 Goal: make the repository understandable and ready for focused implementation.
 
-Status: current.
+Status: complete.
 
 Deliverables:
 
@@ -18,20 +18,25 @@ Deliverables:
 - Architecture and coding standards.
 - Roadmap and decision log.
 - Python package skeleton.
+- Product Owner authority and role review gates.
+- Deterministic evaluation contract.
+- Reconciled Scenario 001 specification and competency scorecard rubric.
 
 ## Phase 1: Text-Based Scenario Coach
 
 Goal: deliver the first usable Finance Director Scenario Coach learning loop through a CLI.
 
+Status: current.
+
 Candidate deliverables:
 
-- Scenario content format.
+- Implement the approved Scenario 001 content and evidence format.
 - First scenario: revenue and EBITDA rising while cash falls, with a decision on hiring 20 people.
 - CLI text interaction flow.
 - Guided questions and skip-to-solution path.
-- Deterministic rubric evaluation contract.
+- Deterministic rubric implementation conforming to the approved evaluation contract.
 - Structured coaching feedback.
-- Competency score, debrief, model Finance Director answer, and action plan.
+- Qualitative competency scorecard, debrief, model Finance Director answer, and action plan.
 - Basic tests around scenario and evaluation behavior.
 
 ## Phase 2: Better Scenario And Feedback Quality

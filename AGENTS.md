@@ -6,7 +6,7 @@ This repository is the foundation for FinanceOS. FinanceOS is the platform; the 
 
 - Build FinanceOS as a Finance Director and CFO simulation platform.
 - Deliver quick wins through the text-based Finance Director Scenario Coach first.
-- Support future scenarios, scoring, learner profiles, financial packs, AI roleplay, and competency tracking.
+- Support future scenarios, evaluation, learner profiles, financial packs, AI roleplay, and competency tracking.
 - Keep the product useful for real finance leadership learning, not generic chatbot practice.
 
 ## Working Principles
@@ -17,25 +17,52 @@ This repository is the foundation for FinanceOS. FinanceOS is the platform; the 
 - Make assumptions and decisions visible in `docs/project-management/decision-log.md`.
 - Keep behavioral learning concepts aligned with `docs/learning/competency-framework.md`.
 - Keep finance-domain learning concepts aligned with `docs/learning/domain-framework.md`.
+- Keep deterministic assessment aligned with `docs/learning/evaluation-contract.md`.
 
 ## Roles And Review Gates
+
+### Product Owner
+
+The Product Owner is the human owner of FinanceOS.
+
+Responsibilities:
+
+- Set product priorities.
+- Provide practical finance experience and scenario input.
+- Approve product scope and milestone acceptance.
+- Test learning experiences from the learner perspective.
+- Make final decisions when product, finance, or delivery tradeoffs remain unresolved.
+
+Authority boundaries:
+
+- Has final authority over priorities, product acceptance, and product direction.
+- Receives product design proposals and reviews from the Chief Product Architect.
+- Relies on the Finance SME as the authority for finance correctness.
+- Delegates approved implementation to Codex and the documented engineering roles.
+- Must be asked to resolve material disagreements or assumptions; agents must not silently decide them.
+
+Review gates:
+
+- Final approval of product scope, milestone acceptance, and changes to product direction.
+- Resolution of material tradeoffs that remain after role review.
 
 ### Chief Product Architect
 
 Responsibilities:
 
-- Own the FinanceOS platform vision and product sequencing.
+- Translate Product Owner priorities into a coherent FinanceOS platform vision and product sequence.
 - Confirm that the Finance Director Scenario Coach remains the first product focus.
-- Decide whether proposed work belongs in the MVP, later roadmap, or backlog.
+- Propose whether work belongs in the MVP, later roadmap, or backlog.
 
 Authority boundaries:
 
-- May approve product scope and prioritization.
+- May propose and review product design, scope, and prioritization.
+- Does not replace the Product Owner's final authority over priorities, acceptance, or direction.
 - Should not prescribe implementation details unless they affect product risk or learning value.
 
 Review gates:
 
-- Product vision, MVP scope, roadmap, and major scenario experience changes.
+- Product coherence of the vision, MVP scope, roadmap, and major scenario experience changes before Product Owner approval.
 - Any proposal to add a frontend, database, AI integration, authentication, payments, or multi-user administration.
 
 ### Software Architect
@@ -43,13 +70,13 @@ Review gates:
 Responsibilities:
 
 - Own architecture, module boundaries, dependency posture, and technical tradeoffs.
-- Keep the initial system simple while preserving room for future scenarios, scoring, profiles, financial packs, AI roleplay, and competency tracking.
+- Keep the initial system simple while preserving room for future scenarios, evaluation, profiles, financial packs, AI roleplay, and competency tracking.
 - Record architecture decisions in `docs/project-management/decision-log.md`.
 
 Authority boundaries:
 
 - May approve technical structure and dependency choices.
-- Should not expand product scope without Chief Product Architect approval.
+- Should not expand product scope without Chief Product Architect review and Product Owner approval.
 
 Review gates:
 
@@ -67,6 +94,7 @@ Authority boundaries:
 
 - May make implementation decisions inside approved architecture.
 - Should not add product capabilities, infrastructure, or dependencies without the relevant review gate.
+- Must escalate material product or finance assumptions rather than resolving them silently in code.
 
 Review gates:
 
@@ -116,8 +144,9 @@ Responsibilities:
 
 Authority boundaries:
 
-- May approve or reject scenario content and domain scoring criteria.
+- May approve or reject scenario content and finance-domain evaluation criteria.
 - Should not dictate software architecture beyond domain requirements.
+- Does not make final product-priority or milestone-acceptance decisions for the Product Owner.
 
 Review gates:
 
@@ -142,6 +171,8 @@ When changing product direction, update the relevant product document:
 - MVP scope: `docs/product/mvp-scope.md`
 - Learning domains: `docs/learning/domain-framework.md`
 - Behavioral competencies: `docs/learning/competency-framework.md`
+- Evaluation contract: `docs/learning/evaluation-contract.md`
+- Scenario specifications: `docs/learning/scenarios/`
 - Roadmap: `docs/project-management/roadmap.md`
 - Decisions: `docs/project-management/decision-log.md`
 

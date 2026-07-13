@@ -70,8 +70,8 @@ Initial learning focus:
 
 ## Usage In Scenarios
 
-Each scenario should identify one primary domain and optional secondary domains. Domain tags should guide scenario selection and debrief content, while behavioral competency scores should guide feedback on judgment and communication.
+Each scenario should identify one primary domain and optional secondary domains. Domain tags should guide scenario selection and debrief content, while behavioral competency ratings should guide feedback on judgment and communication.
 
 ## MVP Priority
 
-The first scenario should combine Balance Sheet and Cash Flow, with Treasury implications. It should use the pattern: revenue and EBITDA are rising while cash is falling, and the learner must decide whether to hire 20 people.
+The first scenario combines Balance Sheet and Cash Flow, with Treasury implications. Its approved specification is [Scenario 001: Growth With Falling Cash](scenarios/scenario-001-growth-with-falling-cash.md).
