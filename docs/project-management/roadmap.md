@@ -21,15 +21,17 @@ Deliverables:
 
 ## Phase 1: Text-Based Scenario Coach
 
-Goal: deliver the first usable learning loop.
+Goal: deliver the first usable Finance Director Scenario Coach learning loop through a CLI.
 
 Candidate deliverables:
 
 - Scenario content format.
-- One to three curated scenarios.
-- Text interaction flow.
-- Response evaluation contract.
+- First scenario: revenue and EBITDA rising while cash falls, with a decision on hiring 20 people.
+- CLI text interaction flow.
+- Guided questions and skip-to-solution path.
+- Deterministic rubric evaluation contract.
 - Structured coaching feedback.
+- Competency score, debrief, model Finance Director answer, and action plan.
 - Basic tests around scenario and evaluation behavior.
 
 ## Phase 2: Better Scenario And Feedback Quality
@@ -42,6 +44,7 @@ Candidate deliverables:
 - More detailed rubrics.
 - Revision loop for learner answers.
 - Better competency mapping.
+- Coverage across Balance Sheet, Cash Flow, Treasury, Audit, and broader Finance Director topics.
 - Lightweight reporting of scenario results.
 
 ## Phase 3: Learner Memory And Progress
@@ -62,13 +65,11 @@ Goal: introduce adaptive coaching and stakeholder simulation once the product co
 Candidate deliverables:
 
 - External AI integration boundary.
-- AI-assisted feedback or stakeholder roleplay.
+- Hybrid deterministic and AI-assisted feedback or stakeholder roleplay.
 - Financial pack ingestion or structured scenario data.
 - Guardrails for consistency and explainability.
 
 ## Open Sequencing Questions
 
-- Should the first interface be CLI, notebook-like, or simple local web UI?
-- Should early evaluation be deterministic, AI-assisted, or hybrid?
 - How many scenarios are needed before learner testing?
-- Which finance leadership situations should define the first scenario set?
+- Which Balance Sheet, Cash Flow, Treasury, and Audit scenarios should follow the first hiring decision scenario?

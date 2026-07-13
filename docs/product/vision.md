@@ -1,6 +1,6 @@
 # Product Vision
 
-Finance Director AI Coach will become a long-term simulation platform for aspiring and current finance leaders. It will help learners practice judgment, communication, commercial thinking, governance, and leadership through realistic Finance Director and CFO scenarios.
+FinanceOS will become a long-term simulation platform for aspiring and current finance leaders. Its first product is the Finance Director Scenario Coach, which will help learners practice judgment, communication, commercial thinking, governance, and leadership through realistic Finance Director and CFO scenarios.
 
 ## Long-Term Vision
 
@@ -15,7 +15,7 @@ The product should simulate the work of senior finance leadership across ambiguo
 
 ## Initial Quick Win
 
-The first usable product should be a text-based Finance Director scenario coach. It should let a learner enter a scenario, respond to prompts, and receive structured coaching feedback.
+The first usable product should be the text-based Finance Director Scenario Coach. It should let a learner enter a scenario, respond to guided questions, skip to a model solution if needed, receive a debrief, see a competency score, compare with a model Finance Director answer, and leave with a practical action plan.
 
 This first version should prove the learning loop before investing in a frontend, database, external AI integration, or advanced simulation systems.
 

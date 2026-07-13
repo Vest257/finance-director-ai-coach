@@ -1,6 +1,6 @@
-# Finance Director AI Coach
+# FinanceOS
 
-Finance Director AI Coach is planned as a long-term Finance Director and CFO simulation platform. The first useful release should be much smaller: a text-based scenario coach that helps learners practice finance leadership decisions, receive structured feedback, and understand the competencies they are developing.
+FinanceOS is planned as a long-term Finance Director and CFO simulation platform. Its first product is the Finance Director Scenario Coach: a text-based scenario coach that helps learners practice finance leadership decisions, receive structured feedback, and understand the competencies they are developing.
 
 This repository currently contains the project foundation only. It intentionally does not include product features, a frontend, database, or external AI integration yet.
 
@@ -15,29 +15,30 @@ This repository currently contains the project foundation only. It intentionally
 
 ```text
 .
-├── docs/
-│   ├── learning/
-│   │   ├── competency-framework.md
-│   │   └── scenario-design.md
-│   ├── product/
-│   │   ├── mvp-scope.md
-│   │   ├── product-principles.md
-│   │   ├── target-user.md
-│   │   └── vision.md
-│   ├── project-management/
-│   │   ├── decision-log.md
-│   │   └── roadmap.md
-│   └── technical/
-│       ├── architecture.md
-│       └── coding-standards.md
-├── src/
-│   └── finance_director_coach/
-│       └── __init__.py
-├── tests/
-│   └── __init__.py
-├── AGENTS.md
-├── pyproject.toml
-└── .gitignore
++-- docs/
+|   +-- learning/
+|   |   +-- competency-framework.md
+|   |   +-- domain-framework.md
+|   |   +-- scenario-design.md
+|   +-- product/
+|   |   +-- mvp-scope.md
+|   |   +-- product-principles.md
+|   |   +-- target-user.md
+|   |   +-- vision.md
+|   +-- project-management/
+|   |   +-- decision-log.md
+|   |   +-- roadmap.md
+|   +-- technical/
+|       +-- architecture.md
+|       +-- coding-standards.md
++-- src/
+|   +-- finance_director_coach/
+|       +-- __init__.py
++-- tests/
+|   +-- __init__.py
++-- AGENTS.md
++-- pyproject.toml
++-- .gitignore
 ```
 
 ## Documentation Map
@@ -47,6 +48,7 @@ This repository currently contains the project foundation only. It intentionally
 - [Target user](docs/product/target-user.md)
 - [MVP scope](docs/product/mvp-scope.md)
 - [Competency framework](docs/learning/competency-framework.md)
+- [Learning domain framework](docs/learning/domain-framework.md)
 - [Scenario design](docs/learning/scenario-design.md)
 - [Architecture](docs/technical/architecture.md)
 - [Coding standards](docs/technical/coding-standards.md)

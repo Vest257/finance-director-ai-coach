@@ -1,16 +1,21 @@
 # MVP Scope
 
-The MVP is a text-based Finance Director scenario coach. Its purpose is to validate the core learning loop before investing in broader platform capabilities.
+The MVP is the text-based Finance Director Scenario Coach, the first product within the FinanceOS platform. Its purpose is to validate the core learning loop before investing in broader platform capabilities.
 
 ## In Scope
 
 - A small set of curated Finance Director scenarios.
 - Scenario prompts with enough context for meaningful decisions.
+- Guided questions that help the learner work through the finance issue step by step.
+- A skip-to-solution path for learners who are stuck or want to study the model approach first.
 - Learner text responses.
-- Structured feedback against a competency rubric.
-- Simple scoring or qualitative assessment.
+- Structured feedback against a deterministic rubric.
+- A competency score tied to the behavioral competency framework.
+- A debrief that explains the scenario, tradeoffs, and stronger reasoning pattern.
+- A model Finance Director answer.
+- A learner action plan for what to practice next.
 - Clear explanations of stronger and weaker response patterns.
-- A command-line or minimal text-based interface if implementation begins later.
+- A command-line interface.
 
 ## Out Of Scope
 
@@ -26,11 +31,13 @@ The MVP is a text-based Finance Director scenario coach. Its purpose is to valid
 ## MVP Learning Loop
 
 1. The learner selects or starts a scenario.
-2. The scenario presents context and a decision prompt.
-3. The learner writes a response.
-4. The coach evaluates the response against scenario expectations and competencies.
-5. The learner receives actionable feedback.
-6. The learner can revise or continue to the next prompt.
+2. The scenario presents context, key numbers, and a decision prompt.
+3. The learner answers guided questions or chooses skip-to-solution.
+4. The learner writes a recommendation or response.
+5. The coach evaluates the response against a deterministic rubric.
+6. The learner receives a competency score and structured feedback.
+7. The learner reviews the debrief and model Finance Director answer.
+8. The learner receives an action plan for the next practice step.
 
 ## Acceptance Criteria
 
@@ -38,8 +45,15 @@ The MVP is useful when:
 
 - A learner can complete at least one realistic scenario end to end.
 - Feedback is specific enough to improve the next response.
-- The competency framework explains what is being evaluated.
+- The behavioral competency framework explains how judgment and communication are evaluated.
+- The learning-domain framework explains which finance topics the scenario exercises.
 - The architecture can support more scenarios without major rewrites.
+
+## First Scenario
+
+The first scenario should focus on a business where revenue and EBITDA are rising while cash is falling. The learner must decide whether to approve hiring 20 additional people, challenge the plan, or recommend conditions before approval.
+
+The scenario should test cash awareness, working capital reasoning, stakeholder communication, and the ability to challenge growth plans without ignoring commercial momentum.
 
 ## Deliberate Constraints
 

@@ -1,6 +1,6 @@
 # Competency Framework
 
-The competency framework defines what the Finance Director AI Coach should help learners practice and improve. It should remain small enough to be usable in the MVP, while leaving room for future expansion.
+The competency framework defines what the Finance Director Scenario Coach should help learners practice and improve as the first FinanceOS product. It should remain small enough to be usable in the MVP, while leaving room for future expansion.
 
 ## Core Competencies
 
