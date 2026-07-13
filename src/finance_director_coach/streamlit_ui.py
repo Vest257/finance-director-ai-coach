@@ -10,7 +10,9 @@ from finance_director_coach.evaluation import evaluate_attempt, skipped_evaluati
 from finance_director_coach.models import EvaluationReport, LearnerAnswers, RecommendationRoute
 from finance_director_coach.scenarios.scenario_001 import (
     CASH_DRIVER_OPTIONS,
+    HIRING_UNIT_WARNING,
     MISSING_INFORMATION_OPTIONS,
+    MONETARY_INPUT_GUIDANCE,
     RECOMMENDATION_OPTIONS,
     RISK_OPTIONS,
     ROUTE_SAFEGUARD_OPTIONS,
@@ -426,9 +428,16 @@ def _back_button(step: int) -> None:
         st.rerun()
 
 
+def _render_monetary_input_guidance(*, hiring_warning: bool = False) -> None:
+    st.info(MONETARY_INPUT_GUIDANCE)
+    if hiring_warning:
+        st.warning(HIRING_UNIT_WARNING)
+
+
 def _render_financial_analysis_step() -> None:
     st.subheader("Growth and cash conversion")
-    st.write("Enter percentages as percentage points and monetary answers in GBP millions.")
+    st.write("Enter growth answers as percentage points.")
+    _render_monetary_input_guidance()
     with st.form("financial_analysis_form"):
         growth_left, growth_right = st.columns(2)
         with growth_left:
@@ -556,7 +565,7 @@ def _render_drivers_and_risks_step() -> None:
 def _render_hiring_and_liquidity_step() -> None:
     _back_button(2)
     st.subheader("Hiring and liquidity")
-    st.write("Enter monetary answers in GBP millions.")
+    _render_monetary_input_guidance(hiring_warning=True)
     st.markdown(
         '<div class="threshold-note"><strong>Keep the thresholds separate:</strong> '
         "the board floor is an internal limit; the lender minimum is a covenant.</div>",
@@ -565,26 +574,32 @@ def _render_hiring_and_liquidity_step() -> None:
     with st.form("hiring_and_liquidity_form"):
         cost_left, cost_right = st.columns(2)
         with cost_left:
-            h2_cost = _number_input("H2 2026 hiring cost", "input_h2_hiring_cost")
+            h2_cost = _number_input("H2 2026 hiring cost (GBP m)", "input_h2_hiring_cost")
         with cost_right:
             annual_cost = _number_input(
-                "Annual recurring hiring cost",
+                "Annual recurring hiring cost (GBP m)",
                 "input_annual_hiring_cost",
             )
         cash_left, cash_right = st.columns(2)
         with cash_left:
-            low_point = _number_input("Hiring-case cash low point", "input_cash_low_point")
+            low_point = _number_input(
+                "Hiring-case cash low point (GBP m)",
+                "input_cash_low_point",
+            )
         with cash_right:
-            december_cash = _number_input("Hiring-case December cash", "input_december_cash")
+            december_cash = _number_input(
+                "Hiring-case December cash (GBP m)",
+                "input_december_cash",
+            )
         threshold_left, threshold_right = st.columns(2)
         with threshold_left:
             board_shortfall = _number_input(
-                "Shortfall below the board cash floor",
+                "Shortfall below the board cash floor (GBP m)",
                 "input_board_shortfall",
             )
         with threshold_right:
             lender_headroom = _number_input(
-                "Headroom above the lender minimum at the low point",
+                "Headroom above the lender minimum at the low point (GBP m)",
                 "input_lender_headroom",
             )
         thresholds = st.multiselect(
@@ -770,6 +785,13 @@ def _render_evidence(report: EvaluationReport) -> None:
             st.markdown(f"**Your evidence:** {record.learner_input}")
             st.markdown(f"**Why:** {record.feedback}")
             st.markdown(f"**Next practice:** {record.improvement_guidance}")
+            if record.worked_solution is not None:
+                with st.popover(
+                    "How was this calculated?",
+                    type="tertiary",
+                    icon=":material/calculate:",
+                ):
+                    st.markdown(record.worked_solution)
 
 
 def _render_learning_content() -> None:

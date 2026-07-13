@@ -61,6 +61,7 @@ class EvidenceRecord:
     competencies_informed: tuple[Competency, ...]
     feedback: str
     improvement_guidance: str
+    worked_solution: str | None = None
 
 
 @dataclass(frozen=True)

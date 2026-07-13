@@ -10,7 +10,9 @@ from finance_director_coach.evaluation import evaluate_attempt, skipped_evaluati
 from finance_director_coach.models import EvaluationReport, LearnerAnswers, RecommendationRoute
 from finance_director_coach.scenarios.scenario_001 import (
     CASH_DRIVER_OPTIONS,
+    HIRING_UNIT_WARNING,
     MISSING_INFORMATION_OPTIONS,
+    MONETARY_INPUT_GUIDANCE,
     RECOMMENDATION_OPTIONS,
     RISK_OPTIONS,
     ROUTE_SAFEGUARD_OPTIONS,
@@ -74,7 +76,8 @@ class Scenario001Session:
 
     def _collect_guided_answers(self) -> LearnerAnswers:
         self.io.write("\nGuided analysis")
-        self.io.write("Enter monetary answers in GBP millions. Negative cash flow should include a minus sign.")
+        self.io.write(MONETARY_INPUT_GUIDANCE)
+        self.io.write("Negative cash flow should include a minus sign.")
 
         revenue_growth = self.io.ask_number("Revenue growth percentage: ")
         ebitda_growth = self.io.ask_number("EBITDA growth percentage: ")
@@ -98,6 +101,7 @@ class Scenario001Session:
         risks = self.io.choose_many("Select all material risks supported by the pack:", RISK_OPTIONS)
 
         self.io.write("\nHiring and liquidity")
+        self.io.write(HIRING_UNIT_WARNING)
         h2_hiring_cost = self.io.ask_number("H2 2026 hiring cost, GBP m: ")
         annual_hiring_cost = self.io.ask_number("Annual recurring hiring cost, GBP m: ")
         cash_low_point = self.io.ask_number("Hiring-case cash low point, GBP m: ")
@@ -158,6 +162,8 @@ class Scenario001Session:
             self.io.write(f"Your evidence: {record.learner_input}")
             self.io.write(f"Why: {record.feedback}")
             self.io.write(f"Next step: {record.improvement_guidance}")
+            if record.worked_solution is not None:
+                self.io.write(f"Worked calculation:\n{record.worked_solution}")
         if report.critical_omissions:
             self.io.write(f"\nCritical omission gates triggered: {', '.join(report.critical_omissions)}")
 

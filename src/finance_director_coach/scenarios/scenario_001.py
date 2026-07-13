@@ -8,6 +8,15 @@ from finance_director_coach.models import ContentSection, RecommendationRoute, S
 
 MONEY_TOLERANCE = 0.05
 PERCENTAGE_TOLERANCE = 0.2
+MONETARY_INPUT_GUIDANCE = (
+    "All monetary answers are entered in GBP millions.\n\n"
+    "1.00 = GBP 1,000,000\n\n"
+    "0.10 = GBP 100,000"
+)
+HIRING_UNIT_WARNING = (
+    "Entering 580 would mean GBP 580 million, not GBP 580,000. "
+    "Use the GBP-million format shown above."
+)
 
 INCOME_STATEMENT: dict[str, tuple[float, float]] = {
     "Revenue": (18.00, 22.00),
@@ -141,7 +150,7 @@ CORE_MISSING_INFORMATION = frozenset(
 
 TRADEOFF_OPTIONS: dict[str, str] = {
     "growth_capacity": "Additional capacity may protect growth and delivery",
-    "recurring_cost": "The hires create GBP 1.68m of annual recurring cost",
+    "recurring_cost": "The hires create a material annual recurring cost",
     "timing_risk": "Costs begin before incremental receipts are evidenced",
     "contractor_alternative": "Use contractors for urgent capacity",
     "phased_hiring_alternative": "Phase starts and gate the second tranche",
@@ -211,6 +220,19 @@ def balance_sheet_totals() -> tuple[float, float, float, float]:
     )
 
 
+def income_statement_growth(line_item: str) -> float:
+    """Return rounded percentage growth for a comparative income-statement line."""
+
+    prior, current = INCOME_STATEMENT[line_item]
+    return round((current - prior) / prior * 100, 1)
+
+
+def cash_decrease() -> float:
+    """Return the positive decrease between opening and current cash."""
+
+    return round(OPENING_ASSETS["Cash"] - CURRENT_ASSETS["Cash"], 2)
+
+
 def operating_cash_before_interest_and_tax() -> float:
     keys = (
         "EBITDA",
@@ -257,6 +279,185 @@ def cash_after_hiring() -> dict[str, float]:
         cumulative_cost += hiring_costs[month]
         result[month] = round(baseline_cash - cumulative_cost, 2)
     return result
+
+
+def h2_hiring_cost() -> float:
+    """Return the total hiring cash cost in the July-to-December forecast."""
+
+    return round(sum(monthly_hiring_costs().values()), 2)
+
+
+def annual_recurring_hiring_cost() -> float:
+    """Return annual recurring cost for every proposed starter."""
+
+    return round(sum(HIRING_STARTERS.values()) * ANNUAL_COST_PER_HIRE, 2)
+
+
+def hiring_cash_low_point() -> float:
+    """Return the lowest monthly closing cash balance after hiring costs."""
+
+    return min(cash_after_hiring().values())
+
+
+def hiring_december_cash() -> float:
+    """Return December closing cash after cumulative hiring costs."""
+
+    return cash_after_hiring()["December"]
+
+
+def board_floor_shortfall() -> float:
+    """Return the positive shortfall below the internal board cash floor."""
+
+    return round(BOARD_CASH_FLOOR - hiring_cash_low_point(), 2)
+
+
+def lender_minimum_headroom() -> float:
+    """Return positive headroom above the lender minimum at the low point."""
+
+    return round(hiring_cash_low_point() - LENDER_MINIMUM_CASH, 2)
+
+
+EXPECTED_REVENUE_GROWTH = income_statement_growth("Revenue")
+EXPECTED_EBITDA_GROWTH = income_statement_growth("EBITDA")
+EXPECTED_CASH_DECREASE = cash_decrease()
+EXPECTED_OPERATING_CASH = operating_cash_before_interest_and_tax()
+EXPECTED_NET_OPERATING_CASH = net_operating_cash()
+EXPECTED_H2_HIRING_COST = h2_hiring_cost()
+EXPECTED_ANNUAL_HIRING_COST = annual_recurring_hiring_cost()
+EXPECTED_CASH_LOW_POINT = hiring_cash_low_point()
+EXPECTED_DECEMBER_CASH = hiring_december_cash()
+EXPECTED_BOARD_SHORTFALL = board_floor_shortfall()
+EXPECTED_LENDER_HEADROOM = lender_minimum_headroom()
+
+
+def _worked_calculation_explanations() -> dict[str, str]:
+    revenue_prior, revenue_current = INCOME_STATEMENT["Revenue"]
+    ebitda_prior, ebitda_current = INCOME_STATEMENT["EBITDA"]
+    opening_cash = OPENING_ASSETS["Cash"]
+    closing_cash = CURRENT_ASSETS["Cash"]
+    monthly_cost_per_hire = ANNUAL_COST_PER_HIRE / 12
+    annual_cost_gbp = ANNUAL_COST_PER_HIRE * 1_000_000
+    monthly_cost_gbp = monthly_cost_per_hire * 1_000_000
+    onboarding_cost_gbp = ONE_TIME_COST_PER_HIRE * 1_000_000
+    september_starters = HIRING_STARTERS["September"]
+    november_starters = HIRING_STARTERS["November"]
+    forecast_months = tuple(HIRING_STARTERS)
+    september_recurring_months = len(forecast_months) - forecast_months.index("September")
+    november_recurring_months = len(forecast_months) - forecast_months.index("November")
+    september_cost = round(
+        september_starters
+        * (monthly_cost_per_hire * september_recurring_months + ONE_TIME_COST_PER_HIRE),
+        2,
+    )
+    november_cost = round(
+        november_starters
+        * (monthly_cost_per_hire * november_recurring_months + ONE_TIME_COST_PER_HIRE),
+        2,
+    )
+    monthly_costs = monthly_hiring_costs()
+    hiring_forecast = cash_after_hiring()
+
+    return {
+        "E-001": dedent(
+            f"""
+            **Revenue growth**
+
+            Formula: (current period - prior period) / prior period x 100.
+
+            (GBP {revenue_current:.2f}m - GBP {revenue_prior:.2f}m) / GBP {revenue_prior:.2f}m x 100
+            = {EXPECTED_REVENUE_GROWTH:.1f}%.
+
+            **EBITDA growth**
+
+            (GBP {ebitda_current:.2f}m - GBP {ebitda_prior:.2f}m) / GBP {ebitda_prior:.2f}m x 100
+            = {EXPECTED_EBITDA_GROWTH:.1f}%.
+
+            Enter **{EXPECTED_REVENUE_GROWTH:.1f}** and **{EXPECTED_EBITDA_GROWTH:.1f}**. The fields expect percentage points, not decimal fractions.
+            """
+        ).strip(),
+        "E-002": dedent(
+            f"""
+            Formula: opening cash - closing cash = cash decrease.
+
+            GBP {opening_cash:.2f}m - GBP {closing_cash:.2f}m = GBP {EXPECTED_CASH_DECREASE:.2f}m.
+
+            The field asks for the decrease as a positive GBP-million amount, so enter **{EXPECTED_CASH_DECREASE:.2f}**.
+            """
+        ).strip(),
+        "E-003": dedent(
+            f"""
+            Cash uses carry minus signs; increases in payables and accruals are positive cash offsets.
+
+            **Operating cash before interest and tax**
+
+            GBP {CASH_BRIDGE_COMPONENTS['EBITDA']:.2f}m EBITDA
+            - GBP {abs(CASH_BRIDGE_COMPONENTS['Increase in trade receivables']):.2f}m receivables
+            - GBP {abs(CASH_BRIDGE_COMPONENTS['Increase in inventory']):.2f}m inventory
+            - GBP {abs(CASH_BRIDGE_COMPONENTS['Increase in contract assets and prepayments']):.2f}m contract assets and prepayments
+            + GBP {CASH_BRIDGE_COMPONENTS['Increase in trade payables']:.2f}m payables
+            + GBP {CASH_BRIDGE_COMPONENTS['Increase in accruals and deferred revenue']:.2f}m accruals and deferred revenue
+            = **GBP {EXPECTED_OPERATING_CASH:.2f}m**.
+
+            **Net operating cash**
+
+            GBP {EXPECTED_OPERATING_CASH:.2f}m
+            - GBP {abs(CASH_BRIDGE_COMPONENTS['Cash interest paid']):.2f}m cash interest
+            - GBP {abs(CASH_BRIDGE_COMPONENTS['Cash tax paid']):.2f}m cash tax
+            = **GBP {EXPECTED_NET_OPERATING_CASH:.2f}m**.
+
+            Enter **{EXPECTED_OPERATING_CASH:.2f}** and **{EXPECTED_NET_OPERATING_CASH:.2f}**. Keep the minus signs because both are cash outflows in GBP millions.
+            """
+        ).strip(),
+        "E-006": dedent(
+            f"""
+            Annual fully loaded cost per hire is GBP {annual_cost_gbp:,.0f}.
+
+            GBP {annual_cost_gbp:,.0f} / 12 = GBP {monthly_cost_gbp:,.0f} monthly recurring cost per hire.
+
+            **September cohort:** {september_starters} starters incur four months of recurring cost plus onboarding:
+            {september_starters} x ({september_recurring_months} x GBP {monthly_cost_gbp:,.0f} + GBP {onboarding_cost_gbp:,.0f})
+            = GBP {september_cost * 1_000_000:,.0f} = **GBP {september_cost:.2f}m**.
+
+            **November cohort:** {november_starters} starters incur two months of recurring cost plus onboarding:
+            {november_starters} x ({november_recurring_months} x GBP {monthly_cost_gbp:,.0f} + GBP {onboarding_cost_gbp:,.0f})
+            = GBP {november_cost * 1_000_000:,.0f} = **GBP {november_cost:.2f}m**.
+
+            H2 total = GBP {september_cost:.2f}m + GBP {november_cost:.2f}m = **GBP {EXPECTED_H2_HIRING_COST:.2f}m**.
+
+            Annual recurring cost = {sum(HIRING_STARTERS.values())} x GBP {annual_cost_gbp:,.0f}
+            = GBP {EXPECTED_ANNUAL_HIRING_COST * 1_000_000:,.0f} = **GBP {EXPECTED_ANNUAL_HIRING_COST:.2f}m**.
+
+            Enter **{EXPECTED_H2_HIRING_COST:.2f}** and **{EXPECTED_ANNUAL_HIRING_COST:.2f}** because the fields use GBP millions.
+            """
+        ).strip(),
+        "E-007": dedent(
+            f"""
+            Apply each month's hiring cash cost to the visible baseline forecast and carry the cost forward cumulatively.
+
+            Monthly hiring cash costs in GBP millions are: July {monthly_costs['July']:.2f}, August {monthly_costs['August']:.2f}, September {monthly_costs['September']:.2f}, October {monthly_costs['October']:.2f}, November {monthly_costs['November']:.2f}, December {monthly_costs['December']:.2f}.
+
+            September: baseline GBP {BASELINE_CLOSING_CASH['September']:.2f}m - cumulative hiring cost GBP {sum(monthly_costs[month] for month in ('July', 'August', 'September')):.2f}m = **GBP {hiring_forecast['September']:.2f}m**. This is the low point.
+
+            December: baseline GBP {BASELINE_CLOSING_CASH['December']:.2f}m - cumulative H2 hiring cost GBP {EXPECTED_H2_HIRING_COST:.2f}m = **GBP {EXPECTED_DECEMBER_CASH:.2f}m**.
+
+            Enter **{EXPECTED_CASH_LOW_POINT:.2f}** for the low point and **{EXPECTED_DECEMBER_CASH:.2f}** for December cash; both fields use GBP millions.
+            """
+        ).strip(),
+        "E-008": dedent(
+            f"""
+            Compare the GBP {EXPECTED_CASH_LOW_POINT:.2f}m hiring-case low point with each threshold separately.
+
+            **Board-floor shortfall:** GBP {BOARD_CASH_FLOOR:.2f}m - GBP {EXPECTED_CASH_LOW_POINT:.2f}m = **GBP {EXPECTED_BOARD_SHORTFALL:.2f}m**. The internal board floor is breached.
+
+            **Lender-covenant headroom:** GBP {EXPECTED_CASH_LOW_POINT:.2f}m - GBP {LENDER_MINIMUM_CASH:.2f}m = **GBP {EXPECTED_LENDER_HEADROOM:.2f}m**. The lender minimum remains satisfied.
+
+            Enter the positive GBP-million amounts **{EXPECTED_BOARD_SHORTFALL:.2f}** and **{EXPECTED_LENDER_HEADROOM:.2f}**.
+            """
+        ).strip(),
+    }
+
+
+WORKED_CALCULATION_EXPLANATIONS = _worked_calculation_explanations()
 
 
 MODEL_ANSWER = dedent(

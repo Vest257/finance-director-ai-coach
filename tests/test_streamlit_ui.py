@@ -13,10 +13,15 @@ from finance_director_coach.models import (
     AssessmentSource,
     Competency,
     CompetencyRating,
+    EvidenceResult,
     LearnerAnswers,
     RecommendationRoute,
 )
-from finance_director_coach.scenarios.scenario_001 import SCENARIO_001
+from finance_director_coach.scenarios.scenario_001 import (
+    HIRING_UNIT_WARNING,
+    MONETARY_INPUT_GUIDANCE,
+    SCENARIO_001,
+)
 from finance_director_coach import streamlit_ui
 
 
@@ -48,6 +53,82 @@ def test_web_pack_is_loaded_from_core_without_answer_leakage() -> None:
         "Headroom above the lender minimum",
     ):
         assert derived_label not in pack
+
+
+def test_guided_monetary_sections_show_units_without_worked_answers() -> None:
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    first_step = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    first_step.session_state["stage"] = streamlit_ui.GUIDED_STAGE
+    first_step.session_state["guided_step"] = 0
+    first_step.run()
+    assert [message.value for message in first_step.info] == [MONETARY_INPUT_GUIDANCE]
+    assert first_step.get("popover") == []
+    assert "GBP 84,000 / 12 = GBP 7,000" not in str(first_step)
+
+    hiring_step = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    hiring_step.session_state["stage"] = streamlit_ui.GUIDED_STAGE
+    hiring_step.session_state["guided_step"] = 2
+    hiring_step.run()
+    assert [message.value for message in hiring_step.info] == [MONETARY_INPUT_GUIDANCE]
+    assert HIRING_UNIT_WARNING in [message.value for message in hiring_step.warning]
+    assert all(
+        control.label.endswith("(GBP m)") for control in hiring_step.number_input
+    )
+    assert hiring_step.get("popover") == []
+    rendered = str(hiring_step)
+    assert "GBP 84,000 / 12 = GBP 7,000" not in rendered
+    assert "GBP 0.58m" not in rendered
+    assert "GBP 1.68m" not in rendered
+
+    decision_step = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    decision_step.session_state["stage"] = streamlit_ui.GUIDED_STAGE
+    decision_step.session_state["guided_step"] = 3
+    decision_step.session_state["saved_input_recommendation"] = (
+        RecommendationRoute.CONDITIONALLY_APPROVE.value
+    )
+    decision_step.run()
+    decision_rendered = str(decision_step)
+    assert decision_step.get("popover") == []
+    assert "GBP 0.58m" not in decision_rendered
+    assert "GBP 1.68m" not in decision_rendered
+    assert "GBP 84,000 / 12 = GBP 7,000" not in decision_rendered
+
+
+def test_results_render_worked_calculation_popovers_for_both_outcomes(
+    answer_factory: Callable[[RecommendationRoute], LearnerAnswers],
+) -> None:
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+
+    for answers, expected_hiring_result in (
+        (answer_factory(), EvidenceResult.OBSERVED),
+        (
+            replace(
+                answer_factory(),
+                cash_decrease=1.0,
+                h2_hiring_cost=580.0,
+                annual_hiring_cost=1680.0,
+            ),
+            EvidenceResult.NOT_OBSERVED,
+        ),
+    ):
+        report = streamlit_ui.evaluate_guided_submission(answers)
+        assert next(
+            item for item in report.evidence_records if item.evidence_id == "E-006"
+        ).result is expected_hiring_result
+        app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+        app.session_state["stage"] = streamlit_ui.RESULTS_STAGE
+        app.session_state["path"] = "guided"
+        app.session_state["answers"] = answers
+        app.session_state["report"] = report
+        app.run()
+        assert not app.exception
+        popovers = app.get("popover")
+        assert len(popovers) == 6
+        assert all(
+            popover.proto.popover.label == "How was this calculated?"
+            for popover in popovers
+        )
+        assert "GBP 84,000 / 12 = GBP 7,000" in popovers[3].markdown[0].value
 
 
 def test_skip_to_solution_remains_not_assessed() -> None:
@@ -165,6 +246,7 @@ def test_download_summary_contains_results_without_solution_or_hidden_state(
     assert SCENARIO_001.model_answer not in summary
     assert SCENARIO_001.debrief not in summary
     assert "Confidential draft" not in summary
+    assert "GBP 84,000 / 12 = GBP 7,000" not in summary
 
 
 def test_streamlit_welcome_skip_and_restart_flow() -> None:
@@ -190,6 +272,7 @@ def test_streamlit_welcome_skip_and_restart_flow() -> None:
         "Complete financial reconciliation" == subheader.value
         for subheader in app.subheader
     )
+    assert app.get("popover") == []
 
     app.button(key="results_restart").click().run()
     assert not app.exception
