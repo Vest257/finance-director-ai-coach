@@ -24,11 +24,13 @@ Deliverables:
 
 ## Phase 1: Text-Based Scenario Coach
 
-Goal: deliver the first usable Finance Director Scenario Coach learning loop through a CLI.
+Goal: deliver the first usable Finance Director Scenario Coach learning loop through a CLI and expose the proven loop to a small browser-based pilot group.
 
 Status: current.
 
-Scenario 001 CLI vertical-slice milestone: implemented on `feat/scenario-001-cli`, pending pull-request review and merge.
+Scenario 001 CLI vertical-slice milestone: merged through PR #1.
+
+FinanceOS Alpha 0.1 Streamlit pilot milestone: current implementation work.
 
 Delivered in this milestone:
 
@@ -41,6 +43,14 @@ Delivered in this milestone:
 - Qualitative competency scorecard, debrief, model Finance Director answer, and action plan.
 - Comprehensive tests around finance reconciliation, evaluation boundaries, session flow, and CLI validation.
 - Minimal Python 3.11 continuous integration.
+
+Alpha 0.1 pilot scope:
+
+- Streamlit presentation layer over the existing Scenario 001 and deterministic evaluator.
+- Guided and skip-to-solution browser paths.
+- In-memory attempt state, restart, and local plain-text tester summary.
+- Streamlit Community Cloud deployment configuration for a small pilot group.
+- No accounts, persistence, AI, database, authentication, or telemetry.
 
 Remaining Phase 1 work should follow learner testing and Product Owner prioritization; it is not presented as delivered by this milestone.
 

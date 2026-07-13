@@ -1,8 +1,8 @@
 # FinanceOS
 
-FinanceOS is planned as a long-term Finance Director and CFO simulation platform. Its first product is the Finance Director Scenario Coach: a text-based scenario coach that helps learners practice finance leadership decisions, receive structured feedback, and understand the competencies they are developing.
+FinanceOS is planned as a long-term Finance Director and CFO simulation platform. Its first product is the Finance Director Scenario Coach: a scenario coach that helps learners practice finance leadership decisions, receive structured feedback, and understand the competencies they are developing.
 
-This repository contains the first Phase 1 vertical slice: a command-line implementation of Scenario 001. It intentionally does not include a frontend, database, persistence, or external AI integration.
+This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the original command-line interface and a Streamlit pilot interface for small-group browser testing. Both interfaces reuse the same in-memory scenario and deterministic evaluation core. The product has no database, persistence, authentication, telemetry, or external AI integration.
 
 ## Current Goals
 
@@ -44,10 +44,14 @@ This repository contains the first Phase 1 vertical slice: a command-line implem
 |       +-- evaluation.py
 |       +-- models.py
 |       +-- session.py
+|       +-- streamlit_ui.py
 +-- tests/
 |   +-- test_cli.py
 |   +-- test_evaluation.py
 |   +-- test_scenario_financials.py
+|   +-- test_streamlit_ui.py
++-- streamlit_app.py
++-- requirements.txt
 +-- AGENTS.md
 +-- pyproject.toml
 +-- .gitignore
@@ -77,9 +81,19 @@ This project uses Python packaging through `pyproject.toml`.
 python -m pip install -e ".[dev]"
 ```
 
-The application has no runtime dependencies outside the Python standard library.
+Streamlit is the only direct runtime dependency. The root `requirements.txt` delegates installation back to this package so `pyproject.toml` remains the dependency source of truth for local and Community Cloud installs.
 
-## Run Scenario 001
+## Run The Browser Pilot
+
+```bash
+streamlit run streamlit_app.py
+```
+
+The browser pilot supports the guided attempt, skip-to-solution study path, deterministic feedback, competency scorecard, complete learning review, restart, and a locally generated plain-text tester summary.
+
+The scenario is fictional. Pilot testers must not enter confidential, personal, or employer information.
+
+## Run The CLI
 
 ```bash
 python -m finance_director_coach
@@ -87,20 +101,32 @@ python -m finance_director_coach
 
 Choose the guided path to complete an assessed attempt, or skip to the solution for study without collecting learner evidence.
 
+## Deploy On Streamlit Community Cloud
+
+1. Open [Streamlit Community Cloud](https://share.streamlit.io/) and create an app from this GitHub repository.
+2. Select the branch to deploy and set the entrypoint to `streamlit_app.py`.
+3. Select Python 3.12 in Advanced settings to match the validated pilot environment.
+4. Leave secrets and environment variables empty; this pilot has no external integrations.
+5. Deploy and verify both the guided and skip-to-solution paths before sharing the link.
+
+Community Cloud runs the entrypoint from the repository root. The one-line `requirements.txt` installs this project and its pinned Streamlit dependency from `pyproject.toml`.
+
 ## Run Tests
 
 ```bash
 pytest
-python -m compileall src tests
+python -m compileall src tests streamlit_app.py
 ```
 
 ## Current MVP Limitations
 
-- No frontend framework.
 - No database.
 - No learner persistence or attempt history.
+- No user accounts, authentication, or telemetry.
 - No external AI API integration.
 - Scenario 001 is the only implemented learning experience.
+- Browser state exists only for the current Streamlit session and is cleared by Start over.
+- The downloadable summary is generated locally and is not stored by FinanceOS.
 - Unrestricted free-text reasoning is stored for display and self-review but is not automatically evaluated.
 - Commercial Judgment is capped at `Capable` under deterministic evaluation; `Strong` requires qualified manual review.
 - Stakeholder Communication and Strategic Leadership remain `Not assessed` without qualified manual review.
@@ -108,4 +134,4 @@ python -m compileall src tests
 
 ## Status
 
-Phase 0 is complete. Phase 1 remains current, with the Scenario 001 CLI vertical slice implemented for pull-request review.
+Phase 0 is complete. Phase 1 remains current. The Scenario 001 CLI vertical slice is merged, and the Streamlit interface is the Alpha 0.1 pilot surface for small-group learner testing.

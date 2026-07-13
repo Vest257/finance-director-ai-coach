@@ -1,0 +1,11 @@
+[theme]
+primaryColor = "#0F766E"
+backgroundColor = "#F7F8F5"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#172121"
+font = "sans-serif"
+baseRadius = "small"
+buttonRadius = "small"
+
+[browser]
+gatherUsageStats = false

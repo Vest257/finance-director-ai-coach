@@ -1,6 +1,6 @@
 # MVP Scope
 
-The MVP is the text-based Finance Director Scenario Coach, the first product within the FinanceOS platform. Its purpose is to validate the core learning loop before investing in broader platform capabilities.
+The MVP is the Finance Director Scenario Coach, the first product within the FinanceOS platform. Its purpose is to validate the core learning loop before investing in broader platform capabilities. The CLI is the first vertical slice; FinanceOS Alpha 0.1 adds a browser-accessible Streamlit pilot over the same deterministic core.
 
 ## In Scope
 
@@ -17,10 +17,12 @@ The MVP is the text-based Finance Director Scenario Coach, the first product wit
 - A learner action plan for what to practice next.
 - Clear explanations of stronger and weaker response patterns.
 - A command-line interface.
+- A Streamlit pilot interface for small-group browser testing.
+- In-memory session state and a locally generated plain-text tester summary.
 
 ## Out Of Scope
 
-- Frontend framework.
+- Any frontend framework beyond the approved Streamlit pilot layer.
 - Database or persistent learner accounts.
 - External AI API integration.
 - Multi-user administration.

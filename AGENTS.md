@@ -5,7 +5,7 @@ This repository is the foundation for FinanceOS. FinanceOS is the platform; the 
 ## Product Intent
 
 - Build FinanceOS as a Finance Director and CFO simulation platform.
-- Deliver quick wins through the text-based Finance Director Scenario Coach first.
+- Deliver quick wins through the Finance Director Scenario Coach, with the CLI as the first vertical slice and Streamlit as the approved Alpha 0.1 pilot surface.
 - Support future scenarios, evaluation, learner profiles, financial packs, AI roleplay, and competency tracking.
 - Keep the product useful for real finance leadership learning, not generic chatbot practice.
 
@@ -178,7 +178,7 @@ When changing product direction, update the relevant product document:
 
 ## Current Constraints
 
-- No frontend framework yet.
+- Streamlit is approved only as the in-memory Alpha 0.1 presentation layer; do not add another frontend framework without review.
 - No database yet.
 - No external AI API integration yet.
 - No unnecessary placeholder abstractions.
