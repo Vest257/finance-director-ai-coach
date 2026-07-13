@@ -1,98 +1,78 @@
 # Scenario 002: Growth at Any Price
 
-Status: approved synthetic FinanceOS scenario for the curated library.
+Status: Draft synthetic FinanceOS scenario pending Product Owner validation.
 
 ## Purpose
 
-Scenario 002 asks a Finance Director whether Atlas Bridge should renew a strategically visible customer contract when reported growth is accompanied by deteriorating company margins and weak customer contribution.
+Scenario 002 asks the Finance Director of fictional Atlas Bridge to decide how to handle Northstar's renewal. It tests the causal chain from commercial terms to customer profitability, balance-sheet exposure, cash conversion, liquidity, and a defensible recommendation. It is an integrated three-statement decision, not a collection of basic P&L-ratio exercises.
 
-The learner may choose `Approve`, `Conditionally approve`, `Delay`, or `Reject`. The model answer is not the only acceptable route. Every route must be supported by its documented safeguards and the available evidence.
+The learner may choose `Approve`, `Conditionally approve`, `Delay`, or `Reject`. Each can be defensible when it is connected to the evidence and route-specific protections.
 
 ## Metadata
 
 - Scenario ID: `SCN-002`
-- Version: `1.0`
-- Provenance: synthetic FinanceOS content for commercial-finance learning and product-owner validation
+- Version: `2.0`
+- Provenance: synthetic FinanceOS content
 - Learner role: Finance Director of a fictional UK B2B technology and implementation-services company
-- Primary domains: Management Accounting, Commercial Finance, Pricing, Customer Profitability, and FP&A
-- Primary competencies: Financial Insight, Commercial Judgment, Stakeholder Communication, and Strategic Leadership
-- Supporting competency: Cash And Risk Discipline
-- Completion time: about 25 minutes
+- Domains: Commercial Finance, Balance Sheet, Cash Flow, and Liquidity
+- Competencies: Financial Insight, Commercial Judgment, and Cash And Risk Discipline
+- Completion time: about 35 minutes
 - Difficulty: advanced
 
-## Learner-Facing Pack
+## Financial Contract
 
-All figures are GBP millions unless stated otherwise. The learner-facing pack includes calculation inputs and an explicit exit-cost relationship:
+All figures are GBP millions unless stated otherwise. The learner pack shows the following raw inputs, but never the assessed derived outcomes before submission.
 
-- FY2025 and FY2026 forecast company revenue, gross profit, and EBITDA.
-- Northstar's GBP 10.50m standard price, GBP 9.00m reported customer revenue, and direct cost-to-serve components.
-- Separately reported allocated head-office overhead.
-- A defined 45.0% target contribution margin and 5.0% requested extra discount.
-- Capacity consumption, the avoidable cost categories after exit, retained commitments, and redeployment contribution assumptions.
-- Stakeholder pressure and information not yet available.
+| Area | Raw inputs |
+| --- | --- |
+| Comparative P&L | FY2025/FY2026 revenue `40.00/48.00`, gross profit `18.00/18.24`, and EBITDA `4.80/3.36` |
+| EBITDA-to-cash bridge | EBITDA `3.36`; receivables `(2.40)`; contract assets `(1.20)`; deferred revenue `0.40`; provision cash `(0.30)`; capitalised implementation cash `(0.80)`; interest `(0.35)`; tax `(0.25)` |
+| Customer exposure | Company/Northstar receivables `12.00/3.00`; Northstar overdue `1.20`; payment terms 45 days; company/Northstar contract assets `4.50/1.80`; company/Northstar deferred revenue `3.20/0.60`; capitalised implementation `1.00`; recoverability 70%; provision `0.50` |
+| Liquidity | Cash `3.80`; gross debt `8.00`; undrawn RCF `4.00`; board cash floor `3.50`; July to December baseline cash forecast |
+| Routes | Discount, target margin, direct-cost base, avoidable/retained cost, recovery, transition, replacement, and monthly route assumptions |
 
-The pack does not state calculated revenue growth, company margins, customer contribution, economic revenue, required price increase, cost reduction, discount effect, or option EBITDA outcomes before submission.
+Definitions are explicit in the learner pack:
 
-## Reconciled Financial Contract
+- Operating cash flow is the stated EBITDA-to-cash bridge total.
+- Cash conversion is operating cash flow divided by EBITDA.
+- Net customer working capital is Northstar receivables plus contract assets, less deferred revenue and the service-credit/transition provision.
+- Total customer balance-sheet exposure is net customer working capital plus capitalised implementation.
+- Exposure at risk uses 20% unrecovered receivables, 50% unrecovered contract assets, non-recoverable implementation, and the provision.
+- Required RCF draw is the positive difference between the board floor and route low point; liquidity headroom is undrawn RCF less that draw.
 
-| Measure | Reconciled result | Learner format |
-| --- | ---: | --- |
-| Company revenue growth | 20.0% | Percentage points |
-| Gross margin: FY2025 / FY2026 | 45.0% / 38.0% | Percentage points |
-| EBITDA margin: FY2025 / FY2026 | 12.0% / 7.0% | Percentage points |
-| Northstar contribution / margin | GBP 3.00m / 33.3% | GBP m / percentage points |
-| Economic revenue at 45.0% target | GBP 10.91m | GBP m |
-| Required price increase | GBP 1.91m / 21.2% | GBP m / percentage points |
-| Required direct-cost reduction | GBP 1.05m | GBP m |
-| Additional discount / resulting margin | GBP 0.45m / 29.8% | GBP m / percentage points |
-| Company EBITDA: proposed renewal | GBP 2.91m | Skip-path reconciliation only |
-| Company EBITDA: target economics | GBP 5.27m | Skip-path reconciliation only |
-| Company EBITDA: exit and redeployment | GBP 3.06m | Skip-path reconciliation only |
+## Cash-Flow Reconciliation
 
-The current direct customer-cost base is GBP 6.00m. The exit-and-redeployment result deducts GBP 9.00m of revenue, adds GBP 5.00m of avoidable direct cost, and adds GBP 3.70m of replacement contribution. The remaining GBP 1.00m is retained direct cost within the existing GBP 6.00m base, not an additional exit cost: it comprises GBP 0.50m of delivery notice and tooling commitments and GBP 0.50m of service-level credits. The separately allocated GBP 0.80m head-office amount also remains, is already contained in company EBITDA, and is not treated as avoidable.
+The bridge reconciles EBITDA to operating cash by applying every signed movement. Working-capital build and capitalised implementation expenditure are cash effects even where they are not current P&L expense. Interest and tax are included so the learner sees the liquidity result rather than an adjusted proxy.
 
-## Guided Flow
+The baseline monthly closing-cash forecast is July `4.10`, August `3.90`, September `3.70`, October `3.60`, November `3.80`, and December `4.00`. Learners apply each route's monthly adjustment and identify the trough rather than relying on the year-end balance.
 
-1. Company performance: calculate growth and company margins; interpret growth with margin deterioration.
-2. Customer economics: calculate contribution, target pricing, cost-reduction alternative, and the requested-discount effect.
-3. Drivers and risks: select exactly three priority margin drivers, four avoidable direct-cost categories, and three missing information items.
-4. Decision: choose a route, select route safeguards, select exactly two decision conditions, and write a concise CEO recommendation.
+## Route Assumptions And Outcomes
 
-Free-text CEO wording is retained for self-review only. It is not deterministically scored for keywords, length, grammar, sentiment, persuasiveness, or leadership quality.
+The learner receives raw assumptions for all three routes:
 
-The driver ranking is derivable from raw pack data. The standard price and reported revenue establish the current discount/value leakage; the other options are ranked only where they have a quantified cost-to-serve input. The calculated ranking remains post-submission feedback rather than learner-facing pack content.
+- Renew: a 5.0% discount, no immediate direct-cost repair, additional working-capital build, and stated monthly cash deterioration.
+- Renegotiate: a 45.0% target contribution margin on a 6.00 direct-cost base, controls for implementation/support cash, payment protection, and stated monthly cash improvements.
+- Exit and redeploy: revenue cessation, 5.00 avoidable direct cost, 1.00 retained direct cost, 0.80 retained allocated overhead, customer-asset recovery, 1.10 transition cash, and replacement contribution/cash timing.
 
-## Evidence And Explanations
+The full reconciliation, including annual EBITDA, annual operating cash, monthly cash trough, RCF draw, and headroom for every route, appears only in the skip path, post-submission worked solutions, and the reconciliation summary. Retained cost is not double counted as an additional exit cash cost.
 
-Evidence IDs run from `SCN-002-E-001` through `SCN-002-E-015`.
+## Guided Evidence
 
-- Numerical evidence: `E-001`, `E-002`, `E-003`, `E-005`, `E-006`, `E-007`, and `E-008` uses explicit tolerances and a post-submission "How was this calculated?" worked solution.
-- Structured evidence: `E-004`, `E-009` through `E-014` uses explicit selection rules and a post-submission "Why does this matter?" explanation where the learning value warrants it.
-- `E-012` records the route, `E-013` checks the route's safeguards, and `E-015` checks sequence completion. A route alone does not create a Strategic Leadership rating.
+| Stage | Evidence IDs | Focus |
+| --- | --- | --- |
+| Quality of earnings and cash conversion | `E-001` to `E-004` | Quality interpretation, operating cash, conversion, and largest cash absorber |
+| Balance sheet and customer exposure | `E-005` to `E-008` | DSO, concentration, net working capital, total exposure, and exposure at risk |
+| Route cash and liquidity | `E-009` to `E-012` | Route EBITDA/cash, monthly trough, RCF capacity, and classification |
+| Finance Director decision | `E-013` to `E-015` | Recommendation, route safeguards, protections, and decision-changing assumptions |
 
-Critical omissions are explicit gates: materially incorrect company-margin evidence, materially incorrect customer economics, no decision route, or missing route safeguards. They are not penalty points.
+There is one basic P&L/trend evidence (`E-001`) and fifteen substantive evidence records overall. Financial Insight can be `Strong` only when integrated cash, balance-sheet, and liquidity evidence succeeds. Commercial Judgment is capped at `Capable`; Stakeholder Communication and Strategic Leadership stay `Not assessed` without qualified manual review. CEO wording is retained only for self-review and does not affect deterministic evaluation.
 
-Commercial Judgment may be deterministically rated only `Developing` or `Capable`. Stakeholder Communication and Strategic Leadership remain `Not assessed` without a qualified manual reviewer. See the [evaluation contract](../evaluation-contract.md).
+## Explanation Requirements
 
-## Route Safeguards
+Every numerical record provides a post-submission **How was this calculated?** explanation with the definition, formula, learner-visible sources, intermediate calculation, unit, answer, and business implication. Relevant structured records provide **Why does this matter?** explanations covering profit versus cash, customer credit exposure, deferred revenue, capitalised implementation cash, exit timing, RCF capacity, monthly troughs, and safeguards.
 
-Every route can be defensible under the stated evidence:
+No worked calculation, model answer, or judgment explanation is rendered during the guided flow. The skip path contains the complete reconciliation, model answer, debrief, self-review checklist, action plan, and all competencies as `Not assessed`.
 
-- Approve: revised scope, margin monitoring, a commercial trade for any discount, and an escalation trigger.
-- Conditionally approve: target pricing, capped implementation exposure, service-level reset, and named commercial and delivery owners.
-- Delay: short negotiation window, validated profitability and exit-cost case, interim scope controls, and a redeployment plan.
-- Reject: transition plan, capacity redeployment, commercial re-entry economics, and stakeholder-management plan.
+## Publication Validation Gate
 
-## Route-Aware Decision Conditions
-
-The learner always selects exactly two decision conditions. The deterministic rule applies them to the selected route:
-
-- Approve and Conditionally approve: target contribution margin and scope/service reset.
-- Delay: capacity release plus either target contribution margin or scope/service reset.
-- Reject: capacity release and target contribution margin.
-
-The rule is displayed only in post-submission evidence feedback. It does not turn a selected route into a Strategic Leadership rating.
-
-## Validation Gate
-
-Before publication or material change, validate the financial pack, calculations, tolerances, answer-leakage boundary, all recommendation routes, explanations, skip path, scorecard limits, summary boundary, and desktop and narrow browser flows. Finance SME, Product Owner, and QA approval is required before registry publication.
+Before publication or material change, Finance SME, Product Owner, and QA must validate financial reconciliation, tolerances, answer-leakage boundaries, every recommendation route, explanations, skip behavior, competency caps, state isolation, and desktop plus 390px layouts. See the [evaluation contract](../evaluation-contract.md).

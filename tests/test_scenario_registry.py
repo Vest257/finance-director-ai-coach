@@ -2,17 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
-from finance_director_coach.models import EvidenceResult, RecommendationRoute
+from finance_director_coach.models import CompetencyRating, EvidenceResult
 from finance_director_coach.scenarios.registry import SCENARIOS, get_scenario
-from finance_director_coach.scenarios.scenario_002 import (
-    DECISION_CONDITION_EXPECTATIONS,
-    JUDGMENT_EXPLANATIONS,
-)
 from finance_director_coach.scenarios.scenario_002_evaluation import evaluate_scenario_002_attempt
 from finance_director_coach.streamlit_ui import (
     GUIDED_STAGE,
@@ -43,17 +38,11 @@ def test_reset_clears_selected_scenario_and_all_attempt_state() -> None:
         "selected_scenario_id": "SCN-002",
         "report": object(),
         "answers": object(),
-        "input_customer_contribution": 3.0,
-        "saved_input_top_drivers": ["deep_discount"],
+        "input_northstar_dso": 121.7,
+        "saved_input_classifications": ["receivables"],
     }
     reset_session_state(state)
-    assert state == {
-        "stage": WELCOME_STAGE,
-        "guided_step": 0,
-        "path": None,
-        "answers": None,
-        "report": None,
-    }
+    assert state == {"stage": WELCOME_STAGE, "guided_step": 0, "path": None, "answers": None, "report": None}
 
 
 def test_switching_scenarios_cannot_retain_prior_scenario_widget_values() -> None:
@@ -77,123 +66,61 @@ def test_shared_shell_uses_registry_content_not_hardwired_scenario_one_fields() 
     assert "SCENARIO_001.reconciliation_summary" not in source
 
 
-def test_scenario_two_pack_is_loaded_from_the_registry_without_answer_leakage() -> None:
+def test_scenario_two_pack_is_loaded_from_registry_without_assessed_results() -> None:
     pack = learner_financial_pack_text("SCN-002")
-    assert pack == "\n\n".join(
-        f"{section.title}\n{section.body}" for section in get_scenario("SCN-002").content.financial_pack
-    )
-    for hidden_phrase in (
-        "Economically attractive revenue =",
-        "Required price increase =",
-        "Contribution margin =",
-        "Company EBITDA is GBP",
-    ):
+    assert pack == "\n\n".join(f"{section.title}\n{section.body}" for section in get_scenario("SCN-002").content.financial_pack)
+    for hidden_phrase in ("annual EBITDA to 5.27", "annual EBITDA is 3.06", "Operating cash flow is GBP -1.54", "Low cash points"):
         assert hidden_phrase not in pack
 
 
-def test_scenario_two_results_show_post_submission_calculation_and_judgment_popovers() -> None:
+def test_scenario_two_guided_stages_do_not_render_post_submission_explanations() -> None:
     entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
-    correct = answers_for()
-    incorrect = replace(correct, price_increase=0.10)
-    for answers, expected_result in ((correct, EvidenceResult.OBSERVED), (incorrect, EvidenceResult.NOT_OBSERVED)):
-        report = evaluate_scenario_002_attempt(answers)
-        assert next(record for record in report.evidence_records if record.evidence_id == "SCN-002-E-006").result is expected_result
+    for step in range(4):
         app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
         app.session_state["selected_scenario_id"] = "SCN-002"
-        app.session_state["stage"] = RESULTS_STAGE
-        app.session_state["path"] = "guided"
-        app.session_state["answers"] = answers
-        app.session_state["report"] = report
+        app.session_state["stage"] = GUIDED_STAGE
+        app.session_state["guided_step"] = step
         app.run()
-        labels = [popover.proto.popover.label for popover in app.get("popover")]
-        assert labels.count("How was this calculated?") == 7
-        assert labels.count("Why does this matter?") == 7
-        assert "GBP 6.00m / 0.55" in app.get("popover")[5].markdown[0].value
+        assert app.get("popover") == []
+        assert "How was this calculated?" not in str(app)
+        assert "Why does this matter?" not in str(app)
 
 
-def test_scenario_two_guided_stage_has_no_post_submission_answers_or_popovers() -> None:
+def test_scenario_two_results_expose_calculations_only_after_submission() -> None:
     entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    report = evaluate_scenario_002_attempt(answers_for())
     app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
     app.session_state["selected_scenario_id"] = "SCN-002"
-    app.session_state["stage"] = GUIDED_STAGE
-    app.session_state["guided_step"] = 1
+    app.session_state["stage"] = RESULTS_STAGE
+    app.session_state["path"] = "guided"
+    app.session_state["answers"] = answers_for()
+    app.session_state["report"] = report
     app.run()
-    rendered = str(app)
-    assert app.get("popover") == []
-    for hidden_value in ("GBP 10.91m", "GBP 1.91m", "21.2%", "GBP 1.05m", "29.8%"):
-        assert hidden_value not in rendered
+    labels = [popover.proto.popover.label for popover in app.get("popover")]
+    assert labels.count("How was this calculated?") == 9
+    assert labels.count("Why does this matter?") == 6
+    assert "GBP 3.36m - 2.40m" in str(app)
 
 
-def test_scenario_two_driver_stage_does_not_disclose_the_ranked_answer_or_explanation() -> None:
+def test_scenario_library_selects_scenario_two_and_skip_remains_unassessed() -> None:
     entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
     app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
-    app.session_state["selected_scenario_id"] = "SCN-002"
-    app.session_state["stage"] = GUIDED_STAGE
-    app.session_state["guided_step"] = 2
-    app.run()
-    rendered = str(app)
-    assert app.get("popover") == []
-    assert JUDGMENT_EXPLANATIONS["SCN-002-E-009"] not in rendered
-    assert "Select exactly the three largest drivers" not in rendered
-
-
-def test_scenario_two_decision_stage_does_not_disclose_route_feedback() -> None:
-    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
-    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
-    app.session_state["selected_scenario_id"] = "SCN-002"
-    app.session_state["stage"] = GUIDED_STAGE
-    app.session_state["guided_step"] = 3
-    app.session_state["input_recommendation"] = "delay"
-    app.run()
-    rendered = str(app)
-    assert app.get("popover") == []
-    assert JUDGMENT_EXPLANATIONS["SCN-002-E-014"] not in rendered
-    assert DECISION_CONDITION_EXPECTATIONS[RecommendationRoute.DELAY] not in rendered
-
-
-def test_scenario_library_selects_each_scenario_and_skip_results_identify_it() -> None:
-    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
-    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
-    assert "Growth With Falling Cash" in str(app)
-    assert "Growth at Any Price" in str(app)
     app.radio(key="library_scenario_choice").set_value("SCN-002").run()
     app.button(key="start_scenario").click().run()
-    assert app.session_state["selected_scenario_id"] == "SCN-002"
-    assert app.title[0].value == get_scenario("SCN-002").content.title
     app.button_group(key="path_choice").set_value("skip").run()
     app.button(key="continue_from_scenario").click().run()
     assert app.session_state["stage"] == RESULTS_STAGE
-    assert any("SCN-002" in caption.value for caption in app.caption)
-    app.button(key="results_restart").click().run()
-    assert app.session_state["stage"] == WELCOME_STAGE
-    assert "selected_scenario_id" not in app.session_state
-
-
-def test_scenario_two_skip_reconciliation_explains_retained_costs() -> None:
-    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
-    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
-    app.radio(key="library_scenario_choice").set_value("SCN-002").run()
-    app.button(key="start_scenario").click().run()
-    app.button_group(key="path_choice").set_value("skip").run()
-    app.button(key="continue_from_scenario").click().run()
-    rendered = "\n".join(markdown.value for markdown in app.markdown)
-    for phrase in (
-        "GBP 5.00m of the GBP 6.00m current direct-cost base",
-        "GBP 1.00m retained direct cost",
-        "not an additional cost",
-        "GBP 0.80m head-office overhead also remains",
-    ):
-        assert phrase in rendered
+    rendered = "\n".join(item.value for item in app.get("markdown"))
+    assert "Operating cash flow is GBP -1.54m" in rendered
+    assert all("Not assessed" in expander.label for expander in app.expander[:5])
 
 
 def test_scenario_two_summary_identifies_selected_scenario_without_hidden_learning_content() -> None:
     scenario = get_scenario("SCN-002")
-    answers = answers_for()
-    report = evaluate_scenario_002_attempt(answers)
-    summary = build_pilot_summary(report, answers, scenario)
+    report = evaluate_scenario_002_attempt(answers_for())
+    summary = build_pilot_summary(report, answers_for(), scenario)
     assert "Scenario ID: SCN-002" in summary
-    assert "Scenario version: 1.0" in summary
-    assert "Scenario provenance: Synthetic FinanceOS scenario" in summary
+    assert "Scenario version: 2.0" in summary
     assert "SCN-002-E-001: Observed" in summary
     assert scenario.content.model_answer not in summary
-    assert "GBP 6.00m / 0.55" not in summary
+    assert "GBP 3.36m - 2.40m" not in summary
