@@ -52,6 +52,29 @@ from finance_director_coach.scenarios.scenario_002 import (
 
 ROUTES = ("renew", "renegotiate", "exit")
 
+# Financial Insight is assessed from deterministic, structured evidence only.
+# The CEO response remains self-review material and is intentionally excluded.
+MATERIAL_CASH_BRIDGE_EVIDENCE = ("SCN-002-E-002", "SCN-002-E-003")
+MATERIAL_CUSTOMER_EXPOSURE_EVIDENCE = (
+    "SCN-002-E-005",
+    "SCN-002-E-006",
+    "SCN-002-E-007",
+    "SCN-002-E-008",
+)
+MATERIAL_ROUTE_LIQUIDITY_EVIDENCE = ("SCN-002-E-010", "SCN-002-E-011")
+LIMITED_FINANCIAL_INSIGHT_EVIDENCE = (
+    "SCN-002-E-001",
+    "SCN-002-E-004",
+    "SCN-002-E-009",
+    "SCN-002-E-012",
+)
+FINANCIAL_INSIGHT_EVIDENCE = (
+    MATERIAL_CASH_BRIDGE_EVIDENCE
+    + MATERIAL_CUSTOMER_EXPOSURE_EVIDENCE
+    + MATERIAL_ROUTE_LIQUIDITY_EVIDENCE
+    + LIMITED_FINANCIAL_INSIGHT_EVIDENCE
+)
+
 
 def _within(value: float | None, expected: float, tolerance: float) -> bool:
     return value is not None and abs(value - expected) <= tolerance + 1e-9
@@ -139,8 +162,6 @@ def evaluate_scenario_002_attempt(answers: Scenario002Answers) -> EvaluationRepo
     records = evaluate_scenario_002_evidence(answers)
     by_id = {record.evidence_id: record for record in records}
     observed = lambda ids: all(by_id[evidence_id].result is EvidenceResult.OBSERVED for evidence_id in ids)
-    financial_core = ("SCN-002-E-001", "SCN-002-E-002", "SCN-002-E-003", "SCN-002-E-005", "SCN-002-E-007", "SCN-002-E-008")
-    integrated = financial_core + ("SCN-002-E-004", "SCN-002-E-006", "SCN-002-E-009", "SCN-002-E-010", "SCN-002-E-011", "SCN-002-E-012")
     omissions: list[str] = []
     if not observed(("SCN-002-E-002", "SCN-002-E-009")): omissions.append("SCN-002-CO-001")
     if not observed(("SCN-002-E-007", "SCN-002-E-008")): omissions.append("SCN-002-CO-002")
@@ -148,29 +169,33 @@ def evaluate_scenario_002_attempt(answers: Scenario002Answers) -> EvaluationRepo
     if answers.recommendation and not observed(("SCN-002-E-014", "SCN-002-E-015")): omissions.append("SCN-002-CO-004")
     meaningful_financial_evidence = any(
         by_id[evidence_id].result is not EvidenceResult.INSUFFICIENT_EVIDENCE
-        for evidence_id in integrated
+        for evidence_id in FINANCIAL_INSIGHT_EVIDENCE
     )
     if not meaningful_financial_evidence:
         financial_rating = CompetencyRating.NOT_ASSESSED
         financial_source = AssessmentSource.NOT_ASSESSED
         financial_explanation = "No meaningful Financial Insight evidence was submitted, so it was not assessed."
         financial_guidance = "Complete the cash bridge, customer exposure, and route-liquidity evidence to enable assessment."
-    elif observed(integrated):
+    elif observed(FINANCIAL_INSIGHT_EVIDENCE):
         financial_rating = CompetencyRating.STRONG
         financial_source = AssessmentSource.DETERMINISTIC
         financial_explanation = "All material integrated P&L, balance-sheet, cash-flow, customer-exposure, and liquidity evidence was correct."
         financial_guidance = "Maintain this integrated reconciliation when assessing commercial decisions."
-    elif observed(financial_core):
+    elif observed(
+        MATERIAL_CASH_BRIDGE_EVIDENCE
+        + MATERIAL_CUSTOMER_EXPOSURE_EVIDENCE
+        + MATERIAL_ROUTE_LIQUIDITY_EVIDENCE
+    ):
         financial_rating = CompetencyRating.CAPABLE
         financial_source = AssessmentSource.DETERMINISTIC
-        financial_explanation = "Core cash-flow and balance-sheet evidence was correct, but extended route calculations or integrated interpretation was incomplete or incorrect."
-        financial_guidance = "Complete the route calculations and connect them to the integrated interpretation."
+        financial_explanation = "Cash bridge, customer exposure, and route liquidity were correct, but limited extended calculations, classification, or integrated interpretation was incomplete or incorrect."
+        financial_guidance = "Complete the extended route calculations, classifications, and integrated interpretation."
     else:
         financial_rating = CompetencyRating.DEVELOPING
         financial_source = AssessmentSource.DETERMINISTIC
         financial_explanation = "Submitted evidence contained material errors in the cash bridge, customer exposure, or route-liquidity analysis."
         financial_guidance = "Reconcile cash conversion, customer exposure, and route liquidity together."
-    financial = CompetencyResult(Competency.FINANCIAL_INSIGHT, financial_rating, financial_source, integrated if meaningful_financial_evidence else (), financial_explanation, financial_guidance)
+    financial = CompetencyResult(Competency.FINANCIAL_INSIGHT, financial_rating, financial_source, FINANCIAL_INSIGHT_EVIDENCE if meaningful_financial_evidence else (), financial_explanation, financial_guidance)
     commercial_ids = ("SCN-002-E-009", "SCN-002-E-013", "SCN-002-E-014", "SCN-002-E-015")
     commercial = CompetencyResult(Competency.COMMERCIAL_JUDGMENT, CompetencyRating.CAPABLE if observed(commercial_ids) else CompetencyRating.DEVELOPING, AssessmentSource.DETERMINISTIC, commercial_ids, "Structured commercial route evidence was assessed.", "Connect the route to commercial and liquidity controls.", "Commercial Judgment is capped at Capable under deterministic MVP evaluation.")
     cash_ids = ("SCN-002-E-002", "SCN-002-E-008", "SCN-002-E-010", "SCN-002-E-011", "SCN-002-E-015")

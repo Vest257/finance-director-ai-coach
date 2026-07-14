@@ -90,16 +90,53 @@ def test_evidence_composition_and_integrated_strong_requirement() -> None:
 
 def test_financial_insight_has_deterministic_boundaries_for_all_four_levels() -> None:
     not_assessed = evaluate_scenario_002_attempt(Scenario002Answers())
-    developing = evaluate_scenario_002_attempt(replace(answers_for(), operating_cash_flow=0.0))
-    capable = evaluate_scenario_002_attempt(
+    cash_bridge_error = evaluate_scenario_002_attempt(replace(answers_for(), operating_cash_flow=0.0))
+    customer_exposure_error = evaluate_scenario_002_attempt(replace(answers_for(), northstar_dso=0.0))
+    route_liquidity_error = evaluate_scenario_002_attempt(
         replace(answers_for(), route_low_cash={route: 0.0 for route in ROUTES})
     )
+    capable = evaluate_scenario_002_attempt(replace(answers_for(), classifications=frozenset()))
     strong = evaluate_scenario_002_attempt(answers_for())
     assert not_assessed.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.NOT_ASSESSED
-    assert developing.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.DEVELOPING
+    assert cash_bridge_error.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.DEVELOPING
+    assert customer_exposure_error.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.DEVELOPING
+    assert route_liquidity_error.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.DEVELOPING
     assert capable.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.CAPABLE
     assert strong.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.STRONG
     assert "Insufficient submitted evidence" in next(record.feedback for record in not_assessed.evidence_records if record.evidence_id == "SCN-002-E-002")
+
+
+def test_financial_insight_distinguishes_limited_and_material_route_errors() -> None:
+    limited_extended_error = evaluate_scenario_002_attempt(
+        replace(answers_for(), route_operating_cash={route: 0.0 for route in ROUTES})
+    )
+    material_trough_error = evaluate_scenario_002_attempt(
+        replace(answers_for(), route_low_cash={route: 0.0 for route in ROUTES})
+    )
+    material_rcf_error = evaluate_scenario_002_attempt(
+        replace(answers_for(), route_rcf_draw={route: 0.0 for route in ROUTES})
+    )
+    material_headroom_error = evaluate_scenario_002_attempt(
+        replace(answers_for(), route_headroom={route: 0.0 for route in ROUTES})
+    )
+
+    assert result(limited_extended_error, "SCN-002-E-009") is EvidenceResult.NOT_OBSERVED
+    assert limited_extended_error.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.CAPABLE
+    assert result(material_trough_error, "SCN-002-E-010") is EvidenceResult.NOT_OBSERVED
+    assert material_trough_error.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.DEVELOPING
+    assert result(material_rcf_error, "SCN-002-E-011") is EvidenceResult.NOT_OBSERVED
+    assert material_rcf_error.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.DEVELOPING
+    assert result(material_headroom_error, "SCN-002-E-011") is EvidenceResult.NOT_OBSERVED
+    assert material_headroom_error.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.DEVELOPING
+
+
+def test_ceo_response_does_not_affect_financial_insight_rating() -> None:
+    correct = evaluate_scenario_002_attempt(answers_for())
+    different_ceo_wording = evaluate_scenario_002_attempt(
+        replace(answers_for(), ceo_response="Ignore liquidity and accept any commercial terms.")
+    )
+
+    assert different_ceo_wording.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is correct.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating
 
 
 @pytest.mark.parametrize("field, value, evidence_id", (("northstar_dso", 1.0, "SCN-002-E-005"), ("net_working_capital", 0.0, "SCN-002-E-007"), ("route_low_cash", {"renew": 0.0, "renegotiate": 0.0, "exit": 0.0}, "SCN-002-E-010")))
