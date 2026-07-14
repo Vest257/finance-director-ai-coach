@@ -8,7 +8,7 @@ This repository implements a small curated scenario library with a shared typed 
 
 Current runtime boundaries are:
 
-- `models.py`: typed attempts, evidence, ratings, scorecards, and scenario content.
+- `models.py`: typed attempts, evidence, ratings, scorecards, and scenario content, including optional structured financial-pack tables.
 - `scenarios/scenario_001.py` and `scenarios/scenario_002.py`: approved scenario content, finance constants, reconciliation functions, evidence metadata, and explanation content.
 - `scenarios/scenario_002_evaluation.py`: Scenario 002's pure deterministic evidence and competency evaluation. `evaluation.py` remains the unchanged Scenario 001 evaluator.
 - `scenarios/contracts.py`: the typed `ScenarioRegistration`, metadata, and guided-flow boundary.

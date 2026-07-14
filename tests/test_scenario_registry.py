@@ -10,6 +10,7 @@ from streamlit.testing.v1 import AppTest
 from finance_director_coach.models import CompetencyRating, EvidenceResult
 from finance_director_coach.scenarios.registry import SCENARIOS, get_scenario
 from finance_director_coach.scenarios.scenario_002_evaluation import evaluate_scenario_002_attempt
+from finance_director_coach import streamlit_ui
 from finance_director_coach.streamlit_ui import (
     GUIDED_STAGE,
     RESULTS_STAGE,
@@ -76,7 +77,7 @@ def test_scenario_two_pack_is_loaded_from_registry_without_assessed_results() ->
 
 
 @pytest.mark.parametrize("scenario_id", ("SCN-001", "SCN-002"))
-def test_financial_pack_briefing_renders_readable_text_without_code_elements(scenario_id: str) -> None:
+def test_financial_pack_briefing_uses_prose_fallback_or_static_tables(scenario_id: str) -> None:
     entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
     scenario = get_scenario(scenario_id)
     app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
@@ -92,12 +93,20 @@ def test_financial_pack_briefing_renders_readable_text_without_code_elements(sce
     assert app.get("code") == []
     rendered = "\n".join(item.value for item in app.markdown)
     for section in scenario.content.financial_pack:
-        for paragraph in section.body.split("\n\n"):
-            if paragraph.strip():
-                assert paragraph in rendered
+        if section.tables:
+            for table in section.tables:
+                if table.title:
+                    assert f"**{table.title}**" in rendered
+        else:
+            for paragraph in section.body.split("\n\n"):
+                if paragraph.strip():
+                    assert paragraph in rendered
+    if scenario_id == "SCN-002":
+        assert len(app.dataframe) == 13
+        assert app.get("data_editor") == []
 
 
-def test_scenario_two_guided_financial_pack_uses_the_readable_renderer() -> None:
+def test_scenario_two_guided_financial_pack_uses_the_same_structured_renderer() -> None:
     entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
     scenario = get_scenario("SCN-002")
     app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
@@ -111,11 +120,60 @@ def test_scenario_two_guided_financial_pack_uses_the_readable_renderer() -> None
     rendered = "\n".join(item.value for item in app.markdown)
     for section in scenario.content.financial_pack:
         assert f"**{section.title}**" in rendered
-        for paragraph in section.body.split("\n\n"):
-            if paragraph.strip():
-                assert paragraph in rendered
+        for table in section.tables:
+            if table.title:
+                assert f"**{table.title}**" in rendered
+    assert len(app.dataframe) == 13
+    assert app.get("data_editor") == []
     for hidden_phrase in ("annual EBITDA to 5.27", "annual EBITDA is 3.06", "Operating cash flow is GBP -1.54", "Low cash points"):
         assert hidden_phrase not in rendered
+
+
+def test_scenario_two_structured_pack_retains_required_inputs_without_answers() -> None:
+    scenario = get_scenario("SCN-002")
+    table_text = " ".join(
+        " ".join((table.title, *table.column_headings, *(cell for row in table.rows for cell in row)))
+        for section in scenario.content.financial_pack
+        for table in section.tables
+    )
+    for required_input in (
+        "Northstar receivables GBP 3.00m",
+        "Northstar unbilled implementation work GBP 1.80m",
+        "Undrawn RCF GBP 4.00m",
+        "70% of the price uplift is billed and collected within the forecast period.",
+        "Foregone customer cash receipts 7.00",
+    ):
+        assert required_input in table_text
+    for hidden_answer in (
+        "Operating cash flow is GBP -1.54m",
+        "annual EBITDA to 5.27",
+        "Low cash points",
+        "required RCF draws",
+    ):
+        assert hidden_answer not in table_text
+
+
+def test_structured_table_renderer_hides_indices_without_editable_widgets(monkeypatch) -> None:
+    table = get_scenario("SCN-002").content.financial_pack[0].tables[0]
+    captured: dict[str, object] = {}
+
+    monkeypatch.setattr(streamlit_ui.st, "markdown", lambda *args, **kwargs: None)
+    monkeypatch.setattr(
+        streamlit_ui.st,
+        "dataframe",
+        lambda data, **kwargs: captured.update(data=data, **kwargs),
+    )
+
+    streamlit_ui._render_financial_pack_table(table)
+
+    assert captured["hide_index"] is True
+    assert captured["use_container_width"] is True
+    assert captured["column_order"] == table.column_headings
+    assert captured["data"] == [
+        {"Metric": "Revenue", "FY2025": "40.00", "FY2026 forecast": "48.00"},
+        {"Metric": "Gross profit", "FY2025": "18.00", "FY2026 forecast": "18.24"},
+        {"Metric": "EBITDA", "FY2025": "4.80", "FY2026 forecast": "3.36"},
+    ]
 
 
 def test_scenario_two_guided_stages_do_not_render_post_submission_explanations() -> None:

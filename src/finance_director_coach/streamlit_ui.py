@@ -7,7 +7,7 @@ from collections.abc import Callable, Mapping, MutableMapping
 import streamlit as st
 
 from finance_director_coach.evaluation import evaluate_attempt, skipped_evaluation_report
-from finance_director_coach.models import EvaluationReport, LearnerAnswers
+from finance_director_coach.models import ContentSection, EvaluationReport, FinancialPackTable, LearnerAnswers
 from finance_director_coach.scenarios.contracts import GuidedScenarioContext, ScenarioRegistration
 from finance_director_coach.scenarios.registry import (
     SCENARIOS,
@@ -225,17 +225,45 @@ def _render_financial_pack_body(body: str) -> None:
             st.markdown(paragraph)
 
 
+def _render_financial_pack_table(table: FinancialPackTable) -> None:
+    """Render a static, responsive scenario-owned financial-pack table."""
+
+    if table.note_before:
+        st.markdown(table.note_before)
+    if table.title:
+        st.markdown(f"**{table.title}**")
+    rows = [dict(zip(table.column_headings, row, strict=True)) for row in table.rows]
+    st.dataframe(
+        rows,
+        column_order=table.column_headings,
+        hide_index=True,
+        use_container_width=True,
+    )
+    if table.note_after:
+        st.markdown(table.note_after)
+
+
+def _render_financial_pack_section(section: ContentSection) -> None:
+    """Use supplied structured content, retaining prose for unmigrated scenarios."""
+
+    if section.tables:
+        for table in section.tables:
+            _render_financial_pack_table(table)
+    else:
+        _render_financial_pack_body(section.body)
+
+
 def _render_pack_as_expanders(scenario: ScenarioRegistration[object]) -> None:
     for index, section in enumerate(scenario.content.financial_pack):
         with st.expander(section.title, expanded=index == 0):
-            _render_financial_pack_body(section.body)
+            _render_financial_pack_section(section)
 
 
 def _render_pack_reference(scenario: ScenarioRegistration[object]) -> None:
     with st.expander("Review the financial pack", expanded=False):
         for section in scenario.content.financial_pack:
             st.markdown(f"**{section.title}**")
-            _render_financial_pack_body(section.body)
+            _render_financial_pack_section(section)
 
 
 def _render_scenario() -> None:

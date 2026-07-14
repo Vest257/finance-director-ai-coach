@@ -255,3 +255,17 @@ Implications:
 
 - Code should use type hints and clear module boundaries.
 - Dependencies should remain minimal.
+
+## 2026-07-14: Keep Financial-Pack Tables Scenario-Owned
+
+Decision: Represent optional learner-facing financial-pack tables with small typed content models owned by each scenario, and render them through the shared Streamlit shell with prose as the fallback.
+
+Rationale:
+
+- Structured tables make dense financial inputs readable without coupling the UI to Scenario 002 values.
+- Existing scenarios can retain their proven text content until a deliberate content migration is needed.
+
+Implications:
+
+- A section may contain multiple compact static tables and short supporting notes.
+- The main briefing and guided financial-pack reference use the same renderer.

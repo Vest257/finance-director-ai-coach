@@ -122,6 +122,18 @@ class EvaluationReport:
 class ContentSection:
     title: str
     body: str
+    tables: tuple["FinancialPackTable", ...] = ()
+
+
+@dataclass(frozen=True)
+class FinancialPackTable:
+    """A compact, scenario-owned table for a learner-facing financial pack."""
+
+    title: str
+    column_headings: tuple[str, ...]
+    rows: tuple[tuple[str, ...], ...]
+    note_before: str | None = None
+    note_after: str | None = None
 
 
 @dataclass(frozen=True)
