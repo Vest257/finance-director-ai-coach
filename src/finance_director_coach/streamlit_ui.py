@@ -219,17 +219,23 @@ def _render_scenario_library() -> None:
         _set_stage(SCENARIO_STAGE)
 
 
+def _render_financial_pack_body(body: str) -> None:
+    for paragraph in body.split("\n\n"):
+        if paragraph.strip():
+            st.markdown(paragraph)
+
+
 def _render_pack_as_expanders(scenario: ScenarioRegistration[object]) -> None:
     for index, section in enumerate(scenario.content.financial_pack):
         with st.expander(section.title, expanded=index == 0):
-            st.code(section.body, language=None, wrap_lines=False)
+            _render_financial_pack_body(section.body)
 
 
 def _render_pack_reference(scenario: ScenarioRegistration[object]) -> None:
     with st.expander("Review the financial pack", expanded=False):
         for section in scenario.content.financial_pack:
             st.markdown(f"**{section.title}**")
-            st.code(section.body, language=None, wrap_lines=False)
+            _render_financial_pack_body(section.body)
 
 
 def _render_scenario() -> None:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from streamlit.testing.v1 import AppTest
 
 from finance_director_coach.models import CompetencyRating, EvidenceResult
@@ -12,6 +13,7 @@ from finance_director_coach.scenarios.scenario_002_evaluation import evaluate_sc
 from finance_director_coach.streamlit_ui import (
     GUIDED_STAGE,
     RESULTS_STAGE,
+    SCENARIO_STAGE,
     WELCOME_STAGE,
     build_pilot_summary,
     learner_financial_pack_text,
@@ -71,6 +73,49 @@ def test_scenario_two_pack_is_loaded_from_registry_without_assessed_results() ->
     assert pack == "\n\n".join(f"{section.title}\n{section.body}" for section in get_scenario("SCN-002").content.financial_pack)
     for hidden_phrase in ("annual EBITDA to 5.27", "annual EBITDA is 3.06", "Operating cash flow is GBP -1.54", "Low cash points"):
         assert hidden_phrase not in pack
+
+
+@pytest.mark.parametrize("scenario_id", ("SCN-001", "SCN-002"))
+def test_financial_pack_briefing_renders_readable_text_without_code_elements(scenario_id: str) -> None:
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    scenario = get_scenario(scenario_id)
+    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    app.session_state["selected_scenario_id"] = scenario_id
+    app.session_state["stage"] = SCENARIO_STAGE
+    app.run()
+
+    assert not app.exception
+    assert [expander.label for expander in app.expander] == [
+        section.title for section in scenario.content.financial_pack
+    ]
+    assert app.expander[0].proto.expanded
+    assert app.get("code") == []
+    rendered = "\n".join(item.value for item in app.markdown)
+    for section in scenario.content.financial_pack:
+        for paragraph in section.body.split("\n\n"):
+            if paragraph.strip():
+                assert paragraph in rendered
+
+
+def test_scenario_two_guided_financial_pack_uses_the_readable_renderer() -> None:
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    scenario = get_scenario("SCN-002")
+    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    app.session_state["selected_scenario_id"] = "SCN-002"
+    app.session_state["stage"] = GUIDED_STAGE
+    app.run()
+
+    assert not app.exception
+    assert [expander.label for expander in app.expander] == ["Review the financial pack"]
+    assert app.get("code") == []
+    rendered = "\n".join(item.value for item in app.markdown)
+    for section in scenario.content.financial_pack:
+        assert f"**{section.title}**" in rendered
+        for paragraph in section.body.split("\n\n"):
+            if paragraph.strip():
+                assert paragraph in rendered
+    for hidden_phrase in ("annual EBITDA to 5.27", "annual EBITDA is 3.06", "Operating cash flow is GBP -1.54", "Low cash points"):
+        assert hidden_phrase not in rendered
 
 
 def test_scenario_two_guided_stages_do_not_render_post_submission_explanations() -> None:
