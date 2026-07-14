@@ -49,11 +49,11 @@ CASH_BRIDGE = {
 ROUTE_LABELS = ("Renew as proposed", "Renegotiate to target economics", "Exit and redeploy")
 REQUESTED_DISCOUNT_PERCENT = 5.0
 TARGET_CONTRIBUTION_MARGIN_PERCENT = 45.0
+PRICE_UPLIFT_CASH_REALISATION_PERCENT = 70.0
 EXIT_AVOIDABLE_DIRECT_COST = 5.00
 EXIT_REPLACEMENT_CONTRIBUTION = 3.70
 ROUTE_CASH_COMPONENTS = {
     "renew": {"Additional discount cash effect": -0.45, "Further receivable and unbilled-work build": -0.90},
-    "renegotiate": {"Cash from price and scope reset": 1.34, "Implementation and support cash control": 0.50, "Payment protection": 0.30},
     "exit": {"Foregone customer cash receipts": -7.00, "Avoidable cash costs": 5.00, "Receivable recovery": 2.40, "Contract-asset recovery": 0.90, "Transition cash costs": -1.10, "Replacement cash contribution": 1.00},
 }
 BASELINE_MONTHLY_CASH = {"Jul": 4.10, "Aug": 3.90, "Sep": 3.70, "Oct": 3.60, "Nov": 3.80, "Dec": 4.00}
@@ -77,32 +77,34 @@ CASH_ABSORBER_OPTIONS = {
 CLASSIFICATION_OPTIONS = {
     "implementation_cash": "Capitalised implementation cash expenditure: cash and balance sheet, not current P&L",
     "receivables": "Increase in receivables: cash and balance sheet, not current P&L",
-    "provision": "Service-credit provision cash payment: P&L and cash",
+    "provision_creation": "Creating or increasing a service-credit or transition provision: current-period P&L and balance sheet",
+    "provision_settlement": "Settling an existing service-credit or transition provision: cash and balance sheet, not current-period P&L",
+    "provision_release": "Releasing an unused service-credit or transition provision: current-period P&L and balance sheet",
     "deferred_revenue": "Increase in deferred revenue: cash and balance sheet, before revenue recognition",
     "overhead": "Allocated head-office overhead: current P&L allocation, not automatically avoidable cash",
 }
-EXPECTED_CLASSIFICATIONS = frozenset({"implementation_cash", "receivables", "deferred_revenue"})
-ASSUMPTION_OPTIONS = {
-    "collection": "Northstar receivable recovery and collection timing",
-    "contract_assets": "Recoverability of unbilled implementation work",
-    "redeployment": "Timing and cash conversion of released capacity",
-    "credibility": "Revenue credibility regardless of economics",
-}
-EXPECTED_ASSUMPTIONS = frozenset({"collection", "redeployment"})
+EXPECTED_CLASSIFICATIONS = frozenset({"implementation_cash", "receivables", "provision_creation", "provision_settlement", "provision_release", "deferred_revenue"})
 ROUTE_SAFEGUARD_OPTIONS = {
-    RecommendationRoute.APPROVE: {"margin": "Signed target-margin pricing and scope", "collections": "Payment protections and weekly collections control", "cash": "Board-floor and RCF trigger"},
-    RecommendationRoute.CONDITIONALLY_APPROVE: {"margin": "Signed target-margin pricing and scope", "collections": "Payment protections and weekly collections control", "cash": "Board-floor and RCF trigger"},
-    RecommendationRoute.DELAY: {"collections": "Validated receivable and contract-asset recovery plan", "redeploy": "Validated capacity redeployment and cash timing", "cash": "Board-floor and RCF trigger"},
-    RecommendationRoute.REJECT: {"collections": "Validated receivable and contract-asset recovery plan", "redeploy": "Validated capacity redeployment and cash timing", "cash": "Board-floor and RCF trigger"},
+    RecommendationRoute.APPROVE: {"collections": "Weekly collections cadence for the overdue balance", "exposure": "Customer credit limit and unbilled-work exposure cap", "liquidity": "Board-floor and RCF-draw trigger while the renewal starts"},
+    RecommendationRoute.CONDITIONALLY_APPROVE: {"economics": "Signed target-margin price, scope, and change-control terms", "billing": "Milestone billing with payment protection before renewal", "repair": "Commercial recovery plan for overdue receivables and unbilled work"},
+    RecommendationRoute.DELAY: {"period": "Time-limited negotiation window with named exit date", "validation": "Validate collections, recovery actions, and revised target economics", "alternative": "Validate capacity-redeployment cash timing before committing"},
+    RecommendationRoute.REJECT: {"transition": "Transition plan that protects service delivery and cash", "recovery": "Recover outstanding receivables and contract assets before exit", "redeployment": "Redeploy delivery capacity with a tracked replacement-contribution plan"},
 }
 REQUIRED_ROUTE_SAFEGUARDS = {route: frozenset(options) for route, options in ROUTE_SAFEGUARD_OPTIONS.items()}
 ROUTE_PROTECTION_OPTIONS = {
-    RecommendationRoute.APPROVE: {"cash": "Board-floor and RCF draw trigger", "bs": "Receivable and contract-asset recovery controls", "billing": "Milestone billing and payment protection"},
-    RecommendationRoute.CONDITIONALLY_APPROVE: {"cash": "Board-floor and RCF draw trigger", "bs": "Receivable and contract-asset recovery controls", "billing": "Milestone billing and payment protection"},
-    RecommendationRoute.DELAY: {"cash": "Board-floor and RCF draw trigger", "bs": "Receivable and contract-asset recovery controls", "billing": "Milestone billing and payment protection"},
-    RecommendationRoute.REJECT: {"cash": "Board-floor and RCF draw trigger", "bs": "Receivable and contract-asset recovery controls", "billing": "Milestone billing and payment protection"},
+    RecommendationRoute.APPROVE: {"liquidity": "Weekly board-floor forecast and RCF-draw trigger", "credit": "Freeze further exposure if overdue receivables worsen"},
+    RecommendationRoute.CONDITIONALLY_APPROVE: {"billing": "Collect an upfront or milestone invoice before additional delivery", "exposure": "Cap unbilled work and require recovery of the overdue balance"},
+    RecommendationRoute.DELAY: {"liquidity": "Reserve RCF capacity during the time-limited negotiation period", "exposure": "Stop incremental unbilled work until recovery and pricing are validated"},
+    RecommendationRoute.REJECT: {"cash": "Weekly transition cash forecast with board-floor intervention", "recovery": "Ring-fence receivable and contract-asset recovery ownership"},
 }
-EXPECTED_ROUTE_PROTECTIONS = frozenset({"cash", "bs"})
+REQUIRED_ROUTE_PROTECTIONS = {route: frozenset(options) for route, options in ROUTE_PROTECTION_OPTIONS.items()}
+ROUTE_DECISION_ASSUMPTION_OPTIONS = {
+    RecommendationRoute.APPROVE: {"collection": "Overdue receivables return to the weekly collection plan", "exposure": "The customer does not create additional unbilled-work exposure"},
+    RecommendationRoute.CONDITIONALLY_APPROVE: {"acceptance": "Northstar accepts target economics and milestone billing", "recovery": "The overdue balance and contract assets can be recovered"},
+    RecommendationRoute.DELAY: {"negotiation": "A time-limited negotiation produces enforceable revised economics", "redeployment": "The capacity-redeployment alternative converts to cash on time"},
+    RecommendationRoute.REJECT: {"recovery": "Exit does not materially impair receivable and contract-asset recovery", "redeployment": "Released capacity produces the planned replacement contribution"},
+}
+REQUIRED_ROUTE_ASSUMPTIONS = {route: frozenset(options) for route, options in ROUTE_DECISION_ASSUMPTION_OPTIONS.items()}
 
 
 def operating_cash_flow() -> float:
@@ -136,13 +138,29 @@ def customer_exposure_at_risk() -> float:
     return round(unrecovered_receivables + unrecovered_contract_assets + impaired_implementation + SERVICE_CREDIT_TRANSITION_PROVISION, 2)
 
 
+def renegotiated_target_revenue() -> float:
+    return round(NORTHSTAR_DIRECT_COST / (1 - TARGET_CONTRIBUTION_MARGIN_PERCENT / 100), 2)
+
+
+def renegotiation_cash_realised() -> float:
+    """Return forecast-period collections from the renegotiated price uplift."""
+    revenue_uplift = renegotiated_target_revenue() - NORTHSTAR_REVENUE
+    return round(revenue_uplift * PRICE_UPLIFT_CASH_REALISATION_PERCENT / 100, 2)
+
+
+ROUTE_CASH_COMPONENTS["renegotiate"] = {
+    "Cash from price and scope reset": renegotiation_cash_realised(),
+    "Implementation and support cash control": 0.50,
+    "Payment protection": 0.30,
+}
+
+
 def route_ebitda(route: str) -> float:
     current_ebitda = COMPANY_PNL["EBITDA"][1]
     if route == "renew":
         return round(current_ebitda - NORTHSTAR_REVENUE * REQUESTED_DISCOUNT_PERCENT / 100, 2)
     if route == "renegotiate":
-        target_revenue = NORTHSTAR_DIRECT_COST / (1 - TARGET_CONTRIBUTION_MARGIN_PERCENT / 100)
-        return round(current_ebitda + target_revenue - NORTHSTAR_REVENUE, 2)
+        return round(current_ebitda + renegotiated_target_revenue() - NORTHSTAR_REVENUE, 2)
     if route == "exit":
         return round(current_ebitda - NORTHSTAR_REVENUE + EXIT_AVOIDABLE_DIRECT_COST + EXIT_REPLACEMENT_CONTRIBUTION, 2)
     raise KeyError(f"Unknown Scenario 002 route: {route}")
@@ -216,13 +234,13 @@ SCENARIO_002 = ScenarioContent(
     financial_pack=(
         ContentSection("Company performance and cash bridge - GBP m", dedent("""FY2025 revenue 40.00; FY2026 forecast revenue 48.00. Gross profit moves from 18.00 to 18.24 and EBITDA from 4.80 to 3.36.\n\nCurrent EBITDA 3.36; increase in trade receivables (2.40); increase in contract assets (1.20); increase in deferred revenue 0.40; provision cash payments (0.30); capitalised implementation cash expenditure (0.80); interest (0.35); tax (0.25).""")),
         ContentSection("Northstar customer, balance-sheet and liquidity inputs - GBP m unless stated", dedent("""Reported annual revenue 9.00; standard price 10.50; direct cost-to-serve 6.00; target contribution margin 45.0%; requested additional discount 5.0%.\n\nCompany trade receivables 12.00; Northstar receivables 3.00, including 1.20 overdue; contractual payment terms 45 days. Company contract assets 4.50; Northstar unbilled implementation work 1.80. Company deferred revenue 3.20; Northstar deferred revenue 0.60. Capitalised Northstar implementation cost 1.00, with 70.0% expected recoverable. Service-credit and transition provision 0.50.\n\nCash 3.80; gross debt 8.00; undrawn RCF 4.00; board minimum operating cash 3.50.""")),
-        ContentSection("Route and monthly-cash assumptions", dedent("""Baseline closing cash: Jul 4.10, Aug 3.90, Sep 3.70, Oct 3.60, Nov 3.80, Dec 4.00.\n\nRenew as proposed: the 5.0% requested discount reduces annual revenue and cash by 0.45; further receivable and unbilled-work build is 0.90. Monthly cash adjustments: Jul (0.10), Aug (0.20), Sep (0.35), Oct (0.45), Nov (0.45), Dec (0.45). There is no immediate repair to the 6.00 direct cost-to-serve base.\n\nRenegotiate to target economics: target contribution margin is 45.0% on the 6.00 direct cost-to-serve base; implementation and support cash control is 0.50 and payment protection releases 0.30. Monthly cash adjustments: Jul (0.25), Aug (0.10), Sep 0.10, Oct 0.35, Nov 0.55, Dec 0.70.\n\nExit and redeploy: customer revenue ends; avoidable direct cost is 5.00 while 1.00 of direct cost and 0.80 allocated head-office overhead are retained. Replacement contribution is 3.70. Cash movements are foregone customer cash receipts (7.00), avoidable cash costs 5.00, receivable recovery 2.40, contract-asset recovery 0.90, transition cash costs (1.10), and replacement cash contribution 1.00. Monthly cash adjustments: Jul (0.65), Aug (0.55), Sep (0.35), Oct 0.15, Nov 0.55, Dec 0.85.""")),
-        ContentSection("Definitions", "Operating cash flow is the EBITDA-to-cash bridge total. Cash conversion is operating cash flow / EBITDA. Net customer working capital = Northstar receivables + Northstar contract assets - Northstar deferred revenue - service-credit and transition provision. Total customer balance-sheet exposure = net customer working capital + capitalised implementation. Exposure at risk assumes 20% of Northstar receivables, 50% of contract assets, the non-recoverable implementation balance, and the provision. RCF draw required = maximum of zero and board cash floor less the route low point. Remaining liquidity headroom = undrawn RCF less required draw."),
+        ContentSection("Route and monthly-cash assumptions", dedent(f"""Baseline closing cash: Jul 4.10, Aug 3.90, Sep 3.70, Oct 3.60, Nov 3.80, Dec 4.00.\n\nRenew as proposed: the 5.0% requested discount reduces annual revenue and cash by 0.45; further receivable and unbilled-work build is 0.90. Monthly cash adjustments: Jul (0.10), Aug (0.20), Sep (0.35), Oct (0.45), Nov (0.45), Dec (0.45). There is no immediate repair to the 6.00 direct cost-to-serve base.\n\nRenegotiate to target economics: target contribution margin is 45.0% on the 6.00 direct cost-to-serve base. {PRICE_UPLIFT_CASH_REALISATION_PERCENT:.0f}% of the price uplift is billed and collected within the forecast period; implementation and support cash control is 0.50 and payment protection releases 0.30. Monthly cash adjustments: Jul (0.25), Aug (0.10), Sep 0.10, Oct 0.35, Nov 0.55, Dec 0.70.\n\nExit and redeploy: customer revenue ends; avoidable direct cost is 5.00 while 1.00 of direct cost and 0.80 allocated head-office overhead are retained. Replacement contribution is 3.70. Cash movements are foregone customer cash receipts (7.00), avoidable cash costs 5.00, receivable recovery 2.40, contract-asset recovery 0.90, transition cash costs (1.10), and replacement cash contribution 1.00. Monthly cash adjustments: Jul (0.65), Aug (0.55), Sep (0.35), Oct 0.15, Nov 0.55, Dec 0.85.""")),
+        ContentSection("Definitions", "Operating cash flow is the EBITDA-to-cash bridge total. Cash conversion is operating cash flow / EBITDA. Net customer working capital = Northstar receivables + Northstar contract assets - Northstar deferred revenue - service-credit and transition provision. Total customer balance-sheet exposure = net customer working capital + capitalised implementation. Exposure at risk assumes 20% of Northstar receivables, 50% of contract assets, the non-recoverable implementation balance, and the provision. Creating or increasing a provision affects current-period P&L and the balance sheet; settling an existing provision affects cash and the balance sheet; releasing an unused provision affects current-period P&L and the balance sheet. RCF draw required = maximum of zero and board cash floor less the route low point. Remaining liquidity headroom = undrawn RCF less required draw."),
     ),
     initial_question="Do you approve, conditionally approve, delay, or reject Northstar's renewal when its commercial terms are weakening earnings quality, customer working capital, and liquidity?",
     model_answer="Conditionally approve only with signed target-margin pricing, milestone billing, a receivable and contract-asset recovery plan, and a board-floor RCF trigger. The account can be commercially repaired, but the cash bridge and exposure mean revenue retention alone is not a Finance Director answer.",
     debrief="Profit does not equal cash. Northstar's receivables, unbilled work, capitalised implementation cash, and transition uncertainty create a balance-sheet exposure that must be considered alongside contribution. Renegotiation has the strongest modelled liquidity path, while exit remains defensible if recoveries and redeployment can be validated.",
     self_review_checklist=("Did I reconcile EBITDA to operating cash?", "Did I distinguish working-capital exposure from P&L?", "Did I compare lowest cash points and RCF capacity, not only year-end economics?", "Did my controls cover both commercial repair and liquidity?"),
     action_plan=("Validate Northstar collections and contract-asset recovery weekly.", "Agree pricing, scope, milestone billing, and change-control protections.", "Maintain a capacity-redeployment and transition-cash downside case."),
-    reconciliation_summary=f"Operating cash flow is GBP {EXPECTED_OPERATING_CASH:.2f}m and cash conversion is {EXPECTED_CASH_CONVERSION:.1f}%. Northstar DSO is {EXPECTED_DSO:.1f} days, net working-capital exposure is GBP {EXPECTED_NET_WORKING_CAPITAL:.2f}m, total customer balance-sheet exposure is GBP {EXPECTED_BALANCE_SHEET_EXPOSURE:.2f}m, and exposure at risk is GBP {EXPECTED_EXPOSURE_AT_RISK:.2f}m. Route annual operating cash outcomes are renew GBP {route_operating_cash('renew'):.2f}m, renegotiate GBP {route_operating_cash('renegotiate'):.2f}m, and exit GBP {route_operating_cash('exit'):.2f}m. Low cash points are renew GBP {route_low_cash('renew'):.2f}m, renegotiate GBP {route_low_cash('renegotiate'):.2f}m, and exit GBP {route_low_cash('exit'):.2f}m; required RCF draws are GBP {route_rcf_draw('renew'):.2f}m, GBP {route_rcf_draw('renegotiate'):.2f}m, and GBP {route_rcf_draw('exit'):.2f}m.",
+    reconciliation_summary=f"Operating cash flow is GBP {EXPECTED_OPERATING_CASH:.2f}m and cash conversion is {EXPECTED_CASH_CONVERSION:.1f}%. Northstar DSO is {EXPECTED_DSO:.1f} days, net working-capital exposure is GBP {EXPECTED_NET_WORKING_CAPITAL:.2f}m, total customer balance-sheet exposure is GBP {EXPECTED_BALANCE_SHEET_EXPOSURE:.2f}m, and exposure at risk is GBP {EXPECTED_EXPOSURE_AT_RISK:.2f}m. The renegotiated target revenue is GBP {renegotiated_target_revenue():.2f}m, so the GBP {renegotiation_cash_realised():.2f}m forecast cash from the price uplift reflects {PRICE_UPLIFT_CASH_REALISATION_PERCENT:.0f}% collection. Route annual operating cash outcomes are renew GBP {route_operating_cash('renew'):.2f}m, renegotiate GBP {route_operating_cash('renegotiate'):.2f}m, and exit GBP {route_operating_cash('exit'):.2f}m. Low cash points are renew GBP {route_low_cash('renew'):.2f}m, renegotiate GBP {route_low_cash('renegotiate'):.2f}m, and exit GBP {route_low_cash('exit'):.2f}m; required RCF draws are GBP {route_rcf_draw('renew'):.2f}m, GBP {route_rcf_draw('renegotiate'):.2f}m, and GBP {route_rcf_draw('exit'):.2f}m.",
 )

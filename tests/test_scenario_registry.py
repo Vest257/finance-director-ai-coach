@@ -86,6 +86,21 @@ def test_scenario_two_guided_stages_do_not_render_post_submission_explanations()
         assert "Why does this matter?" not in str(app)
 
 
+def test_scenario_two_stage_three_groups_all_inputs_in_route_tabs() -> None:
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    app.session_state["selected_scenario_id"] = "SCN-002"
+    app.session_state["stage"] = GUIDED_STAGE
+    app.session_state["guided_step"] = 2
+    app.run()
+    assert [tab.label for tab in app.tabs] == [
+        "Renew as proposed",
+        "Renegotiate to target economics",
+        "Exit and redeploy",
+    ]
+    assert len(app.number_input) == 15
+
+
 def test_scenario_two_results_expose_calculations_only_after_submission() -> None:
     entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
     report = evaluate_scenario_002_attempt(answers_for())

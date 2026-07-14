@@ -8,15 +8,18 @@ import pytest
 
 from finance_director_coach.models import Competency, CompetencyRating, EvidenceResult, RecommendationRoute
 from finance_director_coach.scenarios.scenario_002 import (
-    BASIC_PNL_EVIDENCE_IDS, BOARD_CASH_FLOOR, COMPANY_RECEIVABLES, EXPECTED_ASSUMPTIONS, EXPECTED_BALANCE_SHEET_EXPOSURE,
+    BASIC_PNL_EVIDENCE_IDS, BOARD_CASH_FLOOR, CLASSIFICATION_OPTIONS, COMPANY_RECEIVABLES, EXPECTED_BALANCE_SHEET_EXPOSURE,
     EXPECTED_CASH_CONVERSION, EXPECTED_CLASSIFICATIONS, EXPECTED_DSO, EXPECTED_EXPOSURE_AT_RISK,
     EXPECTED_NET_WORKING_CAPITAL, EXPECTED_OPERATING_CASH, EXPECTED_RECEIVABLE_CONCENTRATION,
-    EXPECTED_ROUTE_PROTECTIONS, NORTHSTAR_RECEIVABLES, PERCENTAGE_TOLERANCE, ROUTE_EBITDA, REQUIRED_ROUTE_SAFEGUARDS,
+    NORTHSTAR_RECEIVABLES, PERCENTAGE_TOLERANCE, PRICE_UPLIFT_CASH_REALISATION_PERCENT, REQUIRED_ROUTE_ASSUMPTIONS,
+    REQUIRED_ROUTE_PROTECTIONS, ROUTE_EBITDA, ROUTE_PROTECTION_OPTIONS, ROUTE_SAFEGUARD_OPTIONS, REQUIRED_ROUTE_SAFEGUARDS,
     SCENARIO_002, Scenario002Answers, cash_conversion_percent, customer_balance_sheet_exposure,
     customer_exposure_at_risk, net_customer_working_capital, northstar_dso,
     northstar_receivable_concentration, operating_cash_flow, route_liquidity_headroom,
-    route_ebitda, route_low_cash, route_monthly_cash, route_operating_cash, route_rcf_draw,
+    renegotiated_target_revenue, renegotiation_cash_realised, route_ebitda, route_low_cash,
+    route_monthly_cash, route_operating_cash, route_rcf_draw,
 )
+from finance_director_coach.scenarios.scenario_002_adapter import build_scenario_002_answers
 from finance_director_coach.scenarios.scenario_002_evaluation import evaluate_scenario_002_attempt, skipped_scenario_002_report
 
 ROUTES = ("renew", "renegotiate", "exit")
@@ -27,7 +30,7 @@ def answers_for(route: RecommendationRoute = RecommendationRoute.CONDITIONALLY_A
         quality_interpretation="growth_cash_divergence", operating_cash_flow=operating_cash_flow(), cash_conversion_percent=cash_conversion_percent(), largest_cash_absorber="receivables",
         northstar_dso=northstar_dso(), receivable_concentration_percent=northstar_receivable_concentration(), net_working_capital=net_customer_working_capital(), balance_sheet_exposure=customer_balance_sheet_exposure(), exposure_at_risk=customer_exposure_at_risk(),
         route_ebitda=dict(ROUTE_EBITDA), route_operating_cash={key: route_operating_cash(key) for key in ROUTES}, route_low_cash={key: route_low_cash(key) for key in ROUTES}, route_rcf_draw={key: route_rcf_draw(key) for key in ROUTES}, route_headroom={key: route_liquidity_headroom(key) for key in ROUTES},
-        classifications=EXPECTED_CLASSIFICATIONS, recommendation=route, safeguards=REQUIRED_ROUTE_SAFEGUARDS[route], protections=EXPECTED_ROUTE_PROTECTIONS, assumptions=EXPECTED_ASSUMPTIONS, ceo_response="Route choice is subject to cash, collection, and capacity controls.",
+        classifications=EXPECTED_CLASSIFICATIONS, recommendation=route, safeguards=REQUIRED_ROUTE_SAFEGUARDS[route], protections=REQUIRED_ROUTE_PROTECTIONS[route], assumptions=REQUIRED_ROUTE_ASSUMPTIONS[route], ceo_response="Route choice is subject to cash, collection, and capacity controls.",
     )
 
 
@@ -57,6 +60,16 @@ def test_route_forecasts_monthly_cash_rcf_and_headroom_reconcile() -> None:
     assert {route: route_rcf_draw(route) for route in ROUTES} == {"renew": 0.35, "renegotiate": 0.0, "exit": 0.15}
 
 
+def test_renegotiation_cash_is_derived_from_the_single_collection_assumption() -> None:
+    assert PRICE_UPLIFT_CASH_REALISATION_PERCENT == 70.0
+    assert renegotiated_target_revenue() == 10.91
+    assert renegotiation_cash_realised() == 1.34
+    assert SCENARIO_002.financial_pack[2].body.count("70% of the price uplift") == 1
+    assert route_operating_cash("renegotiate") == round(
+        operating_cash_flow() + renegotiation_cash_realised() + 0.50 + 0.30, 2
+    )
+
+
 def test_pack_exposes_raw_inputs_without_assessed_results() -> None:
     pack = " ".join(section.body for section in SCENARIO_002.financial_pack).lower()
     for raw_input in ("northstar receivables 3.00", "unbilled implementation work 1.80", "undrawn rcf 4.00", "baseline closing cash", "foregone customer cash receipts"):
@@ -73,6 +86,20 @@ def test_evidence_composition_and_integrated_strong_requirement() -> None:
     assert report.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.STRONG
     warmup_only = evaluate_scenario_002_attempt(replace(answers_for(), operating_cash_flow=0.0))
     assert warmup_only.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.DEVELOPING
+
+
+def test_financial_insight_has_deterministic_boundaries_for_all_four_levels() -> None:
+    not_assessed = evaluate_scenario_002_attempt(Scenario002Answers())
+    developing = evaluate_scenario_002_attempt(replace(answers_for(), operating_cash_flow=0.0))
+    capable = evaluate_scenario_002_attempt(
+        replace(answers_for(), route_low_cash={route: 0.0 for route in ROUTES})
+    )
+    strong = evaluate_scenario_002_attempt(answers_for())
+    assert not_assessed.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.NOT_ASSESSED
+    assert developing.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.DEVELOPING
+    assert capable.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.CAPABLE
+    assert strong.scorecard.for_competency(Competency.FINANCIAL_INSIGHT).rating is CompetencyRating.STRONG
+    assert "Insufficient submitted evidence" in next(record.feedback for record in not_assessed.evidence_records if record.evidence_id == "SCN-002-E-002")
 
 
 @pytest.mark.parametrize("field, value, evidence_id", (("northstar_dso", 1.0, "SCN-002-E-005"), ("net_working_capital", 0.0, "SCN-002-E-007"), ("route_low_cash", {"renew": 0.0, "renegotiate": 0.0, "exit": 0.0}, "SCN-002-E-010")))
@@ -95,6 +122,55 @@ def test_tolerance_boundary_and_all_routes_preserve_rating_limits() -> None:
         assert report.scorecard.for_competency(Competency.COMMERCIAL_JUDGMENT).rating is CompetencyRating.CAPABLE
         assert report.scorecard.for_competency(Competency.STAKEHOLDER_COMMUNICATION).rating is CompetencyRating.NOT_ASSESSED
         assert report.scorecard.for_competency(Competency.STRATEGIC_LEADERSHIP).rating is CompetencyRating.NOT_ASSESSED
+
+
+def test_each_recommendation_route_has_distinct_controls_protections_and_assumptions() -> None:
+    assert len({frozenset(values.items()) for values in ROUTE_SAFEGUARD_OPTIONS.values()}) == 4
+    assert len({frozenset(values.items()) for values in ROUTE_PROTECTION_OPTIONS.values()}) == 4
+    assert len(set(REQUIRED_ROUTE_ASSUMPTIONS.values())) == 4
+    for route in RecommendationRoute:
+        answer = answers_for(route)
+        report = evaluate_scenario_002_attempt(answer)
+        assert result(report, "SCN-002-E-014") is EvidenceResult.OBSERVED
+        assert result(report, "SCN-002-E-015") is EvidenceResult.OBSERVED
+        assert result(evaluate_scenario_002_attempt(replace(answer, protections=frozenset())), "SCN-002-E-015") is EvidenceResult.NOT_OBSERVED
+        assert result(evaluate_scenario_002_attempt(replace(answer, assumptions=frozenset())), "SCN-002-E-015") is EvidenceResult.NOT_OBSERVED
+
+
+def test_provision_creation_settlement_and_release_have_distinct_classifications() -> None:
+    assert "current-period P&L" in CLASSIFICATION_OPTIONS["provision_creation"]
+    assert "cash and balance sheet, not current-period P&L" in CLASSIFICATION_OPTIONS["provision_settlement"]
+    assert "current-period P&L and balance sheet" in CLASSIFICATION_OPTIONS["provision_release"]
+    incorrect = evaluate_scenario_002_attempt(
+        replace(answers_for(), classifications=EXPECTED_CLASSIFICATIONS - {"provision_settlement"})
+    )
+    assert result(incorrect, "SCN-002-E-012") is EvidenceResult.NOT_OBSERVED
+
+
+def test_stage_three_saved_values_rebuild_the_full_scenario_002_attempt() -> None:
+    answers = answers_for()
+    route = answers.recommendation
+    assert route is not None
+    state: dict[str, object] = {
+        "saved_input_quality": answers.quality_interpretation,
+        "saved_input_operating_cash": answers.operating_cash_flow,
+        "saved_input_cash_conversion": answers.cash_conversion_percent,
+        "saved_input_cash_absorber": answers.largest_cash_absorber,
+        "saved_input_dso": answers.northstar_dso,
+        "saved_input_concentration": answers.receivable_concentration_percent,
+        "saved_input_net_working_capital": answers.net_working_capital,
+        "saved_input_balance_sheet_exposure": answers.balance_sheet_exposure,
+        "saved_input_exposure_at_risk": answers.exposure_at_risk,
+        "saved_input_classifications": list(answers.classifications),
+        "saved_input_recommendation": route.value,
+        f"saved_input_safeguards_{route.value}": list(answers.safeguards),
+        "saved_input_protections": list(answers.protections),
+        "saved_input_assumptions": list(answers.assumptions),
+        "saved_input_ceo_response": answers.ceo_response,
+    }
+    for prefix, values in (("ebitda", answers.route_ebitda), ("route_cash", answers.route_operating_cash), ("low_cash", answers.route_low_cash), ("rcf_draw", answers.route_rcf_draw), ("headroom", answers.route_headroom)):
+        state.update({f"saved_input_{prefix}_{route_name}": value for route_name, value in values.items()})
+    assert build_scenario_002_answers(state) == answers
 
 
 def test_explanations_are_post_submission_and_skip_is_unassessed() -> None:

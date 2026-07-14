@@ -9,8 +9,9 @@ import streamlit as st
 from finance_director_coach.models import RecommendationRoute
 from finance_director_coach.scenarios.contracts import GuidedScenarioContext
 from finance_director_coach.scenarios.scenario_002 import (
-    ASSUMPTION_OPTIONS, CASH_ABSORBER_OPTIONS, CLASSIFICATION_OPTIONS, MONETARY_INPUT_GUIDANCE,
-    QUALITY_OPTIONS, REQUIRED_ROUTE_SAFEGUARDS, ROUTE_PROTECTION_OPTIONS, ROUTE_SAFEGUARD_OPTIONS,
+    CASH_ABSORBER_OPTIONS, CLASSIFICATION_OPTIONS, MONETARY_INPUT_GUIDANCE,
+    QUALITY_OPTIONS, REQUIRED_ROUTE_SAFEGUARDS, ROUTE_DECISION_ASSUMPTION_OPTIONS,
+    ROUTE_PROTECTION_OPTIONS, ROUTE_SAFEGUARD_OPTIONS,
     Scenario002Answers,
 )
 from finance_director_coach.scenarios.ui_helpers import number_input, render_back_button, save_step_values, state_value
@@ -94,13 +95,14 @@ def _stage_two(context: GuidedScenarioContext) -> None:
         _save(state, {"input_dso": dso, "input_concentration": concentration, "input_net_working_capital": net_wc, "input_balance_sheet_exposure": exposure, "input_exposure_at_risk": at_risk}, 2)
 
 
-def _route_input_grid(state: dict[str, object], prefix: str, label: str) -> dict[str, float | None]:
-    st.markdown(f"**{label}**")
-    columns = st.columns(3)
-    values: dict[str, float | None] = {}
-    for route, column in zip(ROUTES, columns, strict=True):
-        with column: values[route] = number_input(state, f"{ROUTE_LABELS[route]} ({label})", f"input_{prefix}_{route}")
-    return values
+def _route_calculation_inputs(state: dict[str, object], route: str) -> dict[str, float | None]:
+    return {
+        "ebitda": number_input(state, "Annual EBITDA (GBP m)", f"input_ebitda_{route}"),
+        "route_cash": number_input(state, "Annual operating cash (GBP m)", f"input_route_cash_{route}"),
+        "low_cash": number_input(state, "Lowest monthly cash (GBP m)", f"input_low_cash_{route}"),
+        "rcf_draw": number_input(state, "RCF draw required (GBP m)", f"input_rcf_draw_{route}"),
+        "headroom": number_input(state, "Remaining RCF headroom (GBP m)", f"input_headroom_{route}"),
+    }
 
 
 def _stage_three(context: GuidedScenarioContext) -> None:
@@ -109,17 +111,15 @@ def _stage_three(context: GuidedScenarioContext) -> None:
     st.subheader("Route cash and liquidity")
     st.caption("Compare all routes. The annual operating-cash outcome and monthly liquidity trough are different views of the same decision.")
     with st.form("scn_002_route_liquidity"):
-        ebitda = _route_input_grid(state, "ebitda", "annual EBITDA (GBP m)")
-        cash = _route_input_grid(state, "route_cash", "annual operating cash (GBP m)")
-        low = _route_input_grid(state, "low_cash", "lowest monthly cash (GBP m)")
-        draw = _route_input_grid(state, "rcf_draw", "RCF draw required (GBP m)")
-        headroom = _route_input_grid(state, "headroom", "remaining RCF headroom (GBP m)")
-        classifications = st.multiselect("Select exactly three items that are cash-and-balance-sheet, not current P&L", list(CLASSIFICATION_OPTIONS), format_func=CLASSIFICATION_OPTIONS.__getitem__, key="input_classifications")
+        route_inputs: dict[str, dict[str, float | None]] = {}
+        for route, tab in zip(ROUTES, st.tabs([ROUTE_LABELS[route] for route in ROUTES]), strict=True):
+            with tab:
+                route_inputs[route] = _route_calculation_inputs(state, route)
+        classifications = st.multiselect("Select the six stated classifications, including provision creation, settlement, and release", list(CLASSIFICATION_OPTIONS), format_func=CLASSIFICATION_OPTIONS.__getitem__, key="input_classifications")
         submitted = st.form_submit_button("Save and continue", type="primary", width="stretch")
     if submitted:
-        groups = (ebitda, cash, low, draw, headroom)
-        if any(value is None for group in groups for value in group.values()) or len(classifications) != 3: st.error("Complete every grouped route calculation and select exactly three classifications."); return
-        values = {f"input_{prefix}_{route}": group[route] for prefix, group in (("ebitda", ebitda), ("route_cash", cash), ("low_cash", low), ("rcf_draw", draw), ("headroom", headroom)) for route in ROUTES}
+        if any(value is None for values in route_inputs.values() for value in values.values()) or len(classifications) != 6: st.error("Complete every route calculation and select all six stated classifications."); return
+        values = {f"input_{prefix}_{route}": route_inputs[route][prefix] for route in ROUTES for prefix in route_inputs[route]}
         values["input_classifications"] = list(classifications)
         _save(state, values, 3)
 
@@ -135,7 +135,7 @@ def _stage_four(context: GuidedScenarioContext) -> None:
     with st.form("scn_002_decision"):
         safeguards = st.multiselect(f"Safeguards for {route.label}", list(ROUTE_SAFEGUARD_OPTIONS[route]), format_func=ROUTE_SAFEGUARD_OPTIONS[route].__getitem__, key=f"input_safeguards_{route.value}")
         protections = st.multiselect("Select the two minimum cash and balance-sheet protections", list(ROUTE_PROTECTION_OPTIONS[route]), format_func=ROUTE_PROTECTION_OPTIONS[route].__getitem__, key="input_protections")
-        assumptions = st.multiselect("Select the two assumptions most likely to change the decision", list(ASSUMPTION_OPTIONS), format_func=ASSUMPTION_OPTIONS.__getitem__, key="input_assumptions")
+        assumptions = st.multiselect("Select the two assumptions most likely to change this decision", list(ROUTE_DECISION_ASSUMPTION_OPTIONS[route]), format_func=ROUTE_DECISION_ASSUMPTION_OPTIONS[route].__getitem__, key="input_assumptions")
         st.caption("Your CEO wording is stored for self-review only. It is not scored for keywords, length, grammar, sentiment, or persuasiveness.")
         response = st.text_area("Concise recommendation to the CEO", key="input_ceo_response")
         submitted = st.form_submit_button("Submit guided attempt", type="primary", width="stretch")

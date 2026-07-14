@@ -29,7 +29,7 @@ All figures are GBP millions unless stated otherwise. The learner pack shows the
 | EBITDA-to-cash bridge | EBITDA `3.36`; receivables `(2.40)`; contract assets `(1.20)`; deferred revenue `0.40`; provision cash `(0.30)`; capitalised implementation cash `(0.80)`; interest `(0.35)`; tax `(0.25)` |
 | Customer exposure | Company/Northstar receivables `12.00/3.00`; Northstar overdue `1.20`; payment terms 45 days; company/Northstar contract assets `4.50/1.80`; company/Northstar deferred revenue `3.20/0.60`; capitalised implementation `1.00`; recoverability 70%; provision `0.50` |
 | Liquidity | Cash `3.80`; gross debt `8.00`; undrawn RCF `4.00`; board cash floor `3.50`; July to December baseline cash forecast |
-| Routes | Discount, target margin, direct-cost base, avoidable/retained cost, recovery, transition, replacement, and monthly route assumptions |
+| Routes | Discount, target margin, direct-cost base, 70% forecast-period billing/collection of the renegotiation price uplift, avoidable/retained cost, recovery, transition, replacement, and monthly route assumptions |
 
 Definitions are explicit in the learner pack:
 
@@ -65,11 +65,11 @@ The full reconciliation, including annual EBITDA, annual operating cash, monthly
 | Route cash and liquidity | `E-009` to `E-012` | Route EBITDA/cash, monthly trough, RCF capacity, and classification |
 | Finance Director decision | `E-013` to `E-015` | Recommendation, route safeguards, protections, and decision-changing assumptions |
 
-There is one basic P&L/trend evidence (`E-001`) and fifteen substantive evidence records overall. Financial Insight can be `Strong` only when integrated cash, balance-sheet, and liquidity evidence succeeds. Commercial Judgment is capped at `Capable`; Stakeholder Communication and Strategic Leadership stay `Not assessed` without qualified manual review. CEO wording is retained only for self-review and does not affect deterministic evaluation.
+There is one basic P&L/trend evidence (`E-001`) and fifteen substantive evidence records overall. Financial Insight is `Not assessed` where no meaningful evidence is submitted, `Developing` where material cash bridge, customer exposure, or route-liquidity evidence is incorrect, `Capable` where core cash-flow and balance-sheet evidence is correct but extended route calculations or integrated interpretation are not, and `Strong` where all material integrated P&L, balance-sheet, cash-flow, customer-exposure, and liquidity evidence succeeds. Commercial Judgment is capped at `Capable`; Stakeholder Communication and Strategic Leadership stay `Not assessed` without qualified manual review. CEO wording is retained only for self-review and does not affect deterministic evaluation.
 
 ## Explanation Requirements
 
-Every numerical record provides a post-submission **How was this calculated?** explanation with the definition, formula, learner-visible sources, intermediate calculation, unit, answer, and business implication. Relevant structured records provide **Why does this matter?** explanations covering profit versus cash, customer credit exposure, deferred revenue, capitalised implementation cash, exit timing, RCF capacity, monthly troughs, and safeguards.
+Every numerical record provides a post-submission **How was this calculated?** explanation with the definition, formula, learner-visible sources, intermediate calculation, unit, answer, and business implication. Provision classification distinguishes creation/increase (current-period P&L and balance sheet), settlement (cash and balance sheet), and release (current-period P&L and balance sheet). Relevant structured records provide **Why does this matter?** explanations covering profit versus cash, customer credit exposure, deferred revenue, capitalised implementation cash, exit timing, RCF capacity, monthly troughs, and safeguards.
 
 No worked calculation, model answer, or judgment explanation is rendered during the guided flow. The skip path contains the complete reconciliation, model answer, debrief, self-review checklist, action plan, and all competencies as `Not assessed`.
 
