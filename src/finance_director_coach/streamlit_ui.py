@@ -26,6 +26,7 @@ SCENARIO_STAGE = "scenario"
 GUIDED_STAGE = "guided"
 RESULTS_STAGE = "results"
 GUIDED_STEP_COUNT = 4
+PRACTICE_STATE_PREFIX = "practice_"
 
 EVIDENCE_TITLES: dict[str, str] = {
     "E-001": "Growth calculations",
@@ -134,10 +135,11 @@ def initialize_session_state(state: MutableMapping[str, object]) -> None:
 
 
 def reset_session_state(state: MutableMapping[str, object]) -> None:
-    """Clear the current attempt, including all Streamlit widget values."""
+    """Clear Scenario Coach state while preserving the Practice-owned namespace."""
 
     for key in list(state):
-        del state[key]
+        if not key.startswith(PRACTICE_STATE_PREFIX):
+            del state[key]
     initialize_session_state(state)
 
 
@@ -872,11 +874,6 @@ def _render_results() -> None:
 def run_app() -> None:
     """Render the Streamlit application for the current session state."""
 
-    st.set_page_config(
-        page_title="FinanceOS | Finance Director Scenario Coach",
-        layout="wide",
-        initial_sidebar_state="collapsed",
-    )
     st.markdown(APP_CSS, unsafe_allow_html=True)
     initialize_session_state(st.session_state)
     stage = st.session_state["stage"]

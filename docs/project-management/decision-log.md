@@ -1,5 +1,21 @@
 # Decision Log
 
+## 2026-07-15: Add Fast Drill Mode V1 As A Separate In-Memory Practice Surface
+
+Decision: Add a separate Streamlit Practice page backed by the committed, reviewed 100-card FinQA drill bank. Keep answer evaluation deterministic through each card's stored tolerance and retain attempts only for the current browser session.
+
+Rationale:
+
+- Short, one-card numerical practice provides a focused complement to the Finance Director Scenario Coach without changing scenario evaluation.
+- The reviewed committed bank supports reproducible learner content without runtime FinQA imports or network access.
+- Session-only state makes the first learner loop useful without prematurely adding accounts or persistence.
+
+Implications:
+
+- The Practice core remains UI-independent and testable outside Streamlit.
+- V1 has no database, accounts, saved profile, adaptive engine, streaks, leaderboard, or overall learner score.
+- Scenario Coach state and Scenario 001 evaluation rules remain isolated and unchanged.
+
 ## 2026-07-15: Complete Final FinQA Learner-Content And Taxonomy Review
 
 Decision: Make final learner-facing corrections explicit in the committed curation ledger, including percentage-point treatment for effective tax-rate changes, cleaned learner tables, and pending-only automatic curation candidates.
