@@ -27,6 +27,9 @@ Current runtime boundaries are:
 - Keep scenario content and scenario-specific rules separate from the shared coaching shell.
 - Register each published scenario explicitly. A registration owns metadata, content, typed answer construction, deterministic evaluator, skip report, evidence labels, and guided flow.
 - Do not make the shared UI aware of a scenario's finance figures, question fields, options, or evaluation rules.
+- Treat the explicit `SCENARIOS` registry as the complete current learner product surface for shared presentation, navigation, accessibility, and responsive behavior. A shared improvement must be applied to every affected registered scenario unless an explicitly approved, decision-logged exception applies.
+- Keep typed financial-pack data scenario-owned. `FinancialPackTable` carries naturally tabular learner inputs, while the shared Streamlit renderer owns consistent static, index-free, responsive presentation in both the briefing and guided reference.
+- Keep calculation, evidence, and evaluation ownership inside each scenario boundary; shared presentation code must not duplicate or transfer those rules between scenarios.
 - Add persistence only when there is a real need to store learner state.
 - Add external AI integration only behind a clear boundary after the local learning loop is defined.
 
@@ -56,6 +59,8 @@ scenario library -> selected registration -> scenario-specific answers -> scenar
 ```
 
 Streamlit session state retains only the current in-memory attempt and widget values. Start over clears that state. The optional plain-text summary is assembled locally from the learner's submitted answers and evaluation report; it is offered as a download and is not stored by the application.
+
+Financial-pack content is an input-only boundary before submission. The shared renderer preserves authored values, units, signs, and qualifications without exposing calculated answers, worked solutions, or evaluation outcomes. It renders static non-editable tables with hidden indexes and responsive container width; financial-pack expanders remain part of the learner flow, with the first briefing section open by default.
 
 The evaluator uses deterministic rubric logic and authored feedback that follows the [evaluation contract](../learning/evaluation-contract.md). Calculations and structured selections may be machine-assessed. Free-text communication and nuanced reasoning remain self-review or manual-review evidence in the non-AI MVP. Commercial Judgment cannot receive deterministic `Strong`; Stakeholder Communication and Strategic Leadership remain unassessed without a qualified manual reviewer. External AI is not part of this phase.
 

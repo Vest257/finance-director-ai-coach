@@ -110,7 +110,11 @@ Scenario 002 is a commercial-finance renewal decision: a strategically visible c
 
 ## Scenario Data
 
-Financial packs should begin simple. Early scenarios can use plain text tables or static figures. More complex files, model uploads, and generated data should come later only when the learning loop proves useful.
+Every scenario registered in `SCENARIOS` is part of one learner product surface. A shared experience improvement must be considered and applied across every affected registered scenario; an exception needs an explicit Product Owner decision or a documented technical blocker and follow-up action.
+
+Financial packs should present naturally tabular information through the scenario-owned typed `FinancialPackTable` model. This includes statements, cash-flow bridges, working-capital and liquidity schedules, forecasts, route assumptions and comparisons, and glossaries. Prose is reserved for narrative context, qualifications, and supporting explanations, not as a flattened replacement for a financial table.
+
+The pack must preserve all learner-visible inputs, assumptions, units, signs, and qualifiers without revealing calculated answers, worked solutions, or evaluation outcomes before submission. The briefing and guided reference use the same shared renderer and retain financial-pack expanders, with the first section open by default. Tables are static, non-editable, index-free, and responsive on desktop and approximately 390px-wide screens.
 
 ## Publication Gate
 

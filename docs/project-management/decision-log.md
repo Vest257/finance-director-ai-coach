@@ -2,6 +2,35 @@
 
 This log records important product and architecture decisions. Add entries in reverse chronological order.
 
+## 2026-07-15: Require Consistent Financial-Pack Presentation Across The Registered Scenario Library
+
+Decision: Treat all scenarios registered in `SCENARIOS` as a single product surface for shared presentation and learner-flow work. Supersede the 2026-07-14 temporary allowance for existing scenarios to retain flattened prose financial packs.
+
+Rationale:
+
+- A learner should receive the same clear, accessible presentation standard regardless of which registered scenario they select.
+- The existing typed `FinancialPackTable` model and shared renderer support consistent tables without moving scenario-specific finance or evaluation rules into the shared shell.
+
+Implications:
+
+- Naturally tabular learner inputs use scenario-owned `FinancialPackTable` content and the shared briefing/guided renderer; prose remains for narrative context and qualifications only.
+- Shared presentation, navigation, responsive, or accessibility changes require review and validation across every affected registered scenario, including desktop and approximately 390px-width visual checks.
+- Exceptions require an explicit Product Owner request or documented technical blocker, plus a decision-log reason and follow-up action. None are currently approved.
+
+## 2026-07-14: Keep Financial-Pack Tables Scenario-Owned
+
+Decision: Represent optional learner-facing financial-pack tables with small typed content models owned by each scenario, and render them through the shared Streamlit shell with prose as a temporary fallback.
+
+Rationale:
+
+- Structured tables make dense financial inputs readable without coupling the UI to Scenario 002 values.
+- Existing scenarios could retain their proven text content until a deliberate content migration was needed; this allowance is superseded by the 2026-07-15 library-wide presentation decision.
+
+Implications:
+
+- A section may contain multiple compact static tables and short supporting notes.
+- The main briefing and guided financial-pack reference use the same renderer.
+
 ## 2026-07-13: Add A Curated Scenario Library And Approve Scenario 002
 
 Decision: Replace the browser pilot's single hardwired scenario path with a small typed in-code registry. Register Scenario 001 and the synthetic Scenario 002, "Growth at Any Price: Should We Renew the Contract?". Keep the CLI defaulted to Scenario 001.
@@ -255,17 +284,3 @@ Implications:
 
 - Code should use type hints and clear module boundaries.
 - Dependencies should remain minimal.
-
-## 2026-07-14: Keep Financial-Pack Tables Scenario-Owned
-
-Decision: Represent optional learner-facing financial-pack tables with small typed content models owned by each scenario, and render them through the shared Streamlit shell with prose as the fallback.
-
-Rationale:
-
-- Structured tables make dense financial inputs readable without coupling the UI to Scenario 002 values.
-- Existing scenarios can retain their proven text content until a deliberate content migration is needed.
-
-Implications:
-
-- A section may contain multiple compact static tables and short supporting notes.
-- The main briefing and guided financial-pack reference use the same renderer.
