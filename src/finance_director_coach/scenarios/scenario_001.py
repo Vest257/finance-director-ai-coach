@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-from finance_director_coach.models import ContentSection, RecommendationRoute, ScenarioContent
+from finance_director_coach.models import ContentSection, FinancialPackTable, RecommendationRoute, ScenarioContent
 from finance_director_coach.scenarios.contracts import ScenarioMetadata
 
 MONEY_TOLERANCE = 0.05
@@ -523,6 +523,102 @@ DEBRIEF = dedent(
     """
 ).strip()
 
+SCENARIO_001_PRESENTATION = (
+    FinancialPackTable(
+        "Income statement",
+        ("Metric", "H1 2025", "H1 2026"),
+        (
+            ("Revenue", "18.00", "22.00"),
+            ("Gross profit", "8.10", "10.10"),
+            ("EBITDA", "2.70", "3.40"),
+            ("Operating profit", "2.10", "2.70"),
+            ("Net income", "1.48", "2.00"),
+        ),
+        note_before="Six months ended 30 June",
+    ),
+    FinancialPackTable(
+        "Balance sheet",
+        ("Line item", "December 2025", "June 2026"),
+        (
+            ("Cash", "7.00", "4.30"),
+            ("Trade receivables", "6.00", "9.20"),
+            ("Inventory", "2.50", "3.60"),
+            ("Contract assets and prepayments", "1.00", "1.60"),
+            ("Net fixed assets", "5.00", "5.50"),
+            ("Total assets", "21.50", "24.20"),
+            ("Trade payables", "3.10", "4.00"),
+            ("Accruals and deferred revenue", "2.00", "2.40"),
+            ("Interest-bearing debt", "5.50", "4.90"),
+            ("Equity", "10.90", "12.90"),
+            ("Total liabilities and equity", "21.50", "24.20"),
+        ),
+    ),
+    FinancialPackTable(
+        "EBITDA-to-cash bridge",
+        ("Cash-bridge item", "GBP m"),
+        (
+            ("Opening cash at 31 December 2025", "7.00"),
+            ("EBITDA", "3.40"),
+            ("Increase in trade receivables", "(3.20)"),
+            ("Increase in inventory", "(1.10)"),
+            ("Increase in contract assets and prepayments", "(0.60)"),
+            ("Increase in trade payables", "0.90"),
+            ("Increase in accruals and deferred revenue", "0.40"),
+            ("Cash interest paid", "(0.20)"),
+            ("Cash tax paid", "(0.50)"),
+            ("Capital expenditure", "(1.20)"),
+            ("Debt principal repaid", "(0.60)"),
+        ),
+    ),
+    FinancialPackTable(
+        "Working capital",
+        ("Input", "Value"),
+        (
+            ("DSO", "61 days to 76 days"),
+            ("Receivables over 30 days overdue", "GBP 2.00m"),
+            ("Inventory days", "46 to 55"),
+            ("Receivables held by five customers", "GBP 5.60m"),
+        ),
+    ),
+    FinancialPackTable(
+        "Liquidity constraints",
+        ("Input", "Value"),
+        (
+            ("Board cash floor", "GBP 3.50m"),
+            ("Lender minimum cash covenant", "GBP 2.50m"),
+            ("Undrawn RCF", "GBP 3.00m"),
+            ("RCF expiry", "March 2027"),
+            ("Quantified downside case", "Not provided"),
+        ),
+    ),
+    FinancialPackTable(
+        "Baseline monthly closing-cash forecast",
+        ("Month", "Baseline closing cash"),
+        (
+            ("July", "3.80"),
+            ("August", "3.50"),
+            ("September", "3.50"),
+            ("October", "3.80"),
+            ("November", "4.30"),
+            ("December", "5.00"),
+        ),
+    ),
+    FinancialPackTable(
+        "Proposed 20 hires",
+        ("Input", "Value"),
+        (
+            ("September starters", "10"),
+            ("November starters", "10"),
+            ("Annual fully loaded cost per hire", "GBP 84,000"),
+            ("One-time onboarding cost per hire", "GBP 8,000"),
+            ("Recurring cost timing", "Accrues evenly by month from and including each starter's start month."),
+            ("One-time onboarding timing", "Paid in each starter's start month."),
+            ("Incremental revenue or receipts from hires", "No incremental revenue or receipts from the hires are included in the forecast."),
+        ),
+    ),
+)
+
+
 SCENARIO_001 = ScenarioContent(
     scenario_id="SCN-001",
     title="Growth With Falling Cash: Should We Hire 20 People?",
@@ -548,6 +644,7 @@ SCENARIO_001 = ScenarioContent(
                 Net income                              1.48      2.00
                 """
             ).strip(),
+            SCENARIO_001_PRESENTATION[:1],
         ),
         ContentSection(
             "Balance sheet - GBP m",
@@ -568,6 +665,7 @@ SCENARIO_001 = ScenarioContent(
                 Total liabilities and equity           21.50     24.20
                 """
             ).strip(),
+            SCENARIO_001_PRESENTATION[1:2],
         ),
         ContentSection(
             "EBITDA-to-cash bridge - H1 2026, GBP m",
@@ -586,6 +684,7 @@ SCENARIO_001 = ScenarioContent(
                 Debt principal repaid                            (0.60)
                 """
             ).strip(),
+            SCENARIO_001_PRESENTATION[2:3],
         ),
         ContentSection(
             "Working capital and liquidity",
@@ -597,6 +696,7 @@ SCENARIO_001 = ScenarioContent(
                 A GBP 3.00m undrawn RCF expires in March 2027. No downside case is provided.
                 """
             ).strip(),
+            SCENARIO_001_PRESENTATION[3:5],
         ),
         ContentSection(
             "Baseline monthly closing-cash forecast - GBP m",
@@ -610,6 +710,7 @@ SCENARIO_001 = ScenarioContent(
                 December                                         5.00
                 """
             ).strip(),
+            SCENARIO_001_PRESENTATION[5:6],
         ),
         ContentSection(
             "Proposed 20 hires",
@@ -622,6 +723,7 @@ SCENARIO_001 = ScenarioContent(
                 No incremental revenue or receipts from the hires are included in the forecast.
                 """
             ).strip(),
+            SCENARIO_001_PRESENTATION[6:7],
         ),
     ),
     initial_question=(

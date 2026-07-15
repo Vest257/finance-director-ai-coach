@@ -23,6 +23,31 @@ from finance_director_coach.streamlit_ui import (
 
 from tests.test_scenario_002 import answers_for
 
+HIDDEN_FINANCIAL_PACK_OUTPUTS = {
+    "SCN-001": ("GBP 0.58m", "GBP 1.68m", "GBP 3.35m", "GBP 4.42m", "GBP 0.15m", "GBP 0.85m"),
+    "SCN-002": ("annual EBITDA to 5.27", "annual EBITDA is 3.06", "Operating cash flow is GBP -1.54", "Low cash points"),
+}
+
+
+def financial_pack_table_text(scenario_id: str) -> str:
+    """Flatten scenario-owned table content for input and answer-leakage assertions."""
+
+    return " ".join(
+        " ".join(
+            value
+            for value in (
+                table.note_before,
+                table.title,
+                *table.column_headings,
+                *(cell for row in table.rows for cell in row),
+                table.note_after,
+            )
+            if value
+        )
+        for section in get_scenario(scenario_id).content.financial_pack
+        for table in section.tables
+    )
+
 
 def test_registry_contains_unique_scenario_ids_and_distinct_typed_boundaries() -> None:
     assert tuple(scenario.content.scenario_id for scenario in SCENARIOS) == ("SCN-001", "SCN-002")
@@ -65,6 +90,7 @@ def test_switching_scenarios_cannot_retain_prior_scenario_widget_values() -> Non
 def test_shared_shell_uses_registry_content_not_hardwired_scenario_one_fields() -> None:
     source = (Path(__file__).parents[1] / "src" / "finance_director_coach" / "streamlit_ui.py").read_text()
     assert "SCENARIO_001.financial_pack" not in source
+    assert "SCENARIO_002.financial_pack" not in source
     assert "SCENARIO_001.model_answer" not in source
     assert "SCENARIO_001.reconciliation_summary" not in source
 
@@ -77,7 +103,7 @@ def test_scenario_two_pack_is_loaded_from_registry_without_assessed_results() ->
 
 
 @pytest.mark.parametrize("scenario_id", ("SCN-001", "SCN-002"))
-def test_financial_pack_briefing_uses_prose_fallback_or_static_tables(scenario_id: str) -> None:
+def test_financial_pack_briefing_uses_static_tables(scenario_id: str) -> None:
     entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
     scenario = get_scenario(scenario_id)
     app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
@@ -93,24 +119,22 @@ def test_financial_pack_briefing_uses_prose_fallback_or_static_tables(scenario_i
     assert app.get("code") == []
     rendered = "\n".join(item.value for item in app.markdown)
     for section in scenario.content.financial_pack:
-        if section.tables:
-            for table in section.tables:
-                if table.title:
-                    assert f"**{table.title}**" in rendered
-        else:
-            for paragraph in section.body.split("\n\n"):
-                if paragraph.strip():
-                    assert paragraph in rendered
-    if scenario_id == "SCN-002":
-        assert len(app.dataframe) == 13
-        assert app.get("data_editor") == []
+        assert section.tables
+        for table in section.tables:
+            if table.title:
+                assert f"**{table.title}**" in rendered
+    assert len(app.dataframe) == sum(len(section.tables) for section in scenario.content.financial_pack)
+    assert app.get("data_editor") == []
+    for hidden_output in HIDDEN_FINANCIAL_PACK_OUTPUTS[scenario_id]:
+        assert hidden_output not in rendered
 
 
-def test_scenario_two_guided_financial_pack_uses_the_same_structured_renderer() -> None:
+@pytest.mark.parametrize("scenario_id", ("SCN-001", "SCN-002"))
+def test_guided_financial_pack_uses_the_same_structured_renderer(scenario_id: str) -> None:
     entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
-    scenario = get_scenario("SCN-002")
+    scenario = get_scenario(scenario_id)
     app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
-    app.session_state["selected_scenario_id"] = "SCN-002"
+    app.session_state["selected_scenario_id"] = scenario_id
     app.session_state["stage"] = GUIDED_STAGE
     app.run()
 
@@ -123,20 +147,79 @@ def test_scenario_two_guided_financial_pack_uses_the_same_structured_renderer() 
         for table in section.tables:
             if table.title:
                 assert f"**{table.title}**" in rendered
-    assert len(app.dataframe) == 13
+    assert len(app.dataframe) == sum(len(section.tables) for section in scenario.content.financial_pack)
     assert app.get("data_editor") == []
-    for hidden_phrase in ("annual EBITDA to 5.27", "annual EBITDA is 3.06", "Operating cash flow is GBP -1.54", "Low cash points"):
-        assert hidden_phrase not in rendered
+    for hidden_output in HIDDEN_FINANCIAL_PACK_OUTPUTS[scenario_id]:
+        assert hidden_output not in rendered
+
+
+def test_scenario_one_structured_pack_retains_all_financial_inputs() -> None:
+    table_text = financial_pack_table_text("SCN-001")
+
+    for learner_visible_input in (
+        "18.00",
+        "22.00",
+        "Six months ended 30 June",
+        "8.10",
+        "10.10",
+        "2.70",
+        "3.40",
+        "2.10",
+        "1.48",
+        "2.00",
+        "21.50",
+        "24.20",
+        "4.30",
+        "6.00",
+        "9.20",
+        "2.50",
+        "3.60",
+        "1.00",
+        "1.60",
+        "5.50",
+        "3.10",
+        "4.00",
+        "4.90",
+        "10.90",
+        "12.90",
+        "(3.20)",
+        "(1.10)",
+        "(0.60)",
+        "0.90",
+        "0.40",
+        "(0.20)",
+        "(0.50)",
+        "(1.20)",
+        "61 days to 76 days",
+        "GBP 2.00m",
+        "46 to 55",
+        "GBP 5.60m",
+        "GBP 3.50m",
+        "GBP 2.50m",
+        "GBP 3.00m",
+        "March 2027",
+        "Not provided",
+        "3.80",
+        "3.50",
+        "5.00",
+        "10",
+        "GBP 84,000",
+        "GBP 8,000",
+        "Accrues evenly by month from and including each starter's start month.",
+        "Paid in each starter's start month.",
+        "No incremental revenue or receipts from the hires are included in the forecast.",
+    ):
+        assert learner_visible_input in table_text
+    for hidden_output in HIDDEN_FINANCIAL_PACK_OUTPUTS["SCN-001"]:
+        assert hidden_output not in table_text
 
 
 def test_scenario_two_structured_pack_retains_required_inputs_without_answers() -> None:
-    scenario = get_scenario("SCN-002")
-    table_text = " ".join(
-        " ".join((table.title, *table.column_headings, *(cell for row in table.rows for cell in row)))
-        for section in scenario.content.financial_pack
-        for table in section.tables
-    )
+    table_text = financial_pack_table_text("SCN-002")
     for required_input in (
+        "Revenue 40.00 48.00",
+        "Gross profit 18.00 18.24",
+        "EBITDA 4.80 3.36",
         "Northstar receivables GBP 3.00m",
         "Northstar unbilled implementation work GBP 1.80m",
         "Undrawn RCF GBP 4.00m",
@@ -153,8 +236,9 @@ def test_scenario_two_structured_pack_retains_required_inputs_without_answers() 
         assert hidden_answer not in table_text
 
 
-def test_structured_table_renderer_hides_indices_without_editable_widgets(monkeypatch) -> None:
-    table = get_scenario("SCN-002").content.financial_pack[0].tables[0]
+@pytest.mark.parametrize("scenario_id", ("SCN-001", "SCN-002"))
+def test_structured_table_renderer_hides_indices_without_editable_widgets(monkeypatch, scenario_id: str) -> None:
+    table = get_scenario(scenario_id).content.financial_pack[0].tables[0]
     captured: dict[str, object] = {}
 
     monkeypatch.setattr(streamlit_ui.st, "markdown", lambda *args, **kwargs: None)
@@ -169,11 +253,7 @@ def test_structured_table_renderer_hides_indices_without_editable_widgets(monkey
     assert captured["hide_index"] is True
     assert captured["use_container_width"] is True
     assert captured["column_order"] == table.column_headings
-    assert captured["data"] == [
-        {"Metric": "Revenue", "FY2025": "40.00", "FY2026 forecast": "48.00"},
-        {"Metric": "Gross profit", "FY2025": "18.00", "FY2026 forecast": "18.24"},
-        {"Metric": "EBITDA", "FY2025": "4.80", "FY2026 forecast": "3.36"},
-    ]
+    assert captured["data"] == [dict(zip(table.column_headings, row, strict=True)) for row in table.rows]
 
 
 def test_scenario_two_guided_stages_do_not_render_post_submission_explanations() -> None:
