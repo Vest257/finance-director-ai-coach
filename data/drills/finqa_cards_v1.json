@@ -1294,12 +1294,12 @@
       "card_id": "FINQA-434882BEB46E",
       "correct_answer": 100.5,
       "difficulty": "intermediate",
-      "financial_skill": "debt_movement",
+      "financial_skill": "asset_movement",
       "formula": "add(81, 120), divide(#0, const_2)",
       "learner_context": [
         "Loans held for sale table 15 : loans held for sale in millions December 31 December 31."
       ],
-      "learner_question": "What was the average for \"other\" loans held in 2012 and 2011?",
+      "learner_question": "What was the average balance of other loans held for sale at December 31, 2012 and 2011, in USD million?",
       "learner_table": [
         [
           "In millions",
@@ -1315,14 +1315,14 @@
       "license": "MIT",
       "normalized_operands": [
         {
-          "dimension": "number",
+          "dimension": "currency",
           "is_constant": false,
           "normalized_value": 81.0,
           "raw_value": 81.0,
           "scale": "million"
         },
         {
-          "dimension": "number",
+          "dimension": "currency",
           "is_constant": false,
           "normalized_value": 120.0,
           "raw_value": 120.0,
@@ -1331,12 +1331,12 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 2e-06,
+          "normalized_value": 2.0,
           "raw_value": 2.0,
           "scale": "unit"
         }
       ],
-      "primary_domain": "Liquidity & Treasury",
+      "primary_domain": "Balance Sheet",
       "question": "what was the average for \"other\" loans held in 2012 and 2011?",
       "review_status": "approved",
       "reviewed_for_domain": true,
@@ -1352,8 +1352,8 @@
       "source_program": "add(81, 120), divide(#0, const_2)",
       "source_reference": "PNC/2012/page_68.pdf",
       "tolerance": 1e-05,
-      "unit": "million",
-      "unit_dimension": "number",
+      "unit": "USD million",
+      "unit_dimension": "currency",
       "unit_scale": "million",
       "visible_context": [
         "loans held for sale table 15 : loans held for sale in millions december 31 december 31 ."
@@ -1370,8 +1370,8 @@
           "120"
         ]
       ],
-      "why_it_matters": "This helps finance leaders assess near-term funding, cash, and financing movements.",
-      "worked_calculation": "81 + 120 = 201; then 201 / 2 = 100.5. Answer: 100.5 million.",
+      "why_it_matters": "This helps finance leaders understand changes in the resources and obligations reported on the balance sheet.",
+      "worked_calculation": "81 + 120 = 201; then 201 / 2 = 100.5. Answer: 100.5 USD million.",
       "worked_solution": "Retain the source program for provenance; show learners the reviewed calculation instead."
     },
     {
@@ -1676,7 +1676,7 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 3e-06,
+          "normalized_value": 3.0,
           "raw_value": 3.0,
           "scale": "unit"
         }
@@ -1760,7 +1760,7 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 0.002,
+          "normalized_value": 2.0,
           "raw_value": 2.0,
           "scale": "unit"
         }
@@ -3003,7 +3003,7 @@
           "(in millions)",
           "December 31,2014",
           "Net Inflows(Outflows)",
-          "Acquisition(1)",
+          "Acquisition (1)",
           "Market Change",
           "FX Impact",
           "December 31,2015"
@@ -3108,7 +3108,7 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 2e-06,
+          "normalized_value": 2.0,
           "raw_value": 2.0,
           "scale": "unit"
         }
@@ -3281,7 +3281,7 @@
           "Years Ended December 31,"
         ],
         [
-          "Aggregate adjustment for income taxes(f)",
+          "Aggregate adjustment for income taxes (f)",
           "(64.8)",
           "(103.0)",
           "(113.5)",
@@ -3923,7 +3923,7 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 2e-09,
+          "normalized_value": 2.0,
           "raw_value": 2.0,
           "scale": "unit"
         }
@@ -4366,14 +4366,14 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 4e-06,
+          "normalized_value": 4.0,
           "raw_value": 4.0,
           "scale": "unit"
         },
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 4e-06,
+          "normalized_value": 4.0,
           "raw_value": 4.0,
           "scale": "unit"
         }
@@ -4505,7 +4505,7 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 3e-06,
+          "normalized_value": 3.0,
           "raw_value": 3.0,
           "scale": "unit"
         }
@@ -4862,7 +4862,7 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 0.0001,
+          "normalized_value": 100.0,
           "raw_value": 100.0,
           "scale": "unit"
         },
@@ -5083,7 +5083,7 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 0.01,
+          "normalized_value": 10.0,
           "raw_value": 10.0,
           "scale": "unit"
         }
@@ -5270,7 +5270,7 @@
         {
           "dimension": "number",
           "is_constant": true,
-          "normalized_value": 2e-06,
+          "normalized_value": 2.0,
           "raw_value": 2.0,
           "scale": "unit"
         }
@@ -5857,15 +5857,15 @@
       "card_id": "FINQA-DE0AFBA5A97B",
       "correct_answer": 4505.0,
       "difficulty": "foundational",
-      "financial_skill": "receivables_movement",
+      "financial_skill": "operating_cash_flow",
       "formula": "add(4105, 400)",
       "learner_context": [
         "In addition, the adoption of a new accounting standard in January of 2010 changed the accounting treatment for our receivables securitization facility from a sale of undivided interests ( recorded as an operating activity ) to a secured borrowing ( recorded as a financing activity ), which decreased cash provided by operating activities by $ 400 million in 2010."
       ],
-      "learner_question": "What would operating cash flow have been in 2010 without the changed accounting standards for the receivables securitization facility, in us$ million?",
+      "learner_question": "What would operating cash flow have been in 2010 without the accounting-standard change, in USD million?",
       "learner_table": [
         [
-          "Cash FlowsMillions",
+          "Cash Flows \u2014 USD million",
           "2011",
           "2010",
           "2009"
@@ -5894,7 +5894,7 @@
           "scale": "million"
         }
       ],
-      "primary_domain": "Working Capital",
+      "primary_domain": "Cash Flow",
       "question": "what would operating cash flow have been in 2010 without the changed accounting standards for the receivables securitization facility , in us$ million?",
       "review_status": "approved",
       "reviewed_for_domain": true,
@@ -5902,7 +5902,9 @@
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
       "rounding": "Use the unrounded calculation; accept answers within 0.00001 of the sourced result.",
-      "secondary_domains": [],
+      "secondary_domains": [
+        "Working Capital"
+      ],
       "source_answer": "4505",
       "source_attribution": "Chen et al. (2021), FinQA: A Dataset of Numerical Reasoning over Financial Data; https://github.com/czyssrs/FinQA",
       "source_dataset": "FinQA",
@@ -5930,7 +5932,7 @@
           "$3,204"
         ]
       ],
-      "why_it_matters": "This helps finance leaders translate operational balances into cash and funding implications.",
+      "why_it_matters": "This helps finance leaders separate cash movement from the profit measures that may not move in step with it.",
       "worked_calculation": "4105 + 400 = 4505. Answer: 4505 USD million.",
       "worked_solution": "Retain the source program for provenance; show learners the reviewed calculation instead."
     },

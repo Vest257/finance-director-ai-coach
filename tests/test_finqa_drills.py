@@ -120,6 +120,34 @@ def test_taxonomy_regressions_for_cash_flow_effective_rate_and_share_repurchase(
     assert share_repurchase.financial_skill.value == "share_repurchase"
 
 
+def test_remaining_cash_flow_loan_balance_constants_and_table_heading_regressions(cards) -> None:
+    by_source = {card.source_item_id: card for card in cards}
+    for card in cards:
+        question = card.learner_question.casefold()
+        if "operating cash flow" in question or "cash provided by operating activities" in question:
+            assert card.primary_domain == DrillDomain.CASH_FLOW
+            assert card.financial_skill.value == "operating_cash_flow"
+    unp = by_source["UNP/2011/page_35.pdf-1"]
+    assert unp.primary_domain == DrillDomain.CASH_FLOW
+    assert unp.secondary_domains == (DrillDomain.WORKING_CAPITAL,)
+    assert unp.financial_skill.value == "operating_cash_flow"
+    assert "USD million" in unp.learner_question
+    assert unp.learner_table[0][0] == "Cash Flows — USD million"
+    loans_held_for_sale = by_source["PNC/2012/page_68.pdf-3"]
+    assert loans_held_for_sale.primary_domain == DrillDomain.BALANCE_SHEET
+    assert loans_held_for_sale.financial_skill.value == "asset_movement"
+    assert loans_held_for_sale.unit_dimension == UnitDimension.CURRENCY
+    assert loans_held_for_sale.unit == "USD million"
+    constant = next(operand for operand in loans_held_for_sale.normalized_operands if operand.is_constant)
+    assert constant.raw_value == 2.0
+    assert constant.normalized_value == 2.0
+    assert constant.dimension == UnitDimension.NUMBER
+    assert constant.scale == UnitScale.UNIT
+    for card in cards:
+        for cell in (cell for row in card.learner_table for cell in row):
+            assert "cash flowsmillions" not in cell.casefold()
+
+
 def test_approved_cards_are_explicitly_curated_and_auto_entries_remain_pending(cards) -> None:
     curation = json.loads(CURATION.read_text(encoding="utf-8"))["cards"]
     curated_ids = {entry["source_item_id"] for entry in curation if entry["review_status"] == "approved"}

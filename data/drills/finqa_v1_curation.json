@@ -295,16 +295,20 @@
     },
     {
       "calculation_method": "average",
-      "financial_skill": "debt_movement",
-      "primary_domain": "Liquidity & Treasury",
+      "financial_skill": "asset_movement",
+      "learner_question": "What was the average balance of other loans held for sale at December 31, 2012 and 2011, in USD million?",
+      "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
+      "reviewer_note": "Reviewed as an on-balance-sheet loans-held-for-sale asset balance, expressed in USD million.",
       "secondary_domains": [],
-      "source_item_id": "PNC/2012/page_68.pdf-3"
+      "source_item_id": "PNC/2012/page_68.pdf-3",
+      "unit": "USD million",
+      "unit_dimension": "currency",
+      "unit_scale": "million"
     },
     {
       "calculation_method": "subtraction",
@@ -1166,15 +1170,18 @@
     },
     {
       "calculation_method": "addition",
-      "financial_skill": "receivables_movement",
-      "primary_domain": "Working Capital",
+      "financial_skill": "operating_cash_flow",
+      "learner_question": "What would operating cash flow have been in 2010 without the accounting-standard change, in USD million?",
+      "primary_domain": "Cash Flow",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
-      "secondary_domains": [],
+      "reviewer_note": "Reviewed as operating cash flow with Working Capital implications; table and operands are USD million.",
+      "secondary_domains": [
+        "Working Capital"
+      ],
       "source_item_id": "UNP/2011/page_35.pdf-1"
     },
     {

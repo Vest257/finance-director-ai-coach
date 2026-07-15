@@ -27,21 +27,21 @@
 
 ### Primary domain
 
-- Balance Sheet: 16
-- Cash Flow: 10
+- Balance Sheet: 17
+- Cash Flow: 11
 - Commercial Finance: 5
 - Investment & Valuation: 11
-- Liquidity & Treasury: 15
+- Liquidity & Treasury: 14
 - P&L: 18
 - Tax: 10
-- Working Capital: 15
+- Working Capital: 14
 
 ### Financial skill
 
-- asset_movement: 12
+- asset_movement: 13
 - capitalized_expenditure: 1
 - customer_or_segment_performance: 4
-- debt_movement: 8
+- debt_movement: 7
 - effective_tax_rate: 4
 - equity_movement: 5
 - fair_value: 5
@@ -54,9 +54,9 @@
 - liability_movement: 1
 - liquidity: 3
 - net_income: 2
-- operating_cash_flow: 5
+- operating_cash_flow: 6
 - operating_expense: 4
-- receivables_movement: 12
+- receivables_movement: 11
 - revenue_growth: 5
 - share_count: 1
 - share_price: 1

@@ -259,7 +259,13 @@ def _clean_learner_text(text: str, *, question: bool = False) -> str:
 def _clean_learner_table(table: tuple[tuple[str, ...], ...]) -> tuple[tuple[str, ...], ...]:
     """Clean learner-facing cells while leaving the source table untouched."""
 
-    return tuple(tuple(_clean_learner_text(re.sub(r"<[^>]+>", "", cell)) for cell in row) for row in table)
+    cleaned_rows: list[tuple[str, ...]] = []
+    for row in table:
+        cleaned = tuple(_clean_learner_text(re.sub(r"<[^>]+>", " ", cell)) for cell in row)
+        if cleaned and re.fullmatch(r"cash flows\s+millions", cleaned[0], flags=re.IGNORECASE):
+            cleaned = ("Cash Flows — USD million", *cleaned[1:])
+        cleaned_rows.append(cleaned)
+    return tuple(cleaned_rows)
 
 
 def _normalized_operands(program: str, dimension: UnitDimension, scale: UnitScale) -> tuple[NormalizedOperand, ...]:
@@ -274,7 +280,7 @@ def _normalized_operands(program: str, dimension: UnitDimension, scale: UnitScal
             operands.append(
                 NormalizedOperand(
                     raw_value=value,
-                    normalized_value=normalize_scale(value, UnitScale.UNIT if constant else scale, scale),
+                    normalized_value=value if constant else normalize_scale(value, scale, scale),
                     dimension=UnitDimension.NUMBER if constant else dimension,
                     scale=UnitScale.UNIT if constant else scale,
                     is_constant=constant,
