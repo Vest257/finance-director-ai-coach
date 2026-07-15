@@ -10,53 +10,80 @@
 
 ## Rejection reasons
 
-- ambiguous_unit: 56
-- answer_mismatch: 3622
+- ambiguous_unit: 264
+- answer_mismatch: 3477
 - duplicate_question: 163
+- invalid_card_schema: 677
 - missing_required_source_fields: 73
-- missing_visible_context: 663
 - more_than_two_calculation_steps: 646
-- not_selected_after_quality_and_coverage_ordering: 397
+- not_selected_after_quality_and_coverage_ordering: 319
 - question_not_short_drill: 181
+- semantic_quality_gate: 5
 - unclassified_domain: 2034
 - unsupported_or_non_deterministic_program: 273
-- unsupported_source_answer: 73
+- unsupported_source_answer: 69
 
 ## Accepted-card coverage
 
 ### Primary domain
 
-- Balance Sheet: 15
+- Balance Sheet: 16
 - Cash Flow: 10
 - Commercial Finance: 5
 - Investment & Valuation: 10
 - Liquidity & Treasury: 15
-- P&L: 20
+- P&L: 19
 - Tax: 10
 - Working Capital: 15
 
-### Skill
+### Financial skill
 
-- absolute_change: 54
-- average: 9
-- multiplication: 4
-- percentage_change: 5
+- asset_movement: 11
+- capitalized_expenditure: 1
+- customer_or_segment_performance: 4
+- debt_movement: 4
+- effective_tax_rate: 4
+- equity_movement: 5
+- fair_value: 5
+- financing_cash_flow: 1
+- free_cash_flow: 1
+- interest_expense: 6
+- investing_cash_flow: 1
+- investment_return: 1
+- lease_expense: 4
+- liquidity: 3
+- net_income: 2
+- operating_cash_flow: 4
+- operating_expense: 16
+- receivables_movement: 12
+- revenue_growth: 5
+- share_repurchase: 2
+- tax_expense: 8
+
+### Calculation method
+
+- addition: 16
+- average: 10
+- multi_step_reconciliation: 10
+- multiplication: 5
+- percentage_change: 7
+- percentage_point_change: 1
 - ratio: 3
-- total: 25
+- subtraction: 48
 
 ### Difficulty
 
-- foundational: 79
-- intermediate: 21
+- foundational: 84
+- intermediate: 16
 
 ### Calculation-step count
 
-- 1: 79
-- 2: 21
+- 1: 84
+- 2: 16
 
 ## Manual-review flags
 
-- No manual-review flags were introduced by the deterministic selector. Cards retain their FinQA source ID, report reference, evidence, program, answer, attribution, and MIT licence metadata for reviewer inspection.
+- Every selected card is explicitly listed in the committed curation mapping and approved for units, semantics, domain, and learner clarity.
 
 ## Coverage gaps
 
@@ -64,7 +91,7 @@ None in the initial taxonomy.
 
 ## Reproducibility
 
-The full source pass reads `train.json`, `dev.json`, and `test.json` from the upstream FinQA release. CI uses `tests/fixtures/finqa_v1_selected_records.json`, a committed snapshot of the selected source records, so tests perform no network access. Regenerate with `python scripts/import_finqa.py --source tests/fixtures/finqa_v1_selected_records.json`; run against an upstream local dataset directory to re-examine the complete release.
+The full source pass reads `train.json`, `dev.json`, and `test.json` from the upstream FinQA release. CI uses `tests/fixtures/finqa_v1_selected_records.json`, a committed snapshot of the selected source records, so tests perform no network access.
 
 ## Attribution and licence
 

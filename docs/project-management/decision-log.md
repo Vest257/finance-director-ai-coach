@@ -1,5 +1,21 @@
 # Decision Log
 
+## 2026-07-15: Curate FinQA Drills For Learner Use
+
+Decision: Require an explicit, individually reviewed curation ledger for each FinQA drill, separate finance concepts from arithmetic methods, and expose cleaned learner-facing wording alongside retained raw provenance.
+
+Rationale:
+
+- Recomputing a FinQA program alone does not establish financial meaning, compatible units, or learner clarity.
+- FinanceOS needs explicit currency dimensions and scales to avoid presenting USD million as plain USD.
+- Final taxonomy choices must be reviewable rather than inferred solely from a first keyword.
+
+Implications:
+
+- The bank rejects known scale and semantic failures, including point-in-time balance additions without a valid financial reason.
+- Every card records approved review flags for units, semantics, domain, and learner clarity.
+- The learner-facing question, context, table, and worked calculation omit raw FinQA syntax and known OCR artefacts while raw source fields remain available for provenance.
+
 ## 2026-07-15: Add A Deterministic FinQA Calculation-Drill Content Bank
 
 Decision: Introduce a generated, immutable 100-card FinQA fast-drill bank and its offline deterministic import tooling, without adding a learner UI, persistence, scoring, adaptive sequencing, authentication, or runtime network access.
