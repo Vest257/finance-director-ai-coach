@@ -1,5 +1,21 @@
 # Decision Log
 
+## 2026-07-15: Add A Deterministic FinQA Calculation-Drill Content Bank
+
+Decision: Introduce a generated, immutable 100-card FinQA fast-drill bank and its offline deterministic import tooling, without adding a learner UI, persistence, scoring, adaptive sequencing, authentication, or runtime network access.
+
+Rationale:
+
+- FinanceOS needs a reviewable base of short finance calculations before a learner interaction surface is designed.
+- FinQA provides executable numerical programs and source evidence that can be recomputed without an LLM.
+- Committing the selected source-record fixture allows CI to validate the generated bank without downloading FinQA.
+
+Implications:
+
+- The current import taxonomy covers P&L, Balance Sheet, Cash Flow, Working Capital, Liquidity & Treasury, Tax, Commercial Finance, and Investment & Valuation.
+- Each card retains its FinQA source ID, source report reference, citation, and MIT licence metadata.
+- New drill surfaces must consume the committed JSON bank rather than perform runtime source imports.
+
 This log records important product and architecture decisions. Add entries in reverse chronological order.
 
 ## 2026-07-13: Add Streamlit As The Alpha 0.1 Pilot Surface
