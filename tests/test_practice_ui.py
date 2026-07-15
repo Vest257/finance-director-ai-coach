@@ -18,15 +18,20 @@ def test_practice_submission_reveals_feedback_then_next_question() -> None:
     assert not app.exception
     assert app.title[0].value == "Practice"
     rendered_before_submit = str(app)
+    card_id = app.session_state["practice_card_id"]
+    assert any(f"Card ID: {card_id}" in item.value for item in app.get("caption"))
     assert "Worked calculation:" not in rendered_before_submit
     assert "Correct answer:" not in rendered_before_submit
+    assert "Arconic recognized USD 1,503 million more goodwill" not in rendered_before_submit
 
-    card_id = app.session_state["practice_card_id"]
     app.number_input(key="practice_answer").set_value(1503.0)
     app.button[0].click().run()
     assert not app.exception
     assert [message.value for message in app.success] == ["Correct. Submitted answer: 1503."]
     assert any("Worked calculation:" in item.value for item in app.markdown)
+    assert any("Interpretation:" in item.value for item in app.markdown)
+    assert any("Calculation: 1,801 − 298 = 1,503 USD million." in item.value for item in app.markdown)
+    assert any("Arconic recognized USD 1,503 million more goodwill" in item.value for item in app.markdown)
     assert len(app.session_state["practice_attempts"]) == 1
     history = app.table[0].value
     assert history.loc[0, "Submitted answer"] == 1503.0

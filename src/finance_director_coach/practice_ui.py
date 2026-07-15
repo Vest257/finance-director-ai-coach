@@ -74,6 +74,7 @@ def _render_card(card) -> None:
         st.table([dict(zip(card.learner_table[0], row, strict=True)) for row in card.learner_table[1:]])
     st.markdown(f"**{card.learner_question}**")
     st.caption(f"Answer unit: {card.unit}")
+    st.caption(f"Card ID: {card.card_id}")
 
 
 def _render_feedback(card) -> None:
@@ -86,7 +87,7 @@ def _render_feedback(card) -> None:
     else:
         st.error(feedback["result"])
     st.markdown(f"**Worked calculation:** {feedback['worked_calculation']}")
-    st.markdown(f"**Why it matters:** {feedback['why_it_matters']}")
+    st.markdown(f"**Interpretation:** {feedback['why_it_matters']}")
 
 
 def revealed_feedback(card, attempt: PracticeAttempt | None) -> dict[str, str] | None:

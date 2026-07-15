@@ -1,5 +1,11 @@
 # Decision Log
 
+## 2026-07-15: Plan A More Demanding Future Drill Phase
+
+Decision: Keep this focused cleanup limited to reviewed foundational cards; defer harder learner drills to a future phase.
+
+Backlog: Add two- and three-step calculations; working-capital bridges; margin and contribution analysis; cash conversion; liquidity and covenant headroom; debt movement and interest; tax-rate effects; investment returns and valuation; and linked P&L, balance-sheet, and cash-flow reasoning.
+
 ## 2026-07-15: Add Fast Drill Mode V1 As A Separate In-Memory Practice Surface
 
 Decision: Add a separate Streamlit Practice page backed by the committed, reviewed 100-card FinQA drill bank. Keep answer evaluation deterministic through each card's stored tolerance and retain attempts only for the current browser session.

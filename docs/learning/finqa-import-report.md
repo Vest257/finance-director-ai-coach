@@ -77,8 +77,8 @@
 
 ### Difficulty
 
-- foundational: 84
-- intermediate: 16
+- foundational: 86
+- intermediate: 14
 
 ### Calculation-step count
 
