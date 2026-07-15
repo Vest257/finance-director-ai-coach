@@ -34,12 +34,31 @@ def reset_practice_card(state: MutableMapping[str, object]) -> None:
     state["practice_card_id"] = None
     state["practice_submitted"] = False
     state["practice_answer"] = None
+    state.pop("practice_latest_attempt", None)
 
 
 def clear_practice_history(state: MutableMapping[str, object]) -> None:
     """Clear only Fast Drill Mode's in-session records."""
 
     state["practice_attempts"] = []
+
+
+def attempt_history_rows(attempts: list[PracticeAttempt]) -> list[dict[str, object]]:
+    """Format session attempts newest-first for the learner-facing history table."""
+
+    return [
+        {
+            "Result": "Correct" if attempt.is_correct else "Incorrect",
+            "Finance domain": attempt.primary_domain,
+            "Financial skill": attempt.financial_skill,
+            "Difficulty": attempt.difficulty,
+            "Submitted answer": attempt.submitted_answer,
+            "Correct answer": attempt.correct_answer,
+            "First attempt": "Yes" if attempt.first_attempt else "No",
+            "Submitted at": attempt.timestamp.strftime("%Y-%m-%d %H:%M UTC"),
+        }
+        for attempt in reversed(attempts)
+    ]
 
 
 def _enum_selection(label: str, enum_type: type[DrillDomain] | type[FinancialSkill] | type[DrillDifficulty], key: str) -> object | None:
@@ -146,6 +165,7 @@ def run_practice_app() -> None:
     if isinstance(attempts, list) and attempts:
         st.subheader("Session attempt history")
         st.caption(f"{len(attempts)} attempt{'s' if len(attempts) != 1 else ''} in this browser session.")
+        st.table(attempt_history_rows(attempts))
         if st.button("Clear practice-session history", icon=":material/delete_sweep:"):
             clear_practice_history(st.session_state)
             st.rerun()

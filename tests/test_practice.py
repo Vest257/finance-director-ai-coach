@@ -14,6 +14,7 @@ from finance_director_coach.practice import (
     next_card,
 )
 from finance_director_coach.practice_ui import (
+    attempt_history_rows,
     clear_practice_history,
     initialize_practice_state,
     reset_practice_card,
@@ -99,6 +100,36 @@ def test_practice_state_reset_and_history_are_isolated_from_scenario_state() -> 
     clear_practice_history(state)
     assert state["practice_attempts"] == []
     assert state["stage"] == "results"
+
+
+def test_filter_reset_clears_feedback_but_preserves_history_and_scenario_state() -> None:
+    card = load_practice_cards()[0]
+    attempt = create_attempt(card, check_answer(card, card.correct_answer), [])
+    state: dict[str, object] = {
+        "stage": "guided",
+        "practice_card_id": card.card_id,
+        "practice_submitted": True,
+        "practice_answer": card.correct_answer,
+        "practice_latest_attempt": attempt,
+        "practice_attempts": [attempt],
+    }
+    reset_practice_card(state)
+    assert state["stage"] == "guided"
+    assert state["practice_attempts"] == [attempt]
+    assert "practice_latest_attempt" not in state
+    assert state["practice_answer"] is None
+
+
+def test_history_rows_are_newest_first_and_show_repeat_attempts() -> None:
+    card = load_practice_cards()[0]
+    first = create_attempt(card, check_answer(card, card.correct_answer), [])
+    repeat = create_attempt(card, check_answer(card, card.correct_answer + 1), [first])
+    rows = attempt_history_rows([first, repeat])
+    assert rows[0]["Result"] == "Incorrect"
+    assert rows[0]["First attempt"] == "No"
+    assert rows[0]["Submitted answer"] == card.correct_answer + 1
+    assert rows[0]["Correct answer"] == card.correct_answer
+    assert rows[1]["First attempt"] == "Yes"
 
 
 def test_no_answer_leaks_before_submit_and_feedback_reveals_afterwards() -> None:
