@@ -7,7 +7,12 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from finance_director_coach.models import CompetencyRating, EvidenceResult
+from finance_director_coach.models import (
+    CompetencyRating,
+    EvidenceResult,
+    FinancialPackTable,
+    FinancialPackTableLayout,
+)
 from finance_director_coach.scenarios.registry import SCENARIOS, get_scenario
 from finance_director_coach.scenarios.scenario_002_evaluation import evaluate_scenario_002_attempt
 from finance_director_coach import streamlit_ui
@@ -26,6 +31,36 @@ from tests.test_scenario_002 import answers_for
 HIDDEN_FINANCIAL_PACK_OUTPUTS = {
     "SCN-001": ("GBP 0.58m", "GBP 1.68m", "GBP 3.35m", "GBP 4.42m", "GBP 0.15m", "GBP 0.85m"),
     "SCN-002": ("annual EBITDA to 5.27", "annual EBITDA is 3.06", "Operating cash flow is GBP -1.54", "Low cash points"),
+}
+EXPOSURE_AT_RISK_DEFINITION = (
+    "Assumes 20% of Northstar receivables, 50% of contract assets, "
+    "the non-recoverable implementation balance, and the provision."
+)
+EXPECTED_TABLE_LAYOUTS = {
+    "SCN-001": (
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.KEY_VALUE,
+        FinancialPackTableLayout.KEY_VALUE,
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.KEY_VALUE,
+    ),
+    "SCN-002": (
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.KEY_VALUE,
+        FinancialPackTableLayout.KEY_VALUE,
+        FinancialPackTableLayout.KEY_VALUE,
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.KEY_VALUE,
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.KEY_VALUE,
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.KEY_VALUE,
+        FinancialPackTableLayout.TABULAR,
+        FinancialPackTableLayout.KEY_VALUE,
+    ),
 }
 
 
@@ -47,6 +82,46 @@ def financial_pack_table_text(scenario_id: str) -> str:
         for section in get_scenario(scenario_id).content.financial_pack
         for table in section.tables
     )
+
+
+def financial_pack_tables(scenario_id: str) -> tuple[FinancialPackTable, ...]:
+    return tuple(table for section in get_scenario(scenario_id).content.financial_pack for table in section.tables)
+
+
+def key_value_components(app: AppTest) -> list[str]:
+    return [item.value for item in app.markdown if '<dl class="financial-pack-key-value"' in item.value]
+
+
+def test_financial_pack_table_layout_defaults_to_tabular_and_validates_key_value_shape() -> None:
+    tabular = FinancialPackTable("Compact values", ("Metric", "Value"), (("Revenue", "18.00"),))
+    key_value = FinancialPackTable(
+        "Definitions",
+        ("Term", "Definition"),
+        (("Cash conversion", "Operating cash flow / EBITDA."),),
+        layout=FinancialPackTableLayout.KEY_VALUE,
+    )
+
+    assert tabular.layout is FinancialPackTableLayout.TABULAR
+    assert key_value.layout is FinancialPackTableLayout.KEY_VALUE
+    with pytest.raises(ValueError, match="exactly two columns"):
+        FinancialPackTable(
+            "Invalid key-value table",
+            ("One", "Two", "Three"),
+            (("a", "b", "c"),),
+            layout=FinancialPackTableLayout.KEY_VALUE,
+        )
+    with pytest.raises(ValueError, match="exactly two columns"):
+        FinancialPackTable(
+            "Invalid key-value row",
+            ("Term", "Definition"),
+            (("a", "b", "c"),),
+            layout=FinancialPackTableLayout.KEY_VALUE,
+        )
+
+
+@pytest.mark.parametrize("scenario_id", ("SCN-001", "SCN-002"))
+def test_registered_scenario_tables_use_the_expected_scenario_owned_layouts(scenario_id: str) -> None:
+    assert tuple(table.layout for table in financial_pack_tables(scenario_id)) == EXPECTED_TABLE_LAYOUTS[scenario_id]
 
 
 def test_registry_contains_unique_scenario_ids_and_distinct_typed_boundaries() -> None:
@@ -123,7 +198,14 @@ def test_financial_pack_briefing_uses_static_tables(scenario_id: str) -> None:
         for table in section.tables:
             if table.title:
                 assert f"**{table.title}**" in rendered
-    assert len(app.dataframe) == sum(len(section.tables) for section in scenario.content.financial_pack)
+    assert len(app.dataframe) == sum(
+        table.layout is FinancialPackTableLayout.TABULAR for table in financial_pack_tables(scenario_id)
+    )
+    assert len(key_value_components(app)) == sum(
+        table.layout is FinancialPackTableLayout.KEY_VALUE for table in financial_pack_tables(scenario_id)
+    )
+    if scenario_id == "SCN-002":
+        assert EXPOSURE_AT_RISK_DEFINITION in "\n".join(key_value_components(app))
     assert app.get("data_editor") == []
     for hidden_output in HIDDEN_FINANCIAL_PACK_OUTPUTS[scenario_id]:
         assert hidden_output not in rendered
@@ -147,7 +229,14 @@ def test_guided_financial_pack_uses_the_same_structured_renderer(scenario_id: st
         for table in section.tables:
             if table.title:
                 assert f"**{table.title}**" in rendered
-    assert len(app.dataframe) == sum(len(section.tables) for section in scenario.content.financial_pack)
+    assert len(app.dataframe) == sum(
+        table.layout is FinancialPackTableLayout.TABULAR for table in financial_pack_tables(scenario_id)
+    )
+    assert len(key_value_components(app)) == sum(
+        table.layout is FinancialPackTableLayout.KEY_VALUE for table in financial_pack_tables(scenario_id)
+    )
+    if scenario_id == "SCN-002":
+        assert EXPOSURE_AT_RISK_DEFINITION in "\n".join(key_value_components(app))
     assert app.get("data_editor") == []
     for hidden_output in HIDDEN_FINANCIAL_PACK_OUTPUTS[scenario_id]:
         assert hidden_output not in rendered
@@ -234,11 +323,12 @@ def test_scenario_two_structured_pack_retains_required_inputs_without_answers() 
         "required RCF draws",
     ):
         assert hidden_answer not in table_text
+    assert EXPOSURE_AT_RISK_DEFINITION in table_text
 
 
 @pytest.mark.parametrize("scenario_id", ("SCN-001", "SCN-002"))
-def test_structured_table_renderer_hides_indices_without_editable_widgets(monkeypatch, scenario_id: str) -> None:
-    table = get_scenario(scenario_id).content.financial_pack[0].tables[0]
+def test_tabular_table_renderer_hides_indices_without_editable_widgets(monkeypatch, scenario_id: str) -> None:
+    table = next(table for table in financial_pack_tables(scenario_id) if table.layout is FinancialPackTableLayout.TABULAR)
     captured: dict[str, object] = {}
 
     monkeypatch.setattr(streamlit_ui.st, "markdown", lambda *args, **kwargs: None)
@@ -254,6 +344,78 @@ def test_structured_table_renderer_hides_indices_without_editable_widgets(monkey
     assert captured["use_container_width"] is True
     assert captured["column_order"] == table.column_headings
     assert captured["data"] == [dict(zip(table.column_headings, row, strict=True)) for row in table.rows]
+
+
+@pytest.mark.parametrize("scenario_id", ("SCN-001", "SCN-002"))
+def test_key_value_table_renderer_uses_the_shared_html_component(monkeypatch, scenario_id: str) -> None:
+    table = next(table for table in financial_pack_tables(scenario_id) if table.layout is FinancialPackTableLayout.KEY_VALUE)
+    rendered: list[tuple[str, dict[str, object]]] = []
+
+    monkeypatch.setattr(
+        streamlit_ui.st,
+        "markdown",
+        lambda content, **kwargs: rendered.append((content, kwargs)),
+    )
+    monkeypatch.setattr(
+        streamlit_ui.st,
+        "dataframe",
+        lambda *args, **kwargs: pytest.fail("Key-value tables must not render dataframes."),
+    )
+
+    streamlit_ui._render_financial_pack_table(table)
+
+    component, kwargs = next(
+        (content, kwargs)
+        for content, kwargs in rendered
+        if content.startswith('<dl class="financial-pack-key-value"')
+    )
+    assert table.rows[0][0] in component
+    assert table.rows[0][1] in component
+    assert kwargs == {"unsafe_allow_html": True}
+
+
+def test_key_value_renderer_escapes_html_like_content(monkeypatch) -> None:
+    table = FinancialPackTable(
+        "<unsafe title>",
+        ("Term", "Definition"),
+        (("<script>alert('label')</script>", "<img src=x onerror=alert('value')>"),),
+        note_before="<unsafe note>",
+        note_after="<unsafe note after>",
+        layout=FinancialPackTableLayout.KEY_VALUE,
+    )
+    rendered: list[tuple[str, dict[str, object]]] = []
+
+    monkeypatch.setattr(
+        streamlit_ui.st,
+        "markdown",
+        lambda content, **kwargs: rendered.append((content, kwargs)),
+    )
+    monkeypatch.setattr(
+        streamlit_ui.st,
+        "dataframe",
+        lambda *args, **kwargs: pytest.fail("Key-value tables must not render dataframes."),
+    )
+
+    streamlit_ui._render_financial_pack_table(table)
+
+    component = next(content for content, _ in rendered if content.startswith('<dl class="financial-pack-key-value"'))
+    assert "<script>" not in component
+    assert "<img " not in component
+    assert "&lt;script&gt;alert(&#x27;label&#x27;)&lt;/script&gt;" in component
+    assert "&lt;img src=x onerror=alert(&#x27;value&#x27;)&gt;" in component
+    assert 'aria-label="&lt;unsafe title&gt;"' in component
+
+
+def test_key_value_css_has_a_single_column_wrapping_mobile_contract() -> None:
+    css = streamlit_ui.APP_CSS
+
+    assert ".financial-pack-key-value__row" in css
+    assert "grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.7fr);" in css
+    assert "@media (max-width: 640px)" in css
+    assert "grid-template-columns: minmax(0, 1fr);" in css
+    assert "min-width: 0" in css
+    assert "overflow-wrap: anywhere" in css
+    assert "width: 390px" not in css
 
 
 def test_scenario_two_guided_stages_do_not_render_post_submission_explanations() -> None:

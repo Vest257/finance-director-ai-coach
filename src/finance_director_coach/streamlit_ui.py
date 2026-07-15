@@ -3,11 +3,18 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, MutableMapping
+from html import escape
 
 import streamlit as st
 
 from finance_director_coach.evaluation import evaluate_attempt, skipped_evaluation_report
-from finance_director_coach.models import ContentSection, EvaluationReport, FinancialPackTable, LearnerAnswers
+from finance_director_coach.models import (
+    ContentSection,
+    EvaluationReport,
+    FinancialPackTable,
+    FinancialPackTableLayout,
+    LearnerAnswers,
+)
 from finance_director_coach.scenarios.contracts import GuidedScenarioContext, ScenarioRegistration
 from finance_director_coach.scenarios.registry import (
     SCENARIOS,
@@ -47,11 +54,18 @@ APP_CSS = """
     div[data-testid="stAlert"] { border-radius: 6px; }
     div[data-testid="stButton"] button, div[data-testid="stDownloadButton"] button { border-radius: 6px; min-height: 2.65rem; }
     .scenario-metadata { border-top: 1px solid var(--finance-line); padding: 0.75rem 0 0.5rem 0; }
+    .financial-pack-key-value { margin: 0.65rem 0 0; max-width: 100%; }
+    .financial-pack-key-value__row { border: 1px solid var(--finance-line); display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.7fr); margin-top: -1px; }
+    .financial-pack-key-value__term, .financial-pack-key-value__definition { margin: 0; min-width: 0; overflow-wrap: anywhere; padding: 0.7rem 0.8rem; white-space: normal; }
+    .financial-pack-key-value__term { background: #f1f4f2; font-weight: 700; }
+    .financial-pack-key-value__definition { color: var(--finance-ink); }
     @media (max-width: 640px) {
         .block-container { padding: 1.2rem 1rem 3rem 1rem; }
         h1 { font-size: 2rem !important; }
         h2 { font-size: 1.35rem !important; }
         div[data-testid="stCode"] pre { font-size: 0.76rem; }
+        .financial-pack-key-value__row { grid-template-columns: minmax(0, 1fr); margin-top: 0.7rem; }
+        .financial-pack-key-value__term, .financial-pack-key-value__definition { min-width: 0; overflow-wrap: anywhere; }
     }
 </style>
 """
@@ -225,6 +239,22 @@ def _render_financial_pack_body(body: str) -> None:
             st.markdown(paragraph)
 
 
+def _financial_pack_key_value_html(table: FinancialPackTable) -> str:
+    """Return one escaped semantic key-value component for a scenario-owned table."""
+
+    rows = "".join(
+        (
+            '<div class="financial-pack-key-value__row">'
+            f'<dt class="financial-pack-key-value__term">{escape(label)}</dt>'
+            f'<dd class="financial-pack-key-value__definition">{escape(value)}</dd>'
+            "</div>"
+        )
+        for label, value in table.rows
+    )
+    label = escape(table.title or "Financial-pack details", quote=True)
+    return f'<dl class="financial-pack-key-value" aria-label="{label}">{rows}</dl>'
+
+
 def _render_financial_pack_table(table: FinancialPackTable) -> None:
     """Render a static, responsive scenario-owned financial-pack table."""
 
@@ -232,6 +262,11 @@ def _render_financial_pack_table(table: FinancialPackTable) -> None:
         st.markdown(table.note_before)
     if table.title:
         st.markdown(f"**{table.title}**")
+    if table.layout is FinancialPackTableLayout.KEY_VALUE:
+        st.markdown(_financial_pack_key_value_html(table), unsafe_allow_html=True)
+        if table.note_after:
+            st.markdown(table.note_after)
+        return
     rows = [dict(zip(table.column_headings, row, strict=True)) for row in table.rows]
     st.dataframe(
         rows,

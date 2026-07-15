@@ -125,6 +125,13 @@ class ContentSection:
     tables: tuple["FinancialPackTable", ...] = ()
 
 
+class FinancialPackTableLayout(str, Enum):
+    """Presentation choices for scenario-owned learner financial-pack content."""
+
+    TABULAR = "tabular"
+    KEY_VALUE = "key_value"
+
+
 @dataclass(frozen=True)
 class FinancialPackTable:
     """A compact, scenario-owned table for a learner-facing financial pack."""
@@ -134,6 +141,13 @@ class FinancialPackTable:
     rows: tuple[tuple[str, ...], ...]
     note_before: str | None = None
     note_after: str | None = None
+    layout: FinancialPackTableLayout = FinancialPackTableLayout.TABULAR
+
+    def __post_init__(self) -> None:
+        if self.layout is FinancialPackTableLayout.KEY_VALUE and (
+            len(self.column_headings) != 2 or any(len(row) != 2 for row in self.rows)
+        ):
+            raise ValueError("A key-value financial-pack table must have exactly two columns.")
 
 
 @dataclass(frozen=True)

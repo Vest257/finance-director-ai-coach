@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-from finance_director_coach.models import ContentSection, FinancialPackTable, RecommendationRoute, ScenarioContent
+from finance_director_coach.models import (
+    ContentSection,
+    FinancialPackTable,
+    FinancialPackTableLayout,
+    RecommendationRoute,
+    ScenarioContent,
+)
 from finance_director_coach.scenarios.contracts import ScenarioMetadata
 
 MONEY_TOLERANCE = 0.05
@@ -579,6 +585,7 @@ SCENARIO_001_PRESENTATION = (
             ("Inventory days", "46 to 55"),
             ("Receivables held by five customers", "GBP 5.60m"),
         ),
+        layout=FinancialPackTableLayout.KEY_VALUE,
     ),
     FinancialPackTable(
         "Liquidity constraints",
@@ -590,6 +597,7 @@ SCENARIO_001_PRESENTATION = (
             ("RCF expiry", "March 2027"),
             ("Quantified downside case", "Not provided"),
         ),
+        layout=FinancialPackTableLayout.KEY_VALUE,
     ),
     FinancialPackTable(
         "Baseline monthly closing-cash forecast",
@@ -615,6 +623,7 @@ SCENARIO_001_PRESENTATION = (
             ("One-time onboarding timing", "Paid in each starter's start month."),
             ("Incremental revenue or receipts from hires", "No incremental revenue or receipts from the hires are included in the forecast."),
         ),
+        layout=FinancialPackTableLayout.KEY_VALUE,
     ),
 )
 
