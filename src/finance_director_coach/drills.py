@@ -57,8 +57,11 @@ class FinancialSkill(StrEnum):
     RECEIVABLES_MOVEMENT = "receivables_movement"
     REVENUE_GROWTH = "revenue_growth"
     SHARE_REPURCHASE = "share_repurchase"
+    SHARE_COUNT = "share_count"
+    SHARE_PRICE = "share_price"
     TAX_CASH_PAYMENT = "tax_cash_payment"
     TAX_EXPENSE = "tax_expense"
+    WORKING_CAPITAL_MOVEMENT = "working_capital_movement"
 
 
 class CalculationMethod(StrEnum):
@@ -190,6 +193,8 @@ class DrillCard:
         learner_text = " ".join(self.learner_context + (self.learner_question, self.worked_calculation) + tuple(" ".join(row) for row in self.learner_table))
         if any(token in learner_text.casefold() for token in forbidden):
             raise ValueError("learner-facing text contains source-program or OCR artefacts")
+        if any("<" in cell or ">" in cell for row in self.learner_table for cell in row):
+            raise ValueError("learner table contains HTML-like markup")
 
     def as_json(self) -> dict[str, Any]:
         value = asdict(self)

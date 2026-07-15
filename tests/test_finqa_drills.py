@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -27,6 +28,7 @@ from finance_director_coach.drills import (
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 CARD_BANK = REPOSITORY_ROOT / "data" / "drills" / "finqa_cards_v1.json"
 SOURCE_FIXTURE = REPOSITORY_ROOT / "tests" / "fixtures" / "finqa_v1_selected_records.json"
+CURATION = REPOSITORY_ROOT / "data" / "drills" / "finqa_v1_curation.json"
 
 
 @pytest.fixture(scope="module")
@@ -98,6 +100,42 @@ def test_curation_and_learner_text_are_complete(cards) -> None:
         assert all((card.reviewed_for_units, card.reviewed_for_semantics, card.reviewed_for_domain, card.reviewed_for_learner_clarity))
         learner_text = " ".join(card.learner_context + (card.learner_question, card.worked_calculation) + tuple(" ".join(row) for row in card.learner_table)).casefold()
         assert not any(token in learner_text for token in prohibited)
+        assert all("<" not in cell and ">" not in cell for row in card.learner_table for cell in row)
+
+
+def test_taxonomy_regressions_for_cash_flow_effective_rate_and_share_repurchase(cards) -> None:
+    by_source = {card.source_item_id: card for card in cards}
+    cash_flow = by_source["UNP/2009/page_38.pdf-1"]
+    assert cash_flow.financial_skill.value == "operating_cash_flow"
+    assert cash_flow.financial_skill.value != "operating_expense"
+    effective_rate = by_source["APD/2019/page_39.pdf-2"]
+    assert effective_rate.calculation_method == CalculationMethod.PERCENTAGE_POINT_CHANGE
+    assert effective_rate.unit_dimension == UnitDimension.PERCENTAGE_POINTS
+    assert effective_rate.unit == "percentage points"
+    assert effective_rate.learner_context == ("The adjusted effective tax rate was 19.4% in fiscal year 2019 and 18.6% in fiscal year 2018.",)
+    assert effective_rate.worked_calculation == "19.4% - 18.6% = 0.8 percentage points"
+    share_repurchase = by_source["PPG/2012/page_29.pdf-2"]
+    assert share_repurchase.primary_domain == DrillDomain.INVESTMENT_AND_VALUATION
+    assert share_repurchase.secondary_domains == (DrillDomain.BALANCE_SHEET,)
+    assert share_repurchase.financial_skill.value == "share_repurchase"
+
+
+def test_approved_cards_are_explicitly_curated_and_auto_entries_remain_pending(cards) -> None:
+    curation = json.loads(CURATION.read_text(encoding="utf-8"))["cards"]
+    curated_ids = {entry["source_item_id"] for entry in curation if entry["review_status"] == "approved"}
+    assert {card.source_item_id for card in cards} == curated_ids
+    sys.path.insert(0, str(REPOSITORY_ROOT / "scripts"))
+    import import_finqa
+
+    source_record = next(record for record in json.loads(SOURCE_FIXTURE.read_text(encoding="utf-8"))["records"] if record["id"] == "UNP/2009/page_38.pdf-1")
+    automatic = import_finqa._auto_curation_entry(source_record, DrillDomain.CASH_FLOW)
+    assert automatic["review_status"] == "pending"
+    assert not any(automatic[field] for field in ("reviewed_for_units", "reviewed_for_semantics", "reviewed_for_domain", "reviewed_for_learner_clarity"))
+    pending_curation = {entry["source_item_id"]: dict(entry) for entry in curation}
+    pending_curation[source_record["id"]] = automatic
+    fixture_records = json.loads(SOURCE_FIXTURE.read_text(encoding="utf-8"))["records"]
+    with pytest.raises(ValueError, match="individual-review"):
+        import_finqa.curate(fixture_records, pending_curation)
 
 
 def test_generated_bank_is_deterministic_and_requires_no_network(tmp_path: Path) -> None:

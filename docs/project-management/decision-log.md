@@ -1,5 +1,21 @@
 # Decision Log
 
+## 2026-07-15: Complete Final FinQA Learner-Content And Taxonomy Review
+
+Decision: Make final learner-facing corrections explicit in the committed curation ledger, including percentage-point treatment for effective tax-rate changes, cleaned learner tables, and pending-only automatic curation candidates.
+
+Rationale:
+
+- A card must not be marked reviewed merely because it is mechanically eligible.
+- Finance concepts need to remain distinct from the arithmetic used to calculate them.
+- Learner-facing tables and worked calculations must be clear while raw FinQA evidence stays intact for provenance.
+
+Implications:
+
+- The importer accepts only explicit approved curation entries for generated cards.
+- Automatic candidate entries are pending with all review flags false.
+- Effective-rate differences use percentage points rather than percentage-change units.
+
 ## 2026-07-15: Curate FinQA Drills For Learner Use
 
 Decision: Require an explicit, individually reviewed curation ledger for each FinQA drill, separate finance concepts from arithmetic methods, and expose cleaned learner-facing wording alongside retained raw provenance.

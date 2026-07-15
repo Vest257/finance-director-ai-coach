@@ -256,6 +256,12 @@ def _clean_learner_text(text: str, *, question: bool = False) -> str:
     return clean
 
 
+def _clean_learner_table(table: tuple[tuple[str, ...], ...]) -> tuple[tuple[str, ...], ...]:
+    """Clean learner-facing cells while leaving the source table untouched."""
+
+    return tuple(tuple(_clean_learner_text(re.sub(r"<[^>]+>", "", cell)) for cell in row) for row in table)
+
+
 def _normalized_operands(program: str, dimension: UnitDimension, scale: UnitScale) -> tuple[NormalizedOperand, ...]:
     operands: list[NormalizedOperand] = []
     for match in re.finditer(r"(?:add|subtract|multiply|divide|exp)\(([^,]+), ([^)]+)\)", program):
@@ -305,22 +311,25 @@ def _auto_curation_entry(record: dict[str, Any], domain: DrillDomain) -> dict[st
         "secondary_domains": [],
         "financial_skill": _financial_skill(qa["question"], domain).value,
         "calculation_method": _calculation_method(qa["question"], qa["answer"], qa["program"], len(qa["steps"])).value,
-        "review_status": "approved",
-        "reviewed_for_units": True,
-        "reviewed_for_semantics": True,
-        "reviewed_for_domain": True,
-        "reviewed_for_learner_clarity": True,
-        "reviewer_note": "Reviewed against the retained FinQA evidence and executable program.",
+        "review_status": "pending",
+        "reviewed_for_units": False,
+        "reviewed_for_semantics": False,
+        "reviewed_for_domain": False,
+        "reviewed_for_learner_clarity": False,
+        "reviewer_note": "Automatic candidate only; individual review is required before selection.",
     }
 
 
-def _card_from_record(record: dict[str, Any], curation: dict[str, Any]) -> DrillCard:
+def _card_from_record(record: dict[str, Any], curation: dict[str, Any], *, require_approval: bool = True) -> DrillCard:
     qa = record["qa"]
     context, table = _visible_evidence(record)
     inferred_unit = _infer_unit(record, context, table)
     if inferred_unit is None:
         raise ValueError("ambiguous_unit")
     unit, unit_dimension, unit_scale = inferred_unit
+    unit = curation.get("unit", unit)
+    unit_dimension = UnitDimension(curation.get("unit_dimension", unit_dimension.value))
+    unit_scale = UnitScale(curation.get("unit_scale", unit_scale.value))
     result = execute_finqa_program(qa["program"])
     source_answer = numeric_value(qa["answer"])
     tolerance = 0.00001
@@ -356,16 +365,17 @@ def _card_from_record(record: dict[str, Any], curation: dict[str, Any]) -> Drill
         source_program=qa["program"],
         rounding="Use the unrounded calculation; accept answers within 0.00001 of the sourced result.",
         learner_question=curation.get("learner_question", _clean_learner_text(qa["question"], question=True)),
-        learner_context=tuple(_clean_learner_text(line) for line in context),
-        learner_table=table,
-        worked_calculation=_worked_calculation(qa["program"], result, unit),
+        learner_context=tuple(curation.get("learner_context", tuple(_clean_learner_text(line) for line in context))),
+        learner_table=_clean_learner_table(table),
+        worked_calculation=curation.get("worked_calculation", _worked_calculation(qa["program"], result, unit)),
         review_status=curation["review_status"],
         reviewed_for_units=curation["reviewed_for_units"],
         reviewed_for_semantics=curation["reviewed_for_semantics"],
         reviewed_for_domain=curation["reviewed_for_domain"],
         reviewed_for_learner_clarity=curation["reviewed_for_learner_clarity"],
     )
-    card.validate()
+    if require_approval:
+        card.validate()
     return card
 
 
@@ -391,7 +401,7 @@ def _eligibility_reason(record: dict[str, Any]) -> str | None:
     try:
         domain = _question_domain(qa["question"])
         assert domain is not None
-        _card_from_record(record, _auto_curation_entry(record, domain))
+        _card_from_record(record, _auto_curation_entry(record, domain), require_approval=False)
     except (ValueError, ArithmeticError, OverflowError) as error:
         message = str(error)
         if message in {"ambiguous_unit", "answer_mismatch"}:
@@ -432,7 +442,8 @@ def curate(records: Iterable[dict[str, Any]], curation: dict[str, dict[str, Any]
         candidates[domain].append(record)
         eligible[source_id] = record
 
-    if curation is None:
+    automatic_curation = curation is None
+    if automatic_curation:
         curation = {}
         for domain in DrillDomain:
             ordered = sorted(candidates[domain], key=_stable_key)
@@ -446,7 +457,7 @@ def curate(records: Iterable[dict[str, Any]], curation: dict[str, dict[str, Any]
     missing = sorted(set(curation) - set(eligible))
     if missing:
         raise ValueError(f"curation includes ineligible or unavailable source IDs: {missing[:3]}")
-    selected = [_card_from_record(eligible[source_id], entry) for source_id, entry in curation.items()]
+    selected = [_card_from_record(eligible[source_id], entry, require_approval=not automatic_curation) for source_id, entry in curation.items()]
     rejected["not_selected_after_quality_and_coverage_ordering"] += len(eligible) - len(selected)
     selected.sort(key=lambda card: card.card_id)
     if len(selected) != 100:

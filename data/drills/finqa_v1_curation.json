@@ -29,14 +29,14 @@
     },
     {
       "calculation_method": "addition",
-      "financial_skill": "operating_expense",
+      "financial_skill": "operating_cash_flow",
       "primary_domain": "Cash Flow",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Reviewed as operating cash flow excluding a voluntary pension contribution; operands are USD million.",
       "secondary_domains": [],
       "source_item_id": "UNP/2009/page_38.pdf-1"
     },
@@ -59,14 +59,16 @@
     {
       "calculation_method": "average",
       "financial_skill": "share_repurchase",
-      "primary_domain": "P&L",
+      "primary_domain": "Investment & Valuation",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
-      "secondary_domains": [],
+      "reviewer_note": "Reviewed as a share-repurchase price-per-share drill; Balance Sheet is a secondary domain.",
+      "secondary_domains": [
+        "Balance Sheet"
+      ],
       "source_item_id": "PPG/2012/page_29.pdf-2"
     },
     {
@@ -99,17 +101,25 @@
       "source_item_id": "ADBE/2011/page_116.pdf-2"
     },
     {
-      "calculation_method": "percentage_change",
+      "calculation_method": "percentage_point_change",
       "financial_skill": "effective_tax_rate",
+      "learner_context": [
+        "The adjusted effective tax rate was 19.4% in fiscal year 2019 and 18.6% in fiscal year 2018."
+      ],
+      "learner_question": "What was the percentage-point change in the adjusted effective tax rate between fiscal years 2019 and 2018?",
       "primary_domain": "Tax",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Reviewed as a percentage-point change between fiscal years 2019 and 2018.",
       "secondary_domains": [],
-      "source_item_id": "APD/2019/page_39.pdf-2"
+      "source_item_id": "APD/2019/page_39.pdf-2",
+      "unit": "percentage points",
+      "unit_dimension": "percentage_points",
+      "unit_scale": "unit",
+      "worked_calculation": "19.4% - 18.6% = 0.8 percentage points"
     },
     {
       "calculation_method": "multi_step_reconciliation",
@@ -129,14 +139,14 @@
     },
     {
       "calculation_method": "subtraction",
-      "financial_skill": "operating_expense",
+      "financial_skill": "investment_return",
       "primary_domain": "Investment & Valuation",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "RE/2010/page_42.pdf-2"
     },
@@ -285,14 +295,14 @@
     },
     {
       "calculation_method": "average",
-      "financial_skill": "operating_expense",
+      "financial_skill": "debt_movement",
       "primary_domain": "Liquidity & Treasury",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "PNC/2012/page_68.pdf-3"
     },
@@ -389,14 +399,14 @@
     },
     {
       "calculation_method": "average",
-      "financial_skill": "operating_expense",
+      "financial_skill": "share_price",
       "primary_domain": "Investment & Valuation",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "HWM/2016/page_40.pdf-1"
     },
@@ -545,14 +555,14 @@
     },
     {
       "calculation_method": "addition",
-      "financial_skill": "operating_expense",
+      "financial_skill": "share_count",
       "primary_domain": "Investment & Valuation",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "MKTX/2004/page_99.pdf-1"
     },
@@ -597,14 +607,14 @@
     },
     {
       "calculation_method": "addition",
-      "financial_skill": "operating_expense",
+      "financial_skill": "liability_movement",
       "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "GIS/2017/page_31.pdf-3"
     },
@@ -714,14 +724,14 @@
     },
     {
       "calculation_method": "ratio",
-      "financial_skill": "operating_expense",
+      "financial_skill": "debt_movement",
       "primary_domain": "Liquidity & Treasury",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "AON/2015/page_43.pdf-2"
     },
@@ -805,14 +815,14 @@
     },
     {
       "calculation_method": "subtraction",
-      "financial_skill": "operating_expense",
+      "financial_skill": "debt_movement",
       "primary_domain": "Liquidity & Treasury",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "PNC/2015/page_159.pdf-1"
     },
@@ -935,14 +945,14 @@
     },
     {
       "calculation_method": "subtraction",
-      "financial_skill": "operating_expense",
+      "financial_skill": "debt_movement",
       "primary_domain": "Liquidity & Treasury",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "PNC/2011/page_78.pdf-3"
     },
@@ -1039,14 +1049,14 @@
     },
     {
       "calculation_method": "addition",
-      "financial_skill": "operating_expense",
+      "financial_skill": "asset_movement",
       "primary_domain": "Liquidity & Treasury",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "C/2010/page_223.pdf-4"
     },
@@ -1065,14 +1075,14 @@
     },
     {
       "calculation_method": "subtraction",
-      "financial_skill": "operating_expense",
+      "financial_skill": "working_capital_movement",
       "primary_domain": "Working Capital",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "IP/2006/page_35.pdf-4"
     },
@@ -1286,14 +1296,14 @@
     },
     {
       "calculation_method": "subtraction",
-      "financial_skill": "operating_expense",
+      "financial_skill": "working_capital_movement",
       "primary_domain": "Working Capital",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Individual taxonomy review updated the financial skill to match the learner question.",
       "secondary_domains": [],
       "source_item_id": "SNPS/2006/page_46.pdf-3"
     },

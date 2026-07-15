@@ -123,7 +123,7 @@
       "card_id": "FINQA-1A5BD3D5A7B5",
       "correct_answer": 4270.0,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "operating_cash_flow",
       "formula": "add(4070, 200)",
       "learner_context": [
         "Voluntary pension contributions in 2008 totaling $ 200 million and other pension contributions of $ 8 million partially offset the year-over-year increase versus 2007."
@@ -131,8 +131,8 @@
       "learner_question": "Without the 2008 voluntary pension contributions, how much cash would have been provided by operating activities, in millions?",
       "learner_table": [
         [
-          "<i>Millions of Dollars</i>",
-          "<i>2009</i>",
+          "Millions of Dollars",
+          "2009",
           "2008",
           "2007"
         ],
@@ -289,7 +289,7 @@
           "scale": "unit"
         }
       ],
-      "primary_domain": "P&L",
+      "primary_domain": "Investment & Valuation",
       "question": "what was the average cost per share for the share repurchases in 2012?",
       "review_status": "approved",
       "reviewed_for_domain": true,
@@ -297,7 +297,9 @@
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
       "rounding": "Use the unrounded calculation; accept answers within 0.00001 of the sourced result.",
-      "secondary_domains": [],
+      "secondary_domains": [
+        "Balance Sheet"
+      ],
       "source_answer": "92",
       "source_attribution": "Chen et al. (2021), FinQA: A Dataset of Numerical Reasoning over Financial Data; https://github.com/czyssrs/FinQA",
       "source_dataset": "FinQA",
@@ -312,7 +314,7 @@
         "the company 2019s share repurchase activity in 2012 , 2011 and 2010 was 1 million shares at a cost of $ 92 million , 10.2 million shares at a cost of $ 858 million and 8.1 million shares at a cost of $ 586 million , respectively ."
       ],
       "visible_table": [],
-      "why_it_matters": "This helps finance leaders quantify earnings movement before explaining its operating drivers.",
+      "why_it_matters": "This helps finance leaders quantify investment and valuation movements before making capital-allocation decisions.",
       "worked_calculation": "92 / 1 = 92. Answer: 92 USD per share.",
       "worked_solution": "Retain the source program for provenance; show learners the reviewed calculation instead."
     },
@@ -437,7 +439,7 @@
       "worked_solution": "Retain the source program for provenance; show learners the reviewed calculation instead."
     },
     {
-      "calculation_method": "percentage_change",
+      "calculation_method": "percentage_point_change",
       "calculation_steps": 1,
       "card_id": "FINQA-258132EAFDB2",
       "correct_answer": 0.8,
@@ -445,21 +447,21 @@
       "financial_skill": "effective_tax_rate",
       "formula": "subtract(19.4%, 18.6%)",
       "learner_context": [
-        "The adjusted effective tax rate was 19.4% ( 19.4 % ) and 18.6% ( 18.6 % ) in fiscal years' and 2018, respectively."
+        "The adjusted effective tax rate was 19.4% in fiscal year 2019 and 18.6% in fiscal year 2018."
       ],
-      "learner_question": "What is the variation of the adjusted effective tax rate considering the years 2018-2019?",
+      "learner_question": "What was the percentage-point change in the adjusted effective tax rate between fiscal years 2019 and 2018?",
       "learner_table": [],
       "license": "MIT",
       "normalized_operands": [
         {
-          "dimension": "percentage",
+          "dimension": "percentage_points",
           "is_constant": false,
           "normalized_value": 19.4,
           "raw_value": 19.4,
           "scale": "unit"
         },
         {
-          "dimension": "percentage",
+          "dimension": "percentage_points",
           "is_constant": false,
           "normalized_value": 18.6,
           "raw_value": 18.6,
@@ -482,15 +484,15 @@
       "source_program": "subtract(19.4%, 18.6%)",
       "source_reference": "APD/2019/page_39.pdf",
       "tolerance": 1e-05,
-      "unit": "percent",
-      "unit_dimension": "percentage",
+      "unit": "percentage points",
+      "unit_dimension": "percentage_points",
       "unit_scale": "unit",
       "visible_context": [
         "the adjusted effective tax rate was 19.4% ( 19.4 % ) and 18.6% ( 18.6 % ) in fiscal years 2019 and 2018 , respectively ."
       ],
       "visible_table": [],
       "why_it_matters": "This helps finance leaders quantify how tax balances or rates affect reported financial results.",
-      "worked_calculation": "19.4 - 18.6 = 0.8. Answer: 0.8 percent.",
+      "worked_calculation": "19.4% - 18.6% = 0.8 percentage points",
       "worked_solution": "Retain the source program for provenance; show learners the reviewed calculation instead."
     },
     {
@@ -565,7 +567,7 @@
       "card_id": "FINQA-2B6647507BE2",
       "correct_answer": 385.4,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "investment_return",
       "formula": "subtract(695.8, 310.4)",
       "learner_context": [
         "Ireland.",
@@ -1292,7 +1294,7 @@
       "card_id": "FINQA-434882BEB46E",
       "correct_answer": 100.5,
       "difficulty": "intermediate",
-      "financial_skill": "operating_expense",
+      "financial_skill": "debt_movement",
       "formula": "add(81, 120), divide(#0, const_2)",
       "learner_context": [
         "Loans held for sale table 15 : loans held for sale in millions December 31 December 31."
@@ -1301,8 +1303,8 @@
       "learner_table": [
         [
           "In millions",
-          "December 312012",
-          "December 312011"
+          "December 31, 2012",
+          "December 31, 2011"
         ],
         [
           "Other",
@@ -1866,7 +1868,7 @@
       "card_id": "FINQA-5A228288542F",
       "correct_answer": 30.0,
       "difficulty": "intermediate",
-      "financial_skill": "operating_expense",
+      "financial_skill": "share_price",
       "formula": "add(32.91, 27.09), divide(#0, const_2)",
       "learner_context": [
         "The following table sets forth, for the periods indicated, the high and low sales prices and quarterly dividend amounts per share of the company's common stock as reported on the new york stock exchange, adjusted to take into account the reverse stock split effected on October 6, 2016."
@@ -2698,7 +2700,7 @@
       "card_id": "FINQA-71EBFC521A92",
       "correct_answer": 120000000.0,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "share_count",
       "formula": "add(110000000, 10000000)",
       "learner_context": [
         "As of December 31, 2004, the company had 110000000 authorized shares of common stock and 10000000 authorized shares of non-voting common stock."
@@ -2933,7 +2935,7 @@
       "card_id": "FINQA-765B9BAAC1A5",
       "correct_answer": 670.0,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "liability_movement",
       "formula": "add(505, 165)",
       "learner_context": [
         "Off-balance sheet arrangements and contractual obligations as of May 28, 2017, we have issued guarantees and comfort letters of $ 505 million for the debt and other obligations of consolidated subsidiaries, and guarantees and comfort letters of $ 165 million for the debt and other obligations of non-consolidated affiliates, mainly cpw."
@@ -3001,7 +3003,7 @@
           "(in millions)",
           "December 31,2014",
           "Net Inflows(Outflows)",
-          "Acquisition<sup>(1)</sup>",
+          "Acquisition(1)",
           "Market Change",
           "FX Impact",
           "December 31,2015"
@@ -3279,7 +3281,7 @@
           "Years Ended December 31,"
         ],
         [
-          "Aggregate adjustment for income taxes<sup>(f)</sup>",
+          "Aggregate adjustment for income taxes(f)",
           "(64.8)",
           "(103.0)",
           "(113.5)",
@@ -3547,7 +3549,7 @@
       "card_id": "FINQA-9A30DA9B4FE8",
       "correct_answer": 2.25,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "debt_movement",
       "formula": "divide(900, 400)",
       "learner_context": [
         "Credit facilities as of December 31, 2015, we had two committed credit facilities outstanding : our $ 400 million u.s.",
@@ -4016,7 +4018,7 @@
       "card_id": "FINQA-AF8A09A4ADE0",
       "correct_answer": -0.6,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "debt_movement",
       "formula": "subtract(.3, .9)",
       "learner_context": [
         "At December 31, 2015 and December 31, 2014, the alll on total purchased impaired loans was $.3 billion and $.9 billion, respectively."
@@ -4662,7 +4664,7 @@
       "card_id": "FINQA-BF8626C79C7F",
       "correct_answer": 0.2,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "debt_movement",
       "formula": "subtract(13.2, 13.0)",
       "learner_context": [
         "At December 31, 2011 and December 31, 2010, the unpaid principal balance outstanding of loans sold as a participant in these programs was $ 13.0 billion and $ 13.2 billion, respectively."
@@ -4914,7 +4916,7 @@
       "learner_question": "What is the mathematical range, in millions, for total free cash flow from 2008-2010?",
       "learner_table": [
         [
-          "<i>Millions</i>",
+          "Millions",
           "2010",
           "2009",
           "2008"
@@ -5185,7 +5187,7 @@
       "card_id": "FINQA-C95F9E1637A2",
       "correct_answer": 469.0,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "asset_movement",
       "formula": "add(392, 77)",
       "learner_context": [
         "The carrying amount of the company's purchased distressed loan portfolio at December 31, 2010 was $ 392 million, net of an allowance of $ 77 million as of December 31, 2010."
@@ -5306,7 +5308,7 @@
       "card_id": "FINQA-D193331C0052",
       "correct_answer": -204.0,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "working_capital_movement",
       "formula": "subtract(354, 558)",
       "learner_context": [
         "Cash used for these working capital components increased by $ 354 million in 2006, compared with a $ 558 million increase in 2005 and a $ 117 million increase in 2004."
@@ -5371,12 +5373,12 @@
       "learner_question": "What would other income have increased to in 2009 absent the pre-tax gain from a land sale, in millions?",
       "learner_table": [
         [
-          "<i>Millions of Dollars</i>",
-          "<i>2009</i>",
+          "Millions of Dollars",
+          "2009",
           "2008",
           "2007",
-          "<i>% Change 2009 v 2008</i>",
-          "<i>% Change 2008 v 2007</i>"
+          "% Change 2009 v 2008",
+          "% Change 2008 v 2007"
         ],
         [
           "Other income",
@@ -5776,7 +5778,7 @@
         [
           "",
           "",
-          "<i>Amount of Commitment Expiration per Period</i>"
+          "Amount of Commitment Expiration per Period"
         ],
         [
           "Standby letters of credit [d]",
@@ -5863,10 +5865,10 @@
       "learner_question": "What would operating cash flow have been in 2010 without the changed accounting standards for the receivables securitization facility, in us$ million?",
       "learner_table": [
         [
-          "<i>Cash Flows</i><i>Millions</i>",
-          "<i>2011</i>",
-          "<i>2010</i>",
-          "<i>2009</i>"
+          "Cash FlowsMillions",
+          "2011",
+          "2010",
+          "2009"
         ],
         [
           "Cash provided by operating activities",
@@ -6533,7 +6535,7 @@
       "card_id": "FINQA-FBC0708051D3",
       "correct_answer": 107.2,
       "difficulty": "foundational",
-      "financial_skill": "operating_expense",
+      "financial_skill": "working_capital_movement",
       "formula": "subtract(130.6, 23.4)",
       "learner_context": [
         "As of October 31, 2006, our working capital was $ 23.4 million, compared to $ 130.6 million as of October 31, 2005."
