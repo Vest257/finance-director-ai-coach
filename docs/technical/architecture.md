@@ -14,6 +14,8 @@ Current runtime boundaries are:
 - `session.py`: guided and skip-to-solution learning flows.
 - `cli.py` and `__main__.py`: validated console input and application entry point.
 - `streamlit_ui.py`: in-memory browser interaction and rendering over the existing content, models, and evaluator.
+- `practice.py`: pure drill-bank loading, filtering, answer checking, sequencing, and session-attempt helpers.
+- `practice_ui.py`: the separate in-memory Streamlit Practice surface.
 - `streamlit_app.py`: root Streamlit and Community Cloud entrypoint.
 
 ## Architectural Principles
@@ -51,6 +53,8 @@ Streamlit widgets -> LearnerAnswers -> evaluator -> evidence and scorecard -> St
 ```
 
 Streamlit session state retains only the current in-memory attempt and widget values. Start over clears that state. The optional plain-text summary is assembled locally from the learner's submitted answers and evaluation report; it is offered as a download and is not stored by the application.
+
+Fast Drill Mode V1 is a separate page-navigated practice surface. It uses the committed reviewed `data/drills/finqa_cards_v1.json` bank and deterministic core functions for filtering, tolerance checks, and stable card sequencing. Practice attempts exist only in namespaced Streamlit session state for the browser session, so they cannot interfere with Scenario Coach state. The mode has no persistence, accounts, learner profile, adaptive sequencing, streaks, leaderboard, or overall learner score.
 
 The evaluator uses deterministic rubric logic and authored feedback that follows the [evaluation contract](../learning/evaluation-contract.md). Calculations and structured selections may be machine-assessed. Free-text communication and nuanced reasoning remain self-review or manual-review evidence in the non-AI MVP. Commercial Judgment cannot receive deterministic `Strong`; Stakeholder Communication and Strategic Leadership remain unassessed without a qualified manual reviewer. External AI is not part of this phase.
 

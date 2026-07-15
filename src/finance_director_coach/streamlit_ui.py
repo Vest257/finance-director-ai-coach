@@ -872,11 +872,6 @@ def _render_results() -> None:
 def run_app() -> None:
     """Render the Streamlit application for the current session state."""
 
-    st.set_page_config(
-        page_title="FinanceOS | Finance Director Scenario Coach",
-        layout="wide",
-        initial_sidebar_state="collapsed",
-    )
     st.markdown(APP_CSS, unsafe_allow_html=True)
     initialize_session_state(st.session_state)
     stage = st.session_state["stage"]
