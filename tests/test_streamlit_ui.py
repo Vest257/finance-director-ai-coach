@@ -8,6 +8,7 @@ import importlib.util
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
+from streamlit.util import calc_hash
 
 from finance_director_coach.models import (
     AssessmentSource,
@@ -17,12 +18,22 @@ from finance_director_coach.models import (
     LearnerAnswers,
     RecommendationRoute,
 )
+from finance_director_coach.practice import load_practice_cards
+from finance_director_coach.practice_ui import run_practice_app
 from finance_director_coach.scenarios.scenario_001 import (
     HIRING_UNIT_WARNING,
     MONETARY_INPUT_GUIDANCE,
     SCENARIO_001,
 )
 from finance_director_coach import streamlit_ui
+from finance_director_coach.streamlit_ui import run_app
+
+
+def _navigate_to_callable_page(app: AppTest, page: Callable[[], None]) -> AppTest:
+    """Select an ``st.navigation`` callable page without replacing AppTest's session."""
+
+    app._page_hash = calc_hash(page.__name__)
+    return app.run()
 
 
 def test_streamlit_entrypoint_imports_successfully() -> None:
@@ -32,6 +43,51 @@ def test_streamlit_entrypoint_imports_successfully() -> None:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert callable(module.main)
+
+
+def test_navigation_preserves_state_between_scenario_coach_and_practice() -> None:
+    """Exercise both callable pages through the real entrypoint in one session."""
+
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    app.session_state["selected_scenario_id"] = "SCN-002"
+    app.session_state["stage"] = streamlit_ui.SCENARIO_STAGE
+    app.run()
+
+    assert not app.exception
+    assert app.title[0].value == "Growth at Any Price: Should We Renew the Contract?"
+
+    _navigate_to_callable_page(app, run_practice_app)
+
+    assert not app.exception
+    assert app.title[0].value == "Practice"
+    assert app.session_state["selected_scenario_id"] == "SCN-002"
+    assert app.session_state["stage"] == streamlit_ui.SCENARIO_STAGE
+
+    current_card = next(
+        card for card in load_practice_cards() if card.card_id == app.session_state["practice_card_id"]
+    )
+    app.number_input(key="practice_answer").set_value(current_card.correct_answer)
+    app.button[0].click().run()
+    practice_card_id = app.session_state["practice_card_id"]
+    practice_attempts = app.session_state["practice_attempts"]
+    assert len(practice_attempts) == 1
+
+    _navigate_to_callable_page(app, run_app)
+
+    assert not app.exception
+    assert app.title[0].value == "Growth at Any Price: Should We Renew the Contract?"
+    assert app.session_state["selected_scenario_id"] == "SCN-002"
+    assert app.session_state["stage"] == streamlit_ui.SCENARIO_STAGE
+    assert app.session_state["practice_card_id"] == practice_card_id
+    assert app.session_state["practice_attempts"] is practice_attempts
+
+    app.button(key="header_restart").click().run()
+
+    assert app.session_state["stage"] == streamlit_ui.WELCOME_STAGE
+    assert "selected_scenario_id" not in app.session_state
+    assert app.session_state["practice_card_id"] == practice_card_id
+    assert app.session_state["practice_attempts"] is practice_attempts
 
 
 def test_web_pack_is_loaded_from_core_without_answer_leakage() -> None:
