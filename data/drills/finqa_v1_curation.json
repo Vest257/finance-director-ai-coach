@@ -3,16 +3,26 @@
   "cards": [
     {
       "calculation_method": "subtraction",
+      "difficulty": "foundational",
       "financial_skill": "asset_movement",
+      "learner_context": [
+        "Arconic recognized USD 1,801 million of goodwill for Firth Rixson and USD 298 million for RTI."
+      ],
+      "learner_question": "By how much did the goodwill recognized for Firth Rixson exceed the goodwill recognized for RTI?",
+      "why_it_matters": "Arconic recognized USD 1,503 million more goodwill for Firth Rixson than for RTI.",
+      "worked_calculation": "1,801 \u2212 298 = 1,503 USD million.",
       "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,
       "reviewed_for_learner_clarity": true,
       "reviewed_for_semantics": true,
       "reviewed_for_units": true,
-      "reviewer_note": "Individual source, unit, semantic, domain, and learner-clarity review completed.",
+      "reviewer_note": "Reviewed learner wording and source scale: the Arconic annual report presents the goodwill amounts in USD millions.",
       "secondary_domains": [],
-      "source_item_id": "HWM/2016/page_79.pdf-2"
+      "source_item_id": "HWM/2016/page_79.pdf-2",
+      "unit": "USD million",
+      "unit_dimension": "currency",
+      "unit_scale": "million"
     },
     {
       "calculation_method": "subtraction",
@@ -295,8 +305,26 @@
     },
     {
       "calculation_method": "average",
+      "difficulty": "foundational",
       "financial_skill": "asset_movement",
-      "learner_question": "What was the average balance of other loans held for sale at December 31, 2012 and 2011, in USD million?",
+      "learner_context": [
+        "Other loans held for sale had the following year-end balances:"
+      ],
+      "learner_question": "What was the average year-end balance of other loans held for sale across 2011 and 2012, in USD millions?",
+      "learner_table": [
+        [
+          "",
+          "December 31, 2012",
+          "December 31, 2011"
+        ],
+        [
+          "Other loans held for sale",
+          "81",
+          "120"
+        ]
+      ],
+      "why_it_matters": "The result is the arithmetic mean of the two year-end balances, not the balance at another reporting date.",
+      "worked_calculation": "(81 + 120) \u00f7 2 = 100.5 USD million.",
       "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,
@@ -377,7 +405,26 @@
     },
     {
       "calculation_method": "average",
+      "difficulty": "foundational",
       "financial_skill": "asset_movement",
+      "learner_context": [
+        "Intangible assets reported within Other assets were as follows:"
+      ],
+      "learner_question": "What was the average year-end intangible-asset balance across 2011 and 2012, in USD thousands?",
+      "learner_table": [
+        [
+          "",
+          "2012",
+          "2011"
+        ],
+        [
+          "Intangible assets",
+          "204,866",
+          "218,883"
+        ]
+      ],
+      "why_it_matters": "The average balance was equivalent to approximately USD 211.9 million.",
+      "worked_calculation": "(204,866 + 218,883) \u00f7 2 = 211,874.5 USD thousand.",
       "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,
@@ -441,8 +488,29 @@
       "source_item_id": "MRO/2007/page_136.pdf-1"
     },
     {
-      "calculation_method": "average",
+      "calculation_method": "subtraction",
+      "difficulty": "foundational",
       "financial_skill": "asset_movement",
+      "learner_context": [
+        "The Primary Metals segment reported the following weighted-average useful lives:"
+      ],
+      "learner_question": "By how many years is the weighted-average useful life of other intangible assets longer than that of software?",
+      "learner_table": [
+        [
+          "Asset class",
+          "Weighted-average useful life"
+        ],
+        [
+          "Software",
+          "6 years"
+        ],
+        [
+          "Other intangible assets",
+          "37 years"
+        ]
+      ],
+      "why_it_matters": "The longer useful life spreads amortization expense for other intangible assets across more years.",
+      "worked_calculation": "37 \u2212 6 = 31 years.",
       "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,

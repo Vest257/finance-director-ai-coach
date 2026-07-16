@@ -29,6 +29,12 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 CARD_BANK = REPOSITORY_ROOT / "data" / "drills" / "finqa_cards_v1.json"
 SOURCE_FIXTURE = REPOSITORY_ROOT / "tests" / "fixtures" / "finqa_v1_selected_records.json"
 CURATION = REPOSITORY_ROOT / "data" / "drills" / "finqa_v1_curation.json"
+REVIEWED_CARD_IDS = {
+    "FINQA-009A7ECEA253": ("HWM/2016/page_79.pdf-2", "subtract(1801, 298)", 1503.0),
+    "FINQA-434882BEB46E": ("PNC/2012/page_68.pdf-3", "add(81, 120), divide(#0, const_2)", 100.5),
+    "FINQA-53859C0DBA1C": ("RCL/2012/page_80.pdf-2", "add(204866, 218883), divide(#0, const_2)", 211874.5),
+    "FINQA-5EBB6C33025F": ("HWM/2015/page_123.pdf-2", "subtract(37, 6)", 31.0),
+}
 
 
 @pytest.fixture(scope="module")
@@ -146,6 +152,51 @@ def test_remaining_cash_flow_loan_balance_constants_and_table_heading_regression
     for card in cards:
         for cell in (cell for row in card.learner_table for cell in row):
             assert "cash flowsmillions" not in cell.casefold()
+
+
+def test_reviewed_cards_preserve_provenance_and_use_clear_foundational_content(cards) -> None:
+    by_id = {card.card_id: card for card in cards}
+    assert REVIEWED_CARD_IDS.keys() <= by_id.keys()
+    for card_id, (source_item_id, source_program, correct_answer) in REVIEWED_CARD_IDS.items():
+        card = by_id[card_id]
+        assert card.source_item_id == source_item_id
+        assert card.source_program == source_program
+        assert card.formula == source_program
+        assert card.correct_answer == correct_answer
+        assert card.tolerance == 0.00001
+        assert card.difficulty.value == "foundational"
+
+    goodwill = by_id["FINQA-009A7ECEA253"]
+    assert goodwill.worked_calculation == "1,801 − 298 = 1,503 USD million."
+    assert goodwill.unit == "USD million"
+    assert goodwill.unit_scale == UnitScale.MILLION
+    assert all(name in goodwill.learner_context[0] for name in ("Arconic", "Firth Rixson", "RTI"))
+    assert "acquired" not in goodwill.learner_context[0].casefold()
+
+    loans = by_id["FINQA-434882BEB46E"]
+    assert loans.worked_calculation == "(81 + 120) ÷ 2 = 100.5 USD million."
+    assert loans.unit == "USD million"
+    assert loans.unit_scale == UnitScale.MILLION
+    assert loans.learner_table[1][0] == "Other loans held for sale"
+    assert "loans held for sale table" not in " ".join(loans.learner_context).casefold()
+    assert "another reporting date" in loans.why_it_matters
+
+    intangibles = by_id["FINQA-53859C0DBA1C"]
+    assert intangibles.worked_calculation == "(204,866 + 218,883) ÷ 2 = 211,874.5 USD thousand."
+    assert intangibles.unit == "USD thousand"
+    assert intangibles.unit_scale == UnitScale.THOUSAND
+    assert intangibles.learner_table[1][0] == "Intangible assets"
+    assert "intangible assets intangible assets" not in " ".join(intangibles.learner_context).casefold()
+    assert "USD 211.9 million" in intangibles.why_it_matters
+
+    useful_lives = by_id["FINQA-5EBB6C33025F"]
+    assert useful_lives.worked_calculation == "37 − 6 = 31 years."
+    assert useful_lives.unit == "years"
+    assert useful_lives.calculation_method == CalculationMethod.SUBTRACTION
+    assert useful_lives.learner_table[0] == ("Asset class", "Weighted-average useful life")
+    assert "variation" not in useful_lives.learner_question.casefold()
+    assert "longer than" in useful_lives.learner_question
+    assert "amortization" in useful_lives.why_it_matters.casefold()
 
 
 def test_approved_cards_are_explicitly_curated_and_auto_entries_remain_pending(cards) -> None:

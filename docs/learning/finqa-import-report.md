@@ -5,23 +5,12 @@
 - Fixed selection seed: `financeos-finqa-v1-2026-07-15`
 - Source records examined: 8281
 - Cards accepted: 100
-- Cards rejected or not selected: 8181
+- Cards rejected or not selected: 0
 - Runtime network access: none; this report and the card bank are committed generated artifacts.
 
 ## Rejection reasons
 
-- ambiguous_unit: 264
-- answer_mismatch: 3477
-- duplicate_question: 163
-- invalid_card_schema: 67
-- missing_required_source_fields: 73
-- more_than_two_calculation_steps: 646
-- not_selected_after_quality_and_coverage_ordering: 929
-- question_not_short_drill: 181
-- semantic_quality_gate: 5
-- unclassified_domain: 2034
-- unsupported_or_non_deterministic_program: 273
-- unsupported_source_answer: 69
+- not_selected_after_quality_and_coverage_ordering: 0
 
 ## Accepted-card coverage
 
@@ -67,18 +56,18 @@
 ### Calculation method
 
 - addition: 16
-- average: 10
+- average: 9
 - multi_step_reconciliation: 10
 - multiplication: 5
 - percentage_change: 6
 - percentage_point_change: 2
 - ratio: 3
-- subtraction: 48
+- subtraction: 49
 
 ### Difficulty
 
-- foundational: 84
-- intermediate: 16
+- foundational: 86
+- intermediate: 14
 
 ### Calculation-step count
 

@@ -2,7 +2,7 @@
 
 FinanceOS is planned as a long-term Finance Director and CFO simulation platform. Its first product is the Finance Director Scenario Coach: a scenario coach that helps learners practice finance leadership decisions, receive structured feedback, and understand the competencies they are developing.
 
-This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the original command-line interface and a Streamlit pilot interface for small-group browser testing. Both interfaces reuse the same in-memory scenario and deterministic evaluation core. The product has no database, persistence, authentication, telemetry, or external AI integration.
+This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the original command-line interface and the Streamlit Scenario Coach, plus a separate Streamlit Practice surface for short deterministic finance drills. Scenario 001 remains the only implemented scenario. The product has no database, cross-session persistence, authentication, telemetry, or external AI integration.
 
 ## Current Goals
 
@@ -34,6 +34,12 @@ This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the orig
 |   +-- technical/
 |       +-- architecture.md
 |       +-- coding-standards.md
++-- data/
+|   +-- drills/
+|       +-- finqa_cards_v1.json
+|       +-- finqa_v1_curation.json
++-- scripts/
+|   +-- import_finqa.py
 +-- src/
 |   +-- finance_director_coach/
 |       +-- scenarios/
@@ -43,11 +49,16 @@ This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the orig
 |       +-- cli.py
 |       +-- evaluation.py
 |       +-- models.py
+|       +-- practice.py
+|       +-- practice_ui.py
 |       +-- session.py
 |       +-- streamlit_ui.py
 +-- tests/
 |   +-- test_cli.py
 |   +-- test_evaluation.py
+|   +-- test_finqa_drills.py
+|   +-- test_practice.py
+|   +-- test_practice_ui.py
 |   +-- test_scenario_financials.py
 |   +-- test_streamlit_ui.py
 +-- streamlit_app.py
@@ -89,7 +100,7 @@ Streamlit is the only direct runtime dependency. The root `requirements.txt` del
 streamlit run streamlit_app.py
 ```
 
-The browser pilot supports the guided attempt, skip-to-solution study path, deterministic feedback, competency scorecard, complete learning review, restart, and a locally generated plain-text tester summary.
+Use the Streamlit navigation to switch between **Scenario Coach** and **Practice**. Scenario Coach supports the guided attempt, skip-to-solution study path, deterministic feedback, competency scorecard, complete learning review, restart, and a locally generated plain-text tester summary. Practice uses the committed reviewed 100-card FinQA bank, filters by finance domain, financial skill, and difficulty, and checks numerical answers deterministically. Practice shows a card-specific interpretation after submission and keeps its attempt history only for the current browser session.
 
 The scenario is fictional. Pilot testers must not enter confidential, personal, or employer information.
 
@@ -121,10 +132,10 @@ python -m compileall src tests streamlit_app.py
 ## Current MVP Limitations
 
 - No database.
-- No learner persistence or attempt history.
+- No persistent or cross-session learner history; Practice attempts remain only in the current browser session.
 - No user accounts, authentication, or telemetry.
 - No external AI API integration.
-- Scenario 001 is the only implemented learning experience.
+- Scenario 001 is the only implemented scenario.
 - Browser state exists only for the current Streamlit session and is cleared by Start over.
 - The downloadable summary is generated locally and is not stored by FinanceOS.
 - Unrestricted free-text reasoning is stored for display and self-review but is not automatically evaluated.
@@ -134,4 +145,4 @@ python -m compileall src tests streamlit_app.py
 
 ## Status
 
-Phase 0 is complete. Phase 1 remains current. The Scenario 001 CLI vertical slice is merged, and the Streamlit interface is the Alpha 0.1 pilot surface for small-group learner testing.
+Phase 0 is complete. Phase 1 remains current. The Scenario 001 CLI and Streamlit pilot are merged, and Fast Drill Mode V1 is merged as the separate Practice surface. The current small follow-up removes a duplicated calculation label from four learner-tested foundational FinQA cards and keeps the documentation aligned with the delivered product.

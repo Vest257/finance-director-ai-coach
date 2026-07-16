@@ -351,7 +351,12 @@ def _card_from_record(record: dict[str, Any], curation: dict[str, Any], *, requi
         secondary_domains=tuple(DrillDomain(domain) for domain in curation["secondary_domains"]),
         financial_skill=FinancialSkill(curation["financial_skill"]),
         calculation_method=CalculationMethod(curation["calculation_method"]),
-        difficulty=DrillDifficulty.FOUNDATIONAL if steps == 1 else DrillDifficulty.INTERMEDIATE,
+        difficulty=DrillDifficulty(
+            curation.get(
+                "difficulty",
+                DrillDifficulty.FOUNDATIONAL if steps == 1 else DrillDifficulty.INTERMEDIATE,
+            )
+        ),
         calculation_steps=steps,
         question=qa["question"].strip(),
         visible_context=context,
@@ -364,7 +369,7 @@ def _card_from_record(record: dict[str, Any], curation: dict[str, Any], *, requi
         tolerance=tolerance,
         formula=qa["program"],
         worked_solution="Retain the source program for provenance; show learners the reviewed calculation instead.",
-        why_it_matters=_why_it_matters(DrillDomain(curation["primary_domain"])),
+        why_it_matters=curation.get("why_it_matters", _why_it_matters(DrillDomain(curation["primary_domain"]))),
         source_attribution=SOURCE_ATTRIBUTION,
         license=LICENSE,
         source_answer=qa["answer"],
@@ -372,7 +377,7 @@ def _card_from_record(record: dict[str, Any], curation: dict[str, Any], *, requi
         rounding="Use the unrounded calculation; accept answers within 0.00001 of the sourced result.",
         learner_question=curation.get("learner_question", _clean_learner_text(qa["question"], question=True)),
         learner_context=tuple(curation.get("learner_context", tuple(_clean_learner_text(line) for line in context))),
-        learner_table=_clean_learner_table(table),
+        learner_table=tuple(tuple(row) for row in curation.get("learner_table", _clean_learner_table(table))),
         worked_calculation=curation.get("worked_calculation", _worked_calculation(qa["program"], result, unit)),
         review_status=curation["review_status"],
         reviewed_for_units=curation["reviewed_for_units"],
