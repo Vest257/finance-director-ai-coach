@@ -28,9 +28,10 @@ def test_practice_submission_reveals_feedback_then_next_question() -> None:
     app.button[0].click().run()
     assert not app.exception
     assert [message.value for message in app.success] == ["Correct. Submitted answer: 1503."]
-    assert any("Worked calculation:" in item.value for item in app.markdown)
+    rendered_calculations = [item.value.replace("**", "") for item in app.markdown]
+    assert "Worked calculation: 1,801 − 298 = 1,503 USD million." in rendered_calculations
     assert any("Interpretation:" in item.value for item in app.markdown)
-    assert any("Calculation: 1,801 − 298 = 1,503 USD million." in item.value for item in app.markdown)
+    assert "Worked calculation: Calculation: 1,801 − 298 = 1,503 USD million." not in rendered_calculations
     assert any("Arconic recognized USD 1,503 million more goodwill" in item.value for item in app.markdown)
     assert len(app.session_state["practice_attempts"]) == 1
     history = app.table[0].value

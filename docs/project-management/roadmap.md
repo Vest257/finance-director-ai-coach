@@ -22,37 +22,29 @@ Deliverables:
 - Deterministic evaluation contract.
 - Reconciled Scenario 001 specification and competency scorecard rubric.
 
-## Phase 1: Text-Based Scenario Coach
+## Phase 1: Scenario Coach And Fast Drill Mode
 
 Goal: deliver the first usable Finance Director Scenario Coach learning loop through a CLI and expose the proven loop to a small browser-based pilot group.
 
 Status: current.
 
-Scenario 001 CLI vertical-slice milestone: merged through PR #1.
+Scenario 001 CLI vertical-slice milestone: merged.
 
-FinanceOS Alpha 0.1 Streamlit pilot milestone: current implementation work.
+FinanceOS Alpha 0.1 Streamlit pilot milestone: merged.
+
+Fast Drill Mode V1 milestone: merged.
 
 Delivered in this milestone:
 
-- Implement the approved Scenario 001 content and evidence format.
-- First scenario: revenue and EBITDA rising while cash falls, with a decision on hiring 20 people.
-- CLI text interaction flow.
-- Guided questions and skip-to-solution path.
-- Deterministic rubric implementation conforming to the approved evaluation contract.
-- Structured coaching feedback.
-- Qualitative competency scorecard, debrief, model Finance Director answer, and action plan.
-- Comprehensive tests around finance reconciliation, evaluation boundaries, session flow, and CLI validation.
+- Scenario 001 content, CLI, deterministic rubric, structured feedback, competency scorecard, debrief, model answer, and action plan.
+- Streamlit Scenario Coach with guided and skip-to-solution browser paths, in-memory attempt state, restart, and local plain-text tester summary.
+- Fast Drill Mode V1: a separate Streamlit Practice page with a reviewed committed 100-card FinQA bank, deterministic numerical checks, finance-domain, financial-skill, and difficulty filters, and session-only Practice history.
+- Comprehensive tests for Scenario 001, FinQA-bank reconciliation and provenance, Practice state isolation, and browser answer-leakage boundaries.
 - Minimal Python 3.11 continuous integration.
 
-Alpha 0.1 pilot scope:
+Current small follow-up: improve four learner-tested foundational cards and card reporting by removing the repeated calculation label while preserving reviewed units, provenance, and deterministic generation.
 
-- Streamlit presentation layer over the existing Scenario 001 and deterministic evaluator.
-- Guided and skip-to-solution browser paths.
-- In-memory attempt state, restart, and local plain-text tester summary.
-- Streamlit Community Cloud deployment configuration for a small pilot group.
-- No accounts, persistence, AI, database, authentication, or telemetry.
-
-Remaining Phase 1 work should follow learner testing and Product Owner prioritization; it is not presented as delivered by this milestone.
+No accounts, database, durable persistence, AI, authentication, or telemetry are delivered in Phase 1.
 
 ## Phase 2: Better Scenario And Feedback Quality
 
@@ -60,7 +52,7 @@ Goal: improve learning value before adding platform infrastructure.
 
 Candidate deliverables:
 
-- Expanded scenario library.
+- Expanded scenario library, including Scenario 002 and later scenarios when separately approved and merged.
 - More detailed rubrics.
 - Revision loop for learner answers.
 - Better competency mapping.
@@ -74,9 +66,18 @@ Goal: track learner development across attempts.
 Candidate deliverables:
 
 - Learner profile concept.
-- Attempt history.
+- Durable, persistent, cross-session learner history and progress (distinct from the delivered browser-session Practice table).
 - Competency progress tracking.
 - Persistence decision based on actual usage needs.
+
+## Future Harder Drill Phase
+
+Candidate drill coverage after the foundational bank:
+
+- Two- and three-step calculations.
+- Working-capital bridges, margin and contribution analysis, cash conversion, and liquidity and covenant headroom.
+- Debt and interest, tax-rate effects, investment returns and valuation.
+- Linked P&L, balance-sheet, and cash-flow reasoning.
 
 ## Phase 4: AI Roleplay And Richer Inputs
 

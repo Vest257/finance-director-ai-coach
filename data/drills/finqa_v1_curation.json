@@ -10,7 +10,7 @@
       ],
       "learner_question": "By how much did the goodwill recognized for Firth Rixson exceed the goodwill recognized for RTI?",
       "why_it_matters": "Arconic recognized USD 1,503 million more goodwill for Firth Rixson than for RTI.",
-      "worked_calculation": "Calculation: 1,801 \u2212 298 = 1,503 USD million.",
+      "worked_calculation": "1,801 \u2212 298 = 1,503 USD million.",
       "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,
@@ -324,7 +324,7 @@
         ]
       ],
       "why_it_matters": "The result is the arithmetic mean of the two year-end balances, not the balance at another reporting date.",
-      "worked_calculation": "Calculation: (81 + 120) \u00f7 2 = 100.5 USD million.",
+      "worked_calculation": "(81 + 120) \u00f7 2 = 100.5 USD million.",
       "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,
@@ -424,7 +424,7 @@
         ]
       ],
       "why_it_matters": "The average balance was equivalent to approximately USD 211.9 million.",
-      "worked_calculation": "Calculation: (204,866 + 218,883) \u00f7 2 = 211,874.5 USD thousand.",
+      "worked_calculation": "(204,866 + 218,883) \u00f7 2 = 211,874.5 USD thousand.",
       "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,
@@ -510,7 +510,7 @@
         ]
       ],
       "why_it_matters": "The longer useful life spreads amortization expense for other intangible assets across more years.",
-      "worked_calculation": "Calculation: 37 \u2212 6 = 31 years.",
+      "worked_calculation": "37 \u2212 6 = 31 years.",
       "primary_domain": "Balance Sheet",
       "review_status": "approved",
       "reviewed_for_domain": true,

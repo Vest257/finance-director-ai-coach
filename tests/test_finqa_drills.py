@@ -167,12 +167,14 @@ def test_reviewed_cards_preserve_provenance_and_use_clear_foundational_content(c
         assert card.difficulty.value == "foundational"
 
     goodwill = by_id["FINQA-009A7ECEA253"]
+    assert goodwill.worked_calculation == "1,801 − 298 = 1,503 USD million."
     assert goodwill.unit == "USD million"
     assert goodwill.unit_scale == UnitScale.MILLION
     assert all(name in goodwill.learner_context[0] for name in ("Arconic", "Firth Rixson", "RTI"))
     assert "acquired" not in goodwill.learner_context[0].casefold()
 
     loans = by_id["FINQA-434882BEB46E"]
+    assert loans.worked_calculation == "(81 + 120) ÷ 2 = 100.5 USD million."
     assert loans.unit == "USD million"
     assert loans.unit_scale == UnitScale.MILLION
     assert loans.learner_table[1][0] == "Other loans held for sale"
@@ -180,6 +182,7 @@ def test_reviewed_cards_preserve_provenance_and_use_clear_foundational_content(c
     assert "another reporting date" in loans.why_it_matters
 
     intangibles = by_id["FINQA-53859C0DBA1C"]
+    assert intangibles.worked_calculation == "(204,866 + 218,883) ÷ 2 = 211,874.5 USD thousand."
     assert intangibles.unit == "USD thousand"
     assert intangibles.unit_scale == UnitScale.THOUSAND
     assert intangibles.learner_table[1][0] == "Intangible assets"
@@ -187,6 +190,7 @@ def test_reviewed_cards_preserve_provenance_and_use_clear_foundational_content(c
     assert "USD 211.9 million" in intangibles.why_it_matters
 
     useful_lives = by_id["FINQA-5EBB6C33025F"]
+    assert useful_lives.worked_calculation == "37 − 6 = 31 years."
     assert useful_lives.unit == "years"
     assert useful_lives.calculation_method == CalculationMethod.SUBTRACTION
     assert useful_lives.learner_table[0] == ("Asset class", "Weighted-average useful life")
