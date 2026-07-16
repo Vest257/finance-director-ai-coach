@@ -1,5 +1,7 @@
 # Decision Log
 
+This log records important product and architecture decisions. Add entries in reverse chronological order.
+
 ## 2026-07-16: Clarify Learner-Tested Foundational Drill Feedback
 
 Decision: Keep four reviewed foundational cards honestly classified as foundational, display each card's stable Card ID, and show a single clear worked-calculation label followed by a card-specific post-submission interpretation.
@@ -83,8 +85,6 @@ Implications:
 - The current import taxonomy covers P&L, Balance Sheet, Cash Flow, Working Capital, Liquidity & Treasury, Tax, Commercial Finance, and Investment & Valuation.
 - Each card retains its FinQA source ID, source report reference, citation, and MIT licence metadata.
 - New drill surfaces must consume the committed JSON bank rather than perform runtime source imports.
-
-This log records important product and architecture decisions. Add entries in reverse chronological order.
 
 ## 2026-07-15: Require Consistent Financial-Pack Presentation Across The Registered Scenario Library
 

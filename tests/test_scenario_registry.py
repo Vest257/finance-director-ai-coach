@@ -159,6 +159,24 @@ def test_reset_clears_selected_scenario_and_all_attempt_state() -> None:
     }
 
 
+def test_scenario_coach_start_over_preserves_practice_session_state() -> None:
+    entrypoint = Path(__file__).parents[1] / "streamlit_app.py"
+    practice_attempts = [object()]
+    app = AppTest.from_file(str(entrypoint), default_timeout=10).run()
+    app.session_state["selected_scenario_id"] = "SCN-002"
+    app.session_state["stage"] = SCENARIO_STAGE
+    app.session_state["practice_card_id"] = "FINQA-009A7ECEA253"
+    app.session_state["practice_attempts"] = practice_attempts
+    app.run()
+
+    app.button(key="header_restart").click().run()
+
+    assert app.session_state["stage"] == WELCOME_STAGE
+    assert "selected_scenario_id" not in app.session_state
+    assert app.session_state["practice_card_id"] == "FINQA-009A7ECEA253"
+    assert app.session_state["practice_attempts"] is practice_attempts
+
+
 def test_switching_scenarios_cannot_retain_prior_scenario_widget_values() -> None:
     state: dict[str, object] = {
         "selected_scenario_id": "SCN-001",
