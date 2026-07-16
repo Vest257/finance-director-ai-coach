@@ -2,7 +2,7 @@
 
 FinanceOS is planned as a long-term Finance Director and CFO simulation platform. Its first product is the Finance Director Scenario Coach: a scenario coach that helps learners practice finance leadership decisions, receive structured feedback, and understand the competencies they are developing.
 
-This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the original command-line interface and the Streamlit Scenario Coach, plus a separate Streamlit Practice surface for short deterministic finance drills. Scenario 001 remains the only implemented scenario. The product has no database, cross-session persistence, authentication, telemetry, or external AI integration.
+This repository contains FinanceOS Alpha 0.1: a curated two-scenario Streamlit Scenario Coach library, the original Scenario 001 command-line interface, and a separate Streamlit Practice surface for short deterministic finance drills. These learner surfaces use in-memory state and deterministic evaluation cores. The product has no database, cross-session persistence, authentication, telemetry, or external AI integration.
 
 ## Current Goals
 
@@ -23,6 +23,7 @@ This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the orig
 |   |   +-- scenario-design.md
 |   |   +-- scenarios/
 |   |       +-- scenario-001-growth-with-falling-cash.md
+|   |       +-- scenario-002-growth-at-any-price.md
 |   +-- product/
 |   |   +-- mvp-scope.md
 |   |   +-- product-principles.md
@@ -44,6 +45,8 @@ This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the orig
 |   +-- finance_director_coach/
 |       +-- scenarios/
 |       |   +-- scenario_001.py
+|       |   +-- scenario_002.py
+|       |   +-- registry.py
 |       +-- __init__.py
 |       +-- __main__.py
 |       +-- cli.py
@@ -79,6 +82,7 @@ This repository contains FinanceOS Alpha 0.1: Scenario 001 through both the orig
 - [Evaluation contract](docs/learning/evaluation-contract.md)
 - [Scenario design](docs/learning/scenario-design.md)
 - [Scenario 001: Growth With Falling Cash](docs/learning/scenarios/scenario-001-growth-with-falling-cash.md)
+- [Scenario 002: Growth at Any Price](docs/learning/scenarios/scenario-002-growth-at-any-price.md)
 - [Architecture](docs/technical/architecture.md)
 - [Coding standards](docs/technical/coding-standards.md)
 - [Roadmap](docs/project-management/roadmap.md)
@@ -100,7 +104,7 @@ Streamlit is the only direct runtime dependency. The root `requirements.txt` del
 streamlit run streamlit_app.py
 ```
 
-Use the Streamlit navigation to switch between **Scenario Coach** and **Practice**. Scenario Coach supports the guided attempt, skip-to-solution study path, deterministic feedback, competency scorecard, complete learning review, restart, and a locally generated plain-text tester summary. Practice uses the committed reviewed 100-card FinQA bank, filters by finance domain, financial skill, and difficulty, and checks numerical answers deterministically. Practice shows a card-specific interpretation after submission and keeps its attempt history only for the current browser session.
+Use the Streamlit navigation to switch between **Scenario Coach** and **Practice**. Scenario Coach begins with a curated library and supports Scenario 001 and Scenario 002 guided attempts, skip-to-solution study paths, deterministic feedback, competency scorecards, complete learning reviews, restart to the library, and locally generated plain-text tester summaries. Practice uses the committed reviewed 100-card FinQA bank, filters by finance domain, financial skill, and difficulty, and checks numerical answers deterministically. Practice shows a card-specific interpretation after submission and keeps its attempt history only for the current browser session.
 
 The scenario is fictional. Pilot testers must not enter confidential, personal, or employer information.
 
@@ -110,7 +114,7 @@ The scenario is fictional. Pilot testers must not enter confidential, personal, 
 python -m finance_director_coach
 ```
 
-Choose the guided path to complete an assessed attempt, or skip to the solution for study without collecting learner evidence.
+The CLI deliberately defaults to Scenario 001. Choose the guided path to complete an assessed attempt, or skip to the solution for study without collecting learner evidence.
 
 ## Deploy On Streamlit Community Cloud
 
@@ -135,7 +139,7 @@ python -m compileall src tests streamlit_app.py
 - No persistent or cross-session learner history; Practice attempts remain only in the current browser session.
 - No user accounts, authentication, or telemetry.
 - No external AI API integration.
-- Scenario 001 is the only implemented scenario.
+- The browser scenario library contains two curated synthetic scenarios; it does not yet import arbitrary scenario files, YAML, or spreadsheets.
 - Scenario Coach **Start over** clears Scenario Coach state only. Practice has its own clear-history action, and the two surfaces preserve each other's namespaced state.
 - All in-memory state disappears when the browser session ends; nothing persists across browser sessions.
 - The downloadable summary is generated locally and is not stored by FinanceOS.
@@ -146,4 +150,4 @@ python -m compileall src tests streamlit_app.py
 
 ## Status
 
-Phase 0 is complete and Phase 1 remains current. The Scenario 001 CLI and Streamlit pilot, Fast Drill Mode V1, and the learner-tested four-card clarity and documentation cleanup are merged.
+Phase 0 is complete and Phase 1 remains current. The Scenario 001 CLI, the two-scenario Streamlit Scenario Coach library, Fast Drill Mode V1, and the learner-tested four-card clarity and documentation cleanup are merged.

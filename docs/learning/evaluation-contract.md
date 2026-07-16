@@ -56,10 +56,13 @@ Every scenario requirement used in evaluation must have a stable identifier. An 
 - Feedback message explaining the result.
 - Improvement guidance.
 - An optional worked solution for deterministically assessed calculations.
+- An optional post-submission judgment explanation for structured interpretation, risk, or decision evidence.
 
 The scorecard must be reproducible from these records. It must not depend on hidden weighting.
 
 Worked solutions are post-submission learning content. They must use the scenario's reconciled figures and calculation rules, remain hidden during the assessed questions, and be available after assessment whether the numerical evidence was observed or not observed.
+
+Judgment explanations are optional post-submission learning content for structured evidence. They explain why a selected financial driver, cost classification, risk, condition, or safeguard matters. They must not claim to assess unrestricted executive wording and must remain hidden until final submission.
 
 ## Competency Ratings
 
@@ -161,6 +164,7 @@ The deterministic MVP may:
 - Apply explicit route-specific rating gates.
 - Produce authored feedback tied to the evidence record.
 - Show an authored worked solution after submission for numerical evidence where one is defined.
+- Show an authored post-submission explanation for structured evidence where one is defined.
 
 The deterministic MVP may not claim to evaluate:
 

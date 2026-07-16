@@ -30,7 +30,7 @@ Status: current.
 
 Scenario 001 CLI vertical-slice milestone: merged.
 
-FinanceOS Alpha 0.1 Streamlit pilot milestone: merged.
+FinanceOS Alpha 0.1 Streamlit scenario-library milestone: merged.
 
 Fast Drill Mode V1 milestone: merged.
 
@@ -44,6 +44,8 @@ Delivered in this milestone:
 - Minimal Python 3.11 continuous integration.
 
 No accounts, database, durable persistence, AI, authentication, or telemetry are delivered in Phase 1.
+
+Scenario publication remains curated: finance and Product Owner validation are required before a scenario is added to the registry. A general importer is deferred until repeated authoring work establishes a clear need.
 
 ## Phase 2: Better Scenario And Feedback Quality
 

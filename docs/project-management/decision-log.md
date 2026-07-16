@@ -1,5 +1,7 @@
 # Decision Log
 
+This log records important product and architecture decisions. Add entries in reverse chronological order.
+
 ## 2026-07-16: Clarify Learner-Tested Foundational Drill Feedback
 
 Decision: Keep four reviewed foundational cards honestly classified as foundational, display each card's stable Card ID, and show a single clear worked-calculation label followed by a card-specific post-submission interpretation.
@@ -84,7 +86,52 @@ Implications:
 - Each card retains its FinQA source ID, source report reference, citation, and MIT licence metadata.
 - New drill surfaces must consume the committed JSON bank rather than perform runtime source imports.
 
-This log records important product and architecture decisions. Add entries in reverse chronological order.
+## 2026-07-15: Require Consistent Financial-Pack Presentation Across The Registered Scenario Library
+
+Decision: Treat all scenarios registered in `SCENARIOS` as a single product surface for shared presentation and learner-flow work. Supersede the 2026-07-14 temporary allowance for existing scenarios to retain flattened prose financial packs.
+
+Rationale:
+
+- A learner should receive the same clear, accessible presentation standard regardless of which registered scenario they select.
+- The existing typed `FinancialPackTable` model and shared renderer support consistent tables without moving scenario-specific finance or evaluation rules into the shared shell.
+
+Implications:
+
+- Naturally tabular learner inputs use scenario-owned `FinancialPackTable` content and the shared briefing/guided renderer; prose remains for narrative context and qualifications only.
+- Shared presentation, navigation, responsive, or accessibility changes require review and validation across every affected registered scenario, including desktop and approximately 390px-width visual checks.
+- Exceptions require an explicit Product Owner request or documented technical blocker, plus a decision-log reason and follow-up action. None are currently approved.
+
+## 2026-07-14: Keep Financial-Pack Tables Scenario-Owned
+
+Decision: Represent optional learner-facing financial-pack tables with small typed content models owned by each scenario, and render them through the shared Streamlit shell with prose as a temporary fallback.
+
+Rationale:
+
+- Structured tables make dense financial inputs readable without coupling the UI to Scenario 002 values.
+- Existing scenarios could retain their proven text content until a deliberate content migration was needed; this allowance is superseded by the 2026-07-15 library-wide presentation decision.
+
+Implications:
+
+- A section may contain multiple compact static tables and short supporting notes.
+- The main briefing and guided financial-pack reference use the same renderer.
+
+## 2026-07-13: Add A Curated Scenario Library And Approve Scenario 002
+
+Decision: Replace the browser pilot's single hardwired scenario path with a small typed in-code registry. Register Scenario 001 and the synthetic Scenario 002, "Growth at Any Price: Should We Renew the Contract?". Keep the CLI defaulted to Scenario 001.
+
+Rationale:
+
+- Two materially different scenarios establish the minimum real use case for a scenario-selection boundary.
+- Scenario-specific answer models and evaluators avoid forcing unrelated finance decisions into one oversized attempt dataclass.
+- An explicit in-code registry remains understandable and prevents premature YAML, spreadsheet, or database authoring infrastructure.
+
+Implications:
+
+- The shared Streamlit shell owns selection, in-memory state, common results, restart, and summaries; registrations own scenario content, typed answers, evaluator, guided questions, evidence labels, and explanations.
+- Scenario 002 is synthetic and reconciled: it covers company margins, customer contribution, pricing, cost-to-serve, discount impact, capacity, and alternative renewal routes.
+- Numerical evidence may display a post-submission worked calculation. Relevant structured evidence may display a post-submission "Why does this matter?" explanation.
+- Finance SME and Product Owner validation, followed by QA learner-flow validation, is required before a scenario is added to the registry.
+- No importer, database, authentication, AI integration, telemetry, or general enterprise platform capability is introduced.
 
 ## 2026-07-13: Add Streamlit As The Alpha 0.1 Pilot Surface
 

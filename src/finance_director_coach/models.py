@@ -62,6 +62,7 @@ class EvidenceRecord:
     feedback: str
     improvement_guidance: str
     worked_solution: str | None = None
+    judgment_explanation: str | None = None
 
 
 @dataclass(frozen=True)
@@ -121,6 +122,32 @@ class EvaluationReport:
 class ContentSection:
     title: str
     body: str
+    tables: tuple["FinancialPackTable", ...] = ()
+
+
+class FinancialPackTableLayout(str, Enum):
+    """Presentation choices for scenario-owned learner financial-pack content."""
+
+    TABULAR = "tabular"
+    KEY_VALUE = "key_value"
+
+
+@dataclass(frozen=True)
+class FinancialPackTable:
+    """A compact, scenario-owned table for a learner-facing financial pack."""
+
+    title: str
+    column_headings: tuple[str, ...]
+    rows: tuple[tuple[str, ...], ...]
+    note_before: str | None = None
+    note_after: str | None = None
+    layout: FinancialPackTableLayout = FinancialPackTableLayout.TABULAR
+
+    def __post_init__(self) -> None:
+        if self.layout is FinancialPackTableLayout.KEY_VALUE and (
+            len(self.column_headings) != 2 or any(len(row) != 2 for row in self.rows)
+        ):
+            raise ValueError("A key-value financial-pack table must have exactly two columns.")
 
 
 @dataclass(frozen=True)

@@ -176,6 +176,30 @@ When changing product direction, update the relevant product document:
 - Roadmap: `docs/project-management/roadmap.md`
 - Decisions: `docs/project-management/decision-log.md`
 
+## Scenario Library-Wide Delivery
+
+- Treat every scenario registered in `SCENARIOS` as one product surface.
+- Before changing shared UI, presentation models, content rendering, navigation, summaries, responsive behavior, or accessibility, inspect every registered scenario and apply the change to each affected scenario in the same task.
+- Do not leave a registered scenario on a materially inferior fallback because the immediate request names another scenario.
+- Keep financial calculations, evidence rules, and authored content scenario-owned. Do not copy them into unrelated scenarios.
+- A scenario-specific exception requires an explicit Product Owner request or a documented technical blocker. Record the reason and follow-up action in the decision log.
+
+## Financial-Pack Presentation
+
+- Use scenario-owned typed `FinancialPackTable` content for naturally tabular inputs: statements, cash-flow bridges, working-capital and liquidity schedules, forecasts, route assumptions and comparisons, and glossaries.
+- Use prose only for genuine narrative context, qualifications, and supporting explanations; never flatten a financial table into prose as a substitute for structured presentation.
+- Preserve every learner-visible input, assumption, unit, sign, and qualifier. Do not reveal calculated answers, worked solutions, or evaluation outcomes in the briefing or guided flow.
+- Use the same shared renderer for the briefing and guided financial-pack reference. Keep financial-pack expanders, with the first section open by default.
+- Tables are static and non-editable, hide indexes, use responsive container width, and must work on desktop and at approximately 390px width.
+
+## Cross-Scenario Validation And Completion
+
+- Parameterize shared presentation and flow tests across registered scenarios where practical. For any shared presentation change, validate every registered scenario in both the briefing and guided financial-pack reference.
+- Check for code-style financial-pack blocks, editable tables, unintended indexes, answer leakage, and responsive presentation. Visually inspect each affected scenario on desktop and at approximately 390px width; if browser automation is unavailable, report that visual check as outstanding rather than passed.
+- Before declaring a shared change complete, inspect all registered scenarios and run the full test suite, compilation, `git diff --check`, and import-path validation.
+- Review `git status` and the final diff before committing. Commit and push scoped changes automatically, then wait for CI and verify the pull-request state.
+- Never merge, close, or mark a draft pull request ready for review unless the Product Owner explicitly requests it.
+
 ## Current Constraints
 
 - Streamlit is approved only as the in-memory Alpha 0.1 presentation layer; do not add another frontend framework without review.
