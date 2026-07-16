@@ -136,7 +136,8 @@ python -m compileall src tests streamlit_app.py
 - No user accounts, authentication, or telemetry.
 - No external AI API integration.
 - Scenario 001 is the only implemented scenario.
-- Browser state exists only for the current Streamlit session and is cleared by Start over.
+- Scenario Coach **Start over** clears Scenario Coach state only. Practice has its own clear-history action, and the two surfaces preserve each other's namespaced state.
+- All in-memory state disappears when the browser session ends; nothing persists across browser sessions.
 - The downloadable summary is generated locally and is not stored by FinanceOS.
 - Unrestricted free-text reasoning is stored for display and self-review but is not automatically evaluated.
 - Commercial Judgment is capped at `Capable` under deterministic evaluation; `Strong` requires qualified manual review.
@@ -145,4 +146,4 @@ python -m compileall src tests streamlit_app.py
 
 ## Status
 
-Phase 0 is complete. Phase 1 remains current. The Scenario 001 CLI and Streamlit pilot are merged, and Fast Drill Mode V1 is merged as the separate Practice surface. The current small follow-up removes a duplicated calculation label from four learner-tested foundational FinQA cards and keeps the documentation aligned with the delivered product.
+Phase 0 is complete and Phase 1 remains current. The Scenario 001 CLI and Streamlit pilot, Fast Drill Mode V1, and the learner-tested four-card clarity and documentation cleanup are merged.

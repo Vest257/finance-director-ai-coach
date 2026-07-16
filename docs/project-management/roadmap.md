@@ -39,10 +39,9 @@ Delivered in this milestone:
 - Scenario 001 content, CLI, deterministic rubric, structured feedback, competency scorecard, debrief, model answer, and action plan.
 - Streamlit Scenario Coach with guided and skip-to-solution browser paths, in-memory attempt state, restart, and local plain-text tester summary.
 - Fast Drill Mode V1: a separate Streamlit Practice page with a reviewed committed 100-card FinQA bank, deterministic numerical checks, finance-domain, financial-skill, and difficulty filters, and session-only Practice history.
+- Learner-tested four-card clarity and documentation cleanup: four foundational cards clarified while preserving reviewed units and provenance; Card IDs displayed; the repeated calculation label removed; card-specific post-submission interpretations added; and deterministic regeneration enforced.
 - Comprehensive tests for Scenario 001, FinQA-bank reconciliation and provenance, Practice state isolation, and browser answer-leakage boundaries.
 - Minimal Python 3.11 continuous integration.
-
-Current small follow-up: improve four learner-tested foundational cards and card reporting by removing the repeated calculation label while preserving reviewed units, provenance, and deterministic generation.
 
 No accounts, database, durable persistence, AI, authentication, or telemetry are delivered in Phase 1.
 
