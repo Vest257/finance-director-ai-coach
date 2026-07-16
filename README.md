@@ -2,7 +2,7 @@
 
 FinanceOS is planned as a long-term Finance Director and CFO simulation platform. Its first product is the Finance Director Scenario Coach: a scenario coach that helps learners practice finance leadership decisions, receive structured feedback, and understand the competencies they are developing.
 
-This repository contains FinanceOS Alpha 0.1: a curated two-scenario browser library and the original Scenario 001 command-line interface. Both interfaces reuse in-memory scenario content and deterministic evaluation cores. The product has no database, persistence, authentication, telemetry, or external AI integration.
+This repository contains FinanceOS Alpha 0.1: a curated two-scenario Streamlit Scenario Coach library, the original Scenario 001 command-line interface, and a separate Streamlit Practice surface for short deterministic finance drills. These learner surfaces use in-memory state and deterministic evaluation cores. The product has no database, cross-session persistence, authentication, telemetry, or external AI integration.
 
 ## Current Goals
 
@@ -35,6 +35,12 @@ This repository contains FinanceOS Alpha 0.1: a curated two-scenario browser lib
 |   +-- technical/
 |       +-- architecture.md
 |       +-- coding-standards.md
++-- data/
+|   +-- drills/
+|       +-- finqa_cards_v1.json
+|       +-- finqa_v1_curation.json
++-- scripts/
+|   +-- import_finqa.py
 +-- src/
 |   +-- finance_director_coach/
 |       +-- scenarios/
@@ -46,11 +52,16 @@ This repository contains FinanceOS Alpha 0.1: a curated two-scenario browser lib
 |       +-- cli.py
 |       +-- evaluation.py
 |       +-- models.py
+|       +-- practice.py
+|       +-- practice_ui.py
 |       +-- session.py
 |       +-- streamlit_ui.py
 +-- tests/
 |   +-- test_cli.py
 |   +-- test_evaluation.py
+|   +-- test_finqa_drills.py
+|   +-- test_practice.py
+|   +-- test_practice_ui.py
 |   +-- test_scenario_financials.py
 |   +-- test_streamlit_ui.py
 +-- streamlit_app.py
@@ -93,7 +104,7 @@ Streamlit is the only direct runtime dependency. The root `requirements.txt` del
 streamlit run streamlit_app.py
 ```
 
-The browser pilot begins with a scenario library. It supports Scenario 001 and Scenario 002 guided attempts, skip-to-solution study paths, deterministic feedback, competency scorecards, complete learning reviews, restart to the library, and locally generated plain-text tester summaries.
+Use the Streamlit navigation to switch between **Scenario Coach** and **Practice**. Scenario Coach begins with a curated library and supports Scenario 001 and Scenario 002 guided attempts, skip-to-solution study paths, deterministic feedback, competency scorecards, complete learning reviews, restart to the library, and locally generated plain-text tester summaries. Practice uses the committed reviewed 100-card FinQA bank, filters by finance domain, financial skill, and difficulty, and checks numerical answers deterministically. Practice shows a card-specific interpretation after submission and keeps its attempt history only for the current browser session.
 
 The scenario is fictional. Pilot testers must not enter confidential, personal, or employer information.
 
@@ -125,11 +136,12 @@ python -m compileall src tests streamlit_app.py
 ## Current MVP Limitations
 
 - No database.
-- No learner persistence or attempt history.
+- No persistent or cross-session learner history; Practice attempts remain only in the current browser session.
 - No user accounts, authentication, or telemetry.
 - No external AI API integration.
 - The browser scenario library contains two curated synthetic scenarios; it does not yet import arbitrary scenario files, YAML, or spreadsheets.
-- Browser state exists only for the current Streamlit session and is cleared by Start over.
+- Scenario Coach **Start over** clears Scenario Coach state only. Practice has its own clear-history action, and the two surfaces preserve each other's namespaced state.
+- All in-memory state disappears when the browser session ends; nothing persists across browser sessions.
 - The downloadable summary is generated locally and is not stored by FinanceOS.
 - Unrestricted free-text reasoning is stored for display and self-review but is not automatically evaluated.
 - Commercial Judgment is capped at `Capable` under deterministic evaluation; `Strong` requires qualified manual review.
@@ -138,4 +150,4 @@ python -m compileall src tests streamlit_app.py
 
 ## Status
 
-Phase 0 is complete. Phase 1 remains current. The Scenario 001 CLI vertical slice is merged, and the Streamlit interface is the Alpha 0.1 pilot surface for small-group learner testing across two curated scenarios.
+Phase 0 is complete and Phase 1 remains current. The Scenario 001 CLI, the two-scenario Streamlit Scenario Coach library, Fast Drill Mode V1, and the learner-tested four-card clarity and documentation cleanup are merged.

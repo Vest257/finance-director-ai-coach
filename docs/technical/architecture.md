@@ -17,7 +17,9 @@ Current runtime boundaries are:
 - `session.py`: guided and skip-to-solution learning flows.
 - `cli.py` and `__main__.py`: validated console input and application entry point. The CLI deliberately defaults to Scenario 001; it is not a scenario-library surface yet.
 - `streamlit_ui.py`: scenario-library selection, in-memory browser state, shared briefing and results presentation, restart, and local summary rendering.
-- `streamlit_app.py`: root Streamlit and Community Cloud entrypoint.
+- `practice.py`: pure drill-bank loading, filtering, answer checking, sequencing, and session-attempt helpers.
+- `practice_ui.py`: the separate in-memory Streamlit Practice surface.
+- `streamlit_app.py`: root Streamlit and Community Cloud entrypoint; owns navigation between Scenario Coach and Practice.
 
 ## Architectural Principles
 
@@ -58,7 +60,9 @@ The browser pilot uses a small library boundary before preserving the same core 
 scenario library -> selected registration -> scenario-specific answers -> scenario evaluator -> evidence and scorecard -> shared Streamlit results
 ```
 
-Streamlit session state retains only the current in-memory attempt and widget values. Start over clears that state. The optional plain-text summary is assembled locally from the learner's submitted answers and evaluation report; it is offered as a download and is not stored by the application.
+Scenario Coach session state retains only its current in-memory attempt and widget values. Scenario Coach Start over clears that state only. The optional plain-text summary is assembled locally from the learner's submitted answers and evaluation report; it is offered as a download and is not stored by the application.
+
+Fast Drill Mode V1 is a separate page-navigated Practice surface. It uses the committed reviewed `data/drills/finqa_cards_v1.json` bank and deterministic core functions for filtering, tolerance checks, and stable card sequencing. The bank is generated deterministically from the committed FinQA fixture and authored `data/drills/finqa_v1_curation.json` ledger; generated-bank changes must use that importer-and-curation workflow. Practice attempts exist only in namespaced Streamlit session state for the browser session, so they cannot interfere with the Scenario Coach's current in-memory attempt and widgets. Each learning surface resets only the state it owns: Scenario Coach preserves all `practice_*` keys, and Practice leaves Scenario Coach keys unchanged. No state persists across browser sessions. The mode has no persistence, accounts, learner profile, adaptive sequencing, streaks, leaderboard, or overall learner score.
 
 Financial-pack content is an input-only boundary before submission. The shared renderer preserves authored values, units, signs, and qualifications without exposing calculated answers, worked solutions, or evaluation outcomes. It renders static non-editable tables with hidden indexes and responsive container width; financial-pack expanders remain part of the learner flow, with the first briefing section open by default.
 
@@ -89,6 +93,8 @@ Testing should focus on domain behavior:
 - Evaluation output structure.
 - Session flow.
 - Streamlit stage flow, reset behavior, answer-leakage boundaries, and delegation to the core evaluator.
+- FinQA-bank reconciliation, provenance and taxonomy, deterministic regeneration, and unit normalization.
+- Practice history and state isolation.
 
 Avoid brittle tests around wording unless exact wording is a product requirement.
 

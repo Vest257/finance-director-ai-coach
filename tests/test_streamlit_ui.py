@@ -210,12 +210,16 @@ def test_web_submission_preserves_rating_boundaries_and_free_text_rule(
 
 
 def test_restart_clears_attempt_and_widget_state() -> None:
+    practice_attempts = [object()]
     state: dict[str, object] = {
         "stage": streamlit_ui.RESULTS_STAGE,
         "report": object(),
         "answers": object(),
         "input_ceo_response": "Confidential draft",
         "input_revenue_growth": 22.2,
+        "practice_domain": "P&L",
+        "practice_attempts": practice_attempts,
+        "practice_card_id": "FINQA-1",
     }
     streamlit_ui.reset_session_state(state)
     assert state == {
@@ -224,6 +228,9 @@ def test_restart_clears_attempt_and_widget_state() -> None:
         "path": None,
         "answers": None,
         "report": None,
+        "practice_domain": "P&L",
+        "practice_attempts": practice_attempts,
+        "practice_card_id": "FINQA-1",
     }
 
 

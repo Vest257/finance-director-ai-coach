@@ -1,6 +1,6 @@
 # MVP Scope
 
-The MVP is the Finance Director Scenario Coach, the first product within the FinanceOS platform. Its purpose is to validate the core learning loop before investing in broader platform capabilities. The CLI is the first vertical slice; FinanceOS Alpha 0.1 adds a browser-accessible Streamlit pilot over the same deterministic core.
+The MVP is the Finance Director Scenario Coach, the first product within the FinanceOS platform. Its purpose is to validate the core learning loops before investing in broader platform capabilities. The CLI is the first vertical slice; FinanceOS Alpha 0.1 adds a browser-accessible Streamlit Scenario Coach and a separate Practice surface. Scenario 001 is the only implemented scenario.
 
 ## In Scope
 
@@ -20,20 +20,27 @@ The MVP is the Finance Director Scenario Coach, the first product within the Fin
 - A command-line interface.
 - A Streamlit pilot interface for small-group browser testing.
 - In-memory session state and a locally generated plain-text tester summary.
+- A separate browser Practice page with a committed, reviewed 100-card FinQA drill bank.
+- One-card deterministic numerical practice with finance-domain, financial-skill, and difficulty filters.
+- Post-submission answer feedback, unit-correct worked calculations, card-specific interpretations, and visible Card IDs.
+- Session-only Practice attempt history.
 - Scenario-specific typed answer models and deterministic evaluators behind an explicit registration boundary.
 
 ## Out Of Scope
 
 - Any frontend framework beyond the approved Streamlit pilot layer.
-- Database or persistent learner accounts.
+- Database, persistent learner profiles, or cross-session progress.
 - External AI API integration.
 - Multi-user administration.
 - Payment, authentication, or organization management.
 - Dynamic financial model generation.
 - Real-time stakeholder roleplay.
 - Sophisticated adaptive learning paths.
+- AI, authentication, leaderboards, and an overall learner score.
 
-## MVP Learning Loop
+## MVP Learning Loops
+
+### 1. Scenario Coach Loop
 
 1. The learner selects or starts a scenario.
 2. The scenario presents context, key numbers, and a decision prompt.
@@ -43,6 +50,14 @@ The MVP is the Finance Director Scenario Coach, the first product within the Fin
 6. The learner receives a qualitative competency scorecard and structured feedback.
 7. The learner reviews the debrief and model Finance Director answer.
 8. The learner receives an action plan for the next practice step.
+
+### 2. Fast Drill Mode Loop
+
+1. The learner opens Practice from Streamlit navigation and optionally filters the committed drill bank.
+2. The learner reviews one card, including its question, unit, and Card ID, then submits a numerical answer.
+3. Practice checks the answer deterministically against the card tolerance.
+4. After submission, the learner receives the result, a clear unit-correct worked calculation, and a card-specific interpretation.
+5. The learner can continue to another card and review attempts from the current browser session.
 
 ## Acceptance Criteria
 
@@ -54,6 +69,7 @@ The MVP is useful when:
 - The behavioral competency framework explains how judgment and communication are evaluated.
 - The learning-domain framework explains which finance topics the scenario exercises.
 - The architecture can support more scenarios without major rewrites.
+- A learner can complete a drill and receive clear, unit-correct post-submission calculation feedback with a card-specific interpretation.
 
 ## First Scenario
 

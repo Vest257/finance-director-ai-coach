@@ -1,5 +1,89 @@
 # Decision Log
 
+## 2026-07-16: Clarify Learner-Tested Foundational Drill Feedback
+
+Decision: Keep four reviewed foundational cards honestly classified as foundational, display each card's stable Card ID, and show a single clear worked-calculation label followed by a card-specific post-submission interpretation.
+
+Rationale:
+
+- Learner testing identified a repeated `Calculation:` prefix after the Practice UI label.
+- The feedback needs to preserve the reviewed unit and provenance while making the calculation and financial meaning immediately legible.
+
+Implications:
+
+- The authored curation ledger is the source of truth for the four corrected calculation strings; the generated bank is regenerated deterministically.
+- Practice does not reveal the calculation or interpretation before a valid submission.
+
+## 2026-07-15: Plan A More Demanding Future Drill Phase
+
+Decision: Keep this focused cleanup limited to reviewed foundational cards; defer harder learner drills to a future phase.
+
+Backlog: Add two- and three-step calculations; working-capital bridges; margin and contribution analysis; cash conversion; liquidity and covenant headroom; debt movement and interest; tax-rate effects; investment returns and valuation; and linked P&L, balance-sheet, and cash-flow reasoning.
+
+## 2026-07-15: Add Fast Drill Mode V1 As A Separate In-Memory Practice Surface
+
+Decision: Add a separate Streamlit Practice page backed by the committed, reviewed 100-card FinQA drill bank. Keep answer evaluation deterministic through each card's stored tolerance and retain attempts only for the current browser session.
+
+Rationale:
+
+- Short, one-card numerical practice provides a focused complement to the Finance Director Scenario Coach without changing scenario evaluation.
+- The reviewed committed bank supports reproducible learner content without runtime FinQA imports or network access.
+- Session-only state makes the first learner loop useful without prematurely adding accounts or persistence.
+
+Implications:
+
+- The Practice core remains UI-independent and testable outside Streamlit.
+- V1 has no database, accounts, saved profile, adaptive engine, streaks, leaderboard, or overall learner score.
+- Scenario Coach state and Scenario 001 evaluation rules remain isolated and unchanged.
+
+## 2026-07-15: Complete Final FinQA Learner-Content And Taxonomy Review
+
+Decision: Make final learner-facing corrections explicit in the committed curation ledger, including percentage-point treatment for effective tax-rate changes, cleaned learner tables, and pending-only automatic curation candidates.
+
+Rationale:
+
+- A card must not be marked reviewed merely because it is mechanically eligible.
+- Finance concepts need to remain distinct from the arithmetic used to calculate them.
+- Learner-facing tables and worked calculations must be clear while raw FinQA evidence stays intact for provenance.
+
+Implications:
+
+- The importer accepts only explicit approved curation entries for generated cards.
+- Automatic candidate entries are pending with all review flags false.
+- Effective-rate differences use percentage points rather than percentage-change units.
+
+## 2026-07-15: Curate FinQA Drills For Learner Use
+
+Decision: Require an explicit, individually reviewed curation ledger for each FinQA drill, separate finance concepts from arithmetic methods, and expose cleaned learner-facing wording alongside retained raw provenance.
+
+Rationale:
+
+- Recomputing a FinQA program alone does not establish financial meaning, compatible units, or learner clarity.
+- FinanceOS needs explicit currency dimensions and scales to avoid presenting USD million as plain USD.
+- Final taxonomy choices must be reviewable rather than inferred solely from a first keyword.
+
+Implications:
+
+- The bank rejects known scale and semantic failures, including point-in-time balance additions without a valid financial reason.
+- Every card records approved review flags for units, semantics, domain, and learner clarity.
+- The learner-facing question, context, table, and worked calculation omit raw FinQA syntax and known OCR artefacts while raw source fields remain available for provenance.
+
+## 2026-07-15: Add A Deterministic FinQA Calculation-Drill Content Bank
+
+Decision: Introduce a generated, immutable 100-card FinQA fast-drill bank and its offline deterministic import tooling, without adding a learner UI, persistence, scoring, adaptive sequencing, authentication, or runtime network access.
+
+Rationale:
+
+- FinanceOS needs a reviewable base of short finance calculations before a learner interaction surface is designed.
+- FinQA provides executable numerical programs and source evidence that can be recomputed without an LLM.
+- Committing the selected source-record fixture allows CI to validate the generated bank without downloading FinQA.
+
+Implications:
+
+- The current import taxonomy covers P&L, Balance Sheet, Cash Flow, Working Capital, Liquidity & Treasury, Tax, Commercial Finance, and Investment & Valuation.
+- Each card retains its FinQA source ID, source report reference, citation, and MIT licence metadata.
+- New drill surfaces must consume the committed JSON bank rather than perform runtime source imports.
+
 This log records important product and architecture decisions. Add entries in reverse chronological order.
 
 ## 2026-07-15: Require Consistent Financial-Pack Presentation Across The Registered Scenario Library

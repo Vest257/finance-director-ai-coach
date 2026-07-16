@@ -136,6 +136,7 @@ def test_registry_contains_unique_scenario_ids_and_distinct_typed_boundaries() -
 
 
 def test_reset_clears_selected_scenario_and_all_attempt_state() -> None:
+    practice_attempts = [object()]
     state: dict[str, object] = {
         "stage": RESULTS_STAGE,
         "selected_scenario_id": "SCN-002",
@@ -143,9 +144,19 @@ def test_reset_clears_selected_scenario_and_all_attempt_state() -> None:
         "answers": object(),
         "input_northstar_dso": 121.7,
         "saved_input_classifications": ["receivables"],
+        "practice_card_id": "FINQA-009A7ECEA253",
+        "practice_attempts": practice_attempts,
     }
     reset_session_state(state)
-    assert state == {"stage": WELCOME_STAGE, "guided_step": 0, "path": None, "answers": None, "report": None}
+    assert state == {
+        "stage": WELCOME_STAGE,
+        "guided_step": 0,
+        "path": None,
+        "answers": None,
+        "report": None,
+        "practice_card_id": "FINQA-009A7ECEA253",
+        "practice_attempts": practice_attempts,
+    }
 
 
 def test_switching_scenarios_cannot_retain_prior_scenario_widget_values() -> None:
